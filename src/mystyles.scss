@@ -1,0 +1,77 @@
+@charset "utf-8";
+
+@import "globals.scss";
+
+// Import only what you need from Bulma
+@import "../node_modules/bulma/bulma.sass";
+
+/*
+body {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-family: -apple-system, BlinkMacSystemFont,
+  “Segoe UI”, “Roboto”, “Oxygen”,
+  “Ubuntu”, “Cantarell”, “Fira Sans”,
+  “Droid Sans”, “Helvetica Neue”, sans-serif;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}*/
+
+html {
+  overflow-x: auto
+}
+
+html, body {
+  height: 100%
+}
+
+.fieldset{
+  background-color: #fff;
+  border-radius: 6px;
+  color: #4a4a4a;
+  display: block;
+  padding: 0.75rem 1.25rem 1.25rem;
+  border: 1px solid #ccc
+}
+.fieldset  > legend{
+  color: #363636;
+  display: block;
+  font-size: 1rem;
+  font-weight: 700;
+  background-color: #fff;
+  padding: 0 5px;
+  width: max-content;
+  border: 0 none
+}
+
+.tooltip .tooltip-text {
+  min-width:400px;
+  max-width:600px;
+  top:-20px;
+  left:50%;
+  transform:translate(0%,-100%);
+  padding:10px 20px;
+  color:#ffffff;
+  background-color: $secondary;
+  font-weight:normal;
+  font-size:14px;
+  border-radius:8px;
+  position:absolute;
+  z-index:99999999;
+  box-sizing:border-box;
+  box-shadow:0 1px 8px rgba(0,0,0,0.5);
+  display:none;
+}
+
+.tooltip:hover .tooltip-text {
+  display:block;
+}
+
+.checkbox {
+  @extend .is-unselectable
+}
+
+.is-quad-button {
+  height: 2em;
+  min-width: 2em;
+}

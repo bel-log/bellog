@@ -1,0 +1,70 @@
+@import "globals.scss";
+
+$navbar_height: 56px;
+$icon_container_size: 40px;
+$icon_size: 24px;
+$navibar_item_gap: 10px;
+
+#bellog_navbar {
+  position: fixed;
+  top: 0;
+  width: 100%;
+  height: $navbar_height;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  background-color: $primary;
+  color: white;
+  transition: box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  box-shadow: rgb(0 0 0 / 20%) 0px 2px 4px -1px, rgb(0 0 0 / 14%) 0px 4px 5px 0px, rgb(0 0 0 / 12%) 0px 1px 10px 0px;
+  z-index: 999;
+}
+
+#bellog_navbar .icon {
+  -webkit-transition-duration: 0.4s; /* Safari */
+  transition-duration: 0.4s;
+  border-radius: 50%;
+}
+
+#bellog_navbar .icon:active {
+  background-color: gray;
+  transition: all 0.8s;
+}
+
+#bellog_navbar .icon:after {
+  background-color: gray;
+}
+
+#bellog_navbar > .icon {
+  color: $icon-color;
+  stroke: $icon-color;
+
+  width: $icon_size;
+  height: $icon_size;
+}
+
+#bellog_navbar > .left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+#bellog_navbar > .center {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+
+#bellog_navbar > .right {
+  padding-right: 16px;
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+}
+
+#bellog_below_navbar {
+  margin-top: $navbar_height;
+  flex-grow: 1;
+}

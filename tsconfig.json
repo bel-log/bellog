@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist/",
+    "noImplicitAny": false,
+    "sourceMap": true,
+    "module": "esnext",
+    "target": "ES6",
+    "jsx": "react",
+    "allowJs": true,
+    "downlevelIteration": true,
+    "moduleResolution": "node",
+    "suppressImplicitAnyIndexErrors": true
+  }
+}
