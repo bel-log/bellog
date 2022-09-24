@@ -1,38 +1,19 @@
-import { useStateWithCallback } from "../../utility/customHooks";
+import { usePropagator, useStateWithCallback } from "../../utility/customHooks";
 import * as React from "react";
 import { buildDefaultDriverWebSerialSettings } from "../../app/setup/SetupFactories";
 import { DriverSerialPortWebSerialParameters } from "../../drivers/DriverSerialportWebserial";
 import { DriverNames } from "../../drivers/Driver";
 import { useEffect, useState } from "react";
 
-export const DriverWebSerialSetup = (props: { cfg: DriverSerialPortWebSerialParameters, onConfigUpdate: any }) => {
+export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate: any }) => {
 
-    const defaultSettings = (buildDefaultDriverWebSerialSettings(DriverNames.DriverSerialPortWebSerial) as DriverSerialPortWebSerialParameters)
+    const [p, applyCache] = usePropagator<SerialOptions>(props.cfg, props.onConfigUpdate)
 
-    const [baudRate, setBaudRate] = useState(props.cfg.options.baudRate ?? defaultSettings.options.baudRate)
-
-    const [dataBits, setDataBits] = useState(props.cfg.options.dataBits ?? defaultSettings.options.dataBits)
-
-    const [parity, setParity] = useState(props.cfg.options.parity ?? defaultSettings.options.parity)
-
-    const [bufferSize, setBufferSize] = useState(props.cfg.options.bufferSize ?? defaultSettings.options.bufferSize)
-
-    const [flowControl, setFlowControl] = useState(props.cfg.options.flowControl ?? defaultSettings.options.flowControl)
-
-    useEffect(() => {
-        props.onConfigUpdate({
-            options:
-            {
-                baudRate: baudRate,
-                dataBits: dataBits,
-                parity: parity,
-                bufferSize: bufferSize,
-                flowControl: flowControl
-            }
-        }
-        )
-    }, [baudRate, dataBits, parity, bufferSize, flowControl])
-
+    const [baudRate, setBaudRate] = [p.baudRate.val, p.baudRate.set]
+    const [dataBits, setDataBits] = [p.dataBits.val, p.dataBits.set]
+    const [parity, setParity] = [p.parity.val, p.parity.set]
+    const [bufferSize, setBufferSize] = [p.bufferSize.val, p.bufferSize.set]
+    const [flowControl, setFlowControl] = [p.flowControl.val, p.flowControl.set]
 
     return (
         <React.Fragment>

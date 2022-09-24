@@ -11,6 +11,8 @@ import { db } from "../../app/db/db";
 import { useParams } from "react-router-dom";
 import { useLiveQuery } from "dexie-react-hooks";
 import RuntimeProfile from "../runtime/RuntimeProfile";
+import { normalizeProfile } from "../../app/setup/SetupNormalizer";
+import { checkVersionForRedirection } from "../../Version";
 
 
 
@@ -26,10 +28,11 @@ export const PageProfileRuntime = () => {
     const profile = useLiveQuery(async () => {
         let tmpProfile = await db.profiles.get(parseInt(profileId))
 
+        const profileObj = normalizeProfile(JSON.parse(tmpProfile.setup) as SetupProfileObject)
+        checkVersionForRedirection(profileObj.setupVersion)
         // Re-build runtime if profile changes
         setKeyId(++tmpKeyId)
-
-       return JSON.parse(tmpProfile.setup)
+       return normalizeProfile(profileObj)
     }, []);
 
     return (

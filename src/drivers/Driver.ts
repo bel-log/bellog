@@ -15,8 +15,9 @@ export enum DriverStatus {
 
 export interface Driver {
     readonly name:string
-    send(data: Uint8Array): void
-    onReceive(cb: (this: Driver, data: Uint8Array | string) => void):void
+    send(data: Uint8Array | string): void
+    onReceive(cb: (data: Uint8Array | string) => void):void
+    onTransmit(cb: (data: Uint8Array | string) => void):void
     destroy()
 }
 

@@ -1,20 +1,17 @@
 import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
 
-export interface DriverSerialPortWebSerialParameters {
+export interface DriverSerialPortWebSerialParameters extends SerialOptions {
     usbVendorId?: number
     usbProductId?: number
-    options: SerialOptions
 }
 
 export const DriverSerialPortWebSerialDefaults: DriverSerialPortWebSerialParameters = {
-    options: {
-        baudRate: 115200,
-        dataBits: 8,
-        stopBits: 1,
-        parity: "none",
-        bufferSize: 255,
-        flowControl: "none"
-    }
+    baudRate: 115200,
+    dataBits: 8,
+    stopBits: 1,
+    parity: "none",
+    bufferSize: 255,
+    flowControl: "none"
 }
 
 export class DriverSerialPortWebSerial implements DriverOpenClose {
@@ -26,6 +23,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     private readingProcess: Boolean
     private portReader:  ReadableStreamDefaultReader<Uint8Array>
     private onReceiveCb: (data: Uint8Array) => void
+    private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onError: () => void
     readonly name: string;
@@ -39,24 +37,33 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     constructor(private readonly params: DriverSerialPortWebSerialParameters) {
         this.name = "WebSerial"
         this._status = DriverStatus.CLOSE
-        // Override with defaults if missing params
-        this.options = {...DriverSerialPortWebSerialDefaults.options, ...params.options}
         this.usbVendorId = params.usbVendorId ?? 0
         this.usbProductId = params.usbProductId ?? 0
+        this.options = params
     }
 
-    onReceive(cb: (data: Uint8Array) => void) {
+    onReceive(cb: (data: string | Uint8Array) => void): void {
         this.onReceiveCb = cb
+    }
+
+    onTransmit(cb: (data: string | Uint8Array) => void): void {
+        this.onTransmitCb = cb
     }
 
     onStatusChange(cb: (status: DriverStatus) => void) {
         this.onStatusChangeCb = cb
     }
 
-    send(data: Uint8Array) {
+    send(data: Uint8Array | string) {
         try {
+            let wdata = data
+            if(typeof data === "string") {
+                wdata = new TextEncoder().encode(data);
+            }
             const writer = this.port.writable.getWriter();
-            writer.write(data).then(() => {});
+            writer.write(wdata as Uint8Array).then(() => {});
+
+            this.onTransmitCb(data)
         }
         catch (error)
         {

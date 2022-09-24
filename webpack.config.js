@@ -1,9 +1,12 @@
 const path = require("path");
 const CopyPlugin = require('copy-webpack-plugin');
+const TerserPlugin = require("terser-webpack-plugin");
+
+const isProduction = process.argv[process.argv.indexOf('--mode') + 1] === 'production';
 
 module.exports = {
     entry: "./src/index.tsx",
-    devtool: "source-map",
+    devtool: isProduction ? undefined : "source-map",
     module: {
         rules: [
             {
@@ -25,7 +28,7 @@ module.exports = {
                     // Compiles Sass to CSS
                     "sass-loader",
                 ],
-            },
+            }
         ]
     },
     resolve: {

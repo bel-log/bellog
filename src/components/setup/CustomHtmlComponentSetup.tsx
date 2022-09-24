@@ -1,36 +1,38 @@
-import {useStateWithCallback} from "../../utility/customHooks";
+import {usePropagator, useStateWithCallback} from "../../utility/customHooks";
 import * as React from "react";
 import CodeMirror from '@uiw/react-codemirror';
 import {javascript} from "@codemirror/lang-javascript";
-import {HtmlComponentParameterType, SetupCustomHtmlProperties} from "../../app/setup/SetupInterfaces";
+import {HtmlComponentEventType, HtmlComponentParameterType, SetupCustomHtmlProperties} from "../../app/setup/SetupInterfaces";
 import {useEffect, useRef, useState} from "react";
 import {setParamOfArrayProp, setParamOfObjectProp} from "../../utility/customSetters";
 import {compileTemplate} from "../../utility/customRenderUtils";
+import { CollapseCard } from "../CollapseCard";
 
 enum TabType {
     CodeTab,
     PreviewTab
 }
 
-export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties, onConfigChange: any, onDelete?: any }) => {
+export const CustomHtmlComponentSetup = (props: { 
+        cfg: SetupCustomHtmlProperties, 
+        onConfigChange: any, 
+        onDelete?: any,
+        onSortUp: () => void,
+        onSortDown: () => void,
+    }) => {
 
-    const [name, setName] = useStateWithCallback(props.cfg.name, (name) => {
-        props.onConfigChange({name: name})
-    })
+    const [p, applyCache] = usePropagator<SetupCustomHtmlProperties>(props.cfg, props.onConfigChange)
 
-    const [code, setCode] = useStateWithCallback(props.cfg.code, (code: string) => {
-        props.onConfigChange({code: code})
-    })
-
-    const [parameters, setParameters] = useStateWithCallback(props.cfg.parameters, (parameters) => {
-        props.onConfigChange({parameters: parameters})
-    })
-
+    const [name, setName] = [p.name.val, p.name.set]
+    const [code, setCode] = [p.code.val, p.code.set]
+    const [parameters, setParameters] = [p.parameters.val, p.parameters.set]
+    const [events, setEvents] = [p.events.val, p.events.set]
+    
     const [selectedTab, setSelectedTab] = useState(TabType.CodeTab)
 
     const previewRef = useRef<HTMLHeadingElement>()
 
-    useEffect(() => {
+    function updateCode(code: string, previewOnly: boolean= false) {
         let paramsNames = [...code.matchAll(/\$\{.*(\$\$[a-zA-Z0-9]*).*}/gm)]
 
         let currentParameters = paramsNames.reduce((acc, m) => {
@@ -38,13 +40,20 @@ export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties
             acc[name] = {type: HtmlComponentParameterType.Text, default: name}
             return acc
         }, {})
-        
-        setParameters(currentParameters)
-    }, [code])
 
-    useEffect(() => {
-        let args = Object.keys(parameters).reduce((acc, name) => {
-            acc["$$" + name] = parameters[name].default;
+        let eventTypes = Object.values(HtmlComponentEventType).join("|")
+        // TODO put eventTypes inside regex
+        let eventNames = [...code.matchAll(/<.*data-(iwclick)=[\"\'](.*?)[\"|\'].*>/gm)]
+        let currentEvents = eventNames.reduce((acc, m) => {
+            if(m.length == 3)
+            {
+                acc[m[2]] = {type: m[1]}
+                return acc
+            }
+        }, {})
+
+        let args = Object.keys(currentParameters).reduce((acc, name) => {
+            acc["$$" + name] = currentParameters[name].default;
             return acc
         }, {})
         try {
@@ -55,25 +64,28 @@ export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties
             previewRef.current.innerHTML = ex
         }
 
-    }, [parameters])
+        if(!previewOnly) {
+            setCode(code, true)
+            setParameters(currentParameters, true)
+            setEvents(currentEvents, true)
+            applyCache()
+        }
+    }
+
+    useEffect(() => {
+        updateCode(code, true)
+    }, [])
 
     return (
         <React.Fragment>
-            <fieldset className="fieldset mb-2">
-                <legend className="ml-2">{name}</legend>
+            <CollapseCard title={name}
+                deleteIcon deleteClick={() => {props?.onDelete()}}
+                sortArrowIcon={true} sortUpClick={props.onSortUp} sortDownClick={props.onSortDown}>
+
             <div className="field is-grouped">
                 <div className="control is-expanded">
                     <input className="input" type="text" placeholder="Text input" value={name}
                            onChange={(evt) => setName(evt.target.value)}/>
-                </div>
-                <div className="control">
-                    {
-                        props.onDelete ?
-                            <span className="icon is-clickable is-mediumis-vcentered" style={{height: "100%"}}
-                                  onClick={() => props.onDelete()}>
-                        <i className="fas fa-lg fa-trash has-text-danger"></i>
-                    </span> : <div/>
-                    }
                 </div>
             </div>
             <div className="tabs is-left is-boxed">
@@ -99,7 +111,7 @@ export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties
 
             <div
                 className={`box ${selectedTab == TabType.PreviewTab ? "" : "is-hidden"}`}
-                style={{height: "300px"}}
+                style={{minHeight: "300px"}}
                 ref={previewRef}>
 
             </div>
@@ -110,7 +122,7 @@ export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties
                 height="300px"
                 extensions={[javascript({jsx: true})]}
                 onChange={(value, viewUpdate) => {
-                    setCode(value)
+                    updateCode(value)
                 }}/>
             {
                 Object.keys(parameters).map((name, index) => {
@@ -151,7 +163,7 @@ export const CustomHtmlComponentSetup = (props: { cfg: SetupCustomHtmlProperties
                     )
                 })
             }
-            </fieldset>
+            </CollapseCard>
         </React.Fragment>
 
     )

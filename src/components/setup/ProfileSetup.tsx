@@ -1,6 +1,5 @@
 import * as React from "react";
-import {Property} from "csstype";
-import {RendererList} from "../../renderers/rendererslist";
+import { Property } from "csstype";
 import {
     createContext,
     Dispatch,
@@ -12,58 +11,50 @@ import {
     useRef,
     useState
 } from "react";
-import {GenericRendererPropertiesSetup, GenericRendererSetup, MatchEntry} from "../../renderers/generic/Generic";
-import {useStateWithCallback} from "../../utility/customHooks";
-import {GlobalScriptSetup} from "./GlobalScriptSetup";
-import {CustomParsersSetup} from "./CustomParsersSetup";
-import {CollapseCard} from "../CollapseCard";
+import { usePropagator, useStateWithCallback, useUpdateEffect } from "../../utility/customHooks";
+import { GlobalScriptSetup } from "./GlobalScriptSetup";
+import { CustomParsersSetup } from "./CustomParsersSetup";
+import { CollapseCard } from "../CollapseCard";
 import {
+    buildDefaultAction,
+    buildDefaultCustomBuilder,
     buildDefaultCustomHtmlElem,
     buildDefaultCustomParser,
+    buildDefaultDriverSettings,
     buildDefaultDriverWebSerialSettings,
     buildDefaultGlobalScript,
-    buildDefaultGlobalStyle, buildDefaultView
+    buildDefaultGlobalStyle, buildDefaultView, buildDefaultWidgetGroup
 } from "../../app/setup/SetupFactories";
-import {GlobalStyleSetup} from "./GlobalStyleSetup";
-import {SetupCustomParserProperties} from "../../app/setup/SetupInterfaces";
-import {DriverWebSerialSetup} from "./DriverWebSerialSetup";
-import {DriverSerialPortWebSerial, DriverSerialPortWebSerialParameters} from "../../drivers/DriverSerialportWebserial";
-import {CustomHtmlComponentSetup} from "./CustomHtmlComponentSetup";
-import {ViewSetup} from "./ViewSetup";
+import { GlobalStyleSetup } from "./GlobalStyleSetup";
+import { SetupCustomParserProperties } from "../../app/setup/SetupInterfaces";
+import { DriverWebSerialSetup } from "./DriverWebSerialSetup";
+import { DriverSerialPortWebSerial, DriverSerialPortWebSerialParameters } from "../../drivers/DriverSerialportWebserial";
+import { CustomHtmlComponentSetup } from "./CustomHtmlComponentSetup";
+import { ViewSetup } from "./ViewSetup";
 import * as serialize from "serialize-javascript"
-import {DriverNames} from "../../drivers/Driver";
-import {SetupProfileObject} from "../../app/setup/SetupInterfaces";
+import { Driver, DriverNames } from "../../drivers/Driver";
+import { SetupProfileObject } from "../../app/setup/SetupInterfaces";
+import { CustomBuildersSetup } from "./CustomBuildersSetup";
+import { Action } from "./Action";
+import { WidgetGroup } from "./WidgetGroup";
 
 
 const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any, onExportRequest, onImportRequest }) => {
 
-    const [profileName, setProfileName] = useStateWithCallback(props.profile.profileName, (profileName) => {
-        props.onConfigUpdate({profileName: profileName})
-    })
+    const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 
-    const [driver, setDriver] = useStateWithCallback(props.profile.driver, (driver) => {
-        props.onConfigUpdate({driver: driver})
-    })
-
-    const [scripts, setScripts] = useStateWithCallback(props.profile.scripts ?? [], (newScripts) => {
-        props.onConfigUpdate({scripts: newScripts})
-    })
-
-    const [styles, setStyles] = useStateWithCallback(props.profile.styles ?? [], (newStyles) => {
-        props.onConfigUpdate({styles: newStyles})
-    })
-
-    const [parsers, setParsers] = useStateWithCallback(props.profile.parsers ?? [], (newParsers) => {
-        props.onConfigUpdate({parsers: newParsers})
-    })
-
-    const [htmlElems, setHtmlElems] = useStateWithCallback(props.profile.html ?? [], (htmlElems) => {
-        props.onConfigUpdate({html: htmlElems})
-    })
-
-    const [views, setViews] = useStateWithCallback(props.profile.views ?? [], (views) => {
-        props.onConfigUpdate({views: views})
-    })
+    const [profileName, setProfileName] = [p.profileName.val, p.profileName.set]
+    const [driverType, setDriverType] = [p.driverType.val, p.driverType.set]
+    const [driverSettings, setDriverSettings] = [p.driverSettings.val, p.driverSettings.set]
+    const [scripts, setScripts] = [p.scripts.val, p.scripts.set]
+    const [styles, setStyles] = [p.styles.val, p.styles.set]
+    const [parsers, setParsers] = [p.parsers.val, p.parsers.set]
+    const [builders, setBuilders] = [p.builders.val, p.builders.set]
+    const [actions, setActions] = [p.actions.val, p.actions.set]
+    const [htmlElems, setHtmlElems] = [p.html.val, p.html.set]
+    const [views, setViews] = [p.views.val, p.views.set]
+    const [widgetGroups, setWidgetGroups] = [p.widgetGroups.val, p.widgetGroups.set]
+    const [globalSettings, setGlobalSettings] = [p.globalSettings.val, p.globalSettings.set]
 
     function addNewGlobalScript() {
         setScripts([...scripts, buildDefaultGlobalScript(scripts)])
@@ -77,6 +68,14 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
         setParsers([...parsers, buildDefaultCustomParser(parsers)])
     }
 
+    function addNewCustomBuilder() {
+        setBuilders([...builders, buildDefaultCustomBuilder(builders)])
+    }
+
+    function addNewCustomAction() {
+        setActions([...actions, buildDefaultAction(actions, builders)])
+    }
+
     function addNewCustomHtmlComponent() {
         setHtmlElems([...htmlElems, buildDefaultCustomHtmlElem(htmlElems)])
     }
@@ -85,9 +84,15 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
         setViews([...views, buildDefaultView(views)])
     }
 
-    useEffect(() => {
-        setProfileName(props.profile.profileName)
-    }, [])
+    function addNewInteractiveWidget() {
+        setWidgetGroups([...widgetGroups, buildDefaultWidgetGroup(widgetGroups)])
+    }
+
+    function updateDriverType(newDriverType: DriverNames) {
+        setDriverType(newDriverType, true)
+        setDriverSettings(buildDefaultDriverSettings(newDriverType), true)
+        applyCache()
+    }
 
     return (
         <div>
@@ -114,34 +119,30 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                 <label className="label">Profile name</label>
                 <div className="control">
                     <input className="input" type="text" placeholder="Text input" value={profileName}
-                           onChange={(evt) => setProfileName(evt.target.value)}/>
+                        onChange={(evt) => setProfileName(evt.target.value)} />
                 </div>
             </div>
 
             <div className="field">
                 {
                     (() => {
-                        const [tmpDriverSettings, setTmpDriverSettings] = useState(driver.settings)
+                        const [tmpDriverSettings, setTmpDriverSettings] = useState(driverSettings)
                         const [driverModalIsOpen, setDriverModalIsOpen] = useStateWithCallback(false, (isOpen) => {
                             if (isOpen) {
-                                setTmpDriverSettings(driver.settings)
+                                setTmpDriverSettings(driverSettings)
                             }
                         })
 
                         useEffect(() => {
-                            setDriver({
-                                name: driver.name,
-                                settings: tmpDriverSettings
-                            })
+                            setDriverSettings(tmpDriverSettings)
                         }, [tmpDriverSettings])
+
                         return (
                             <React.Fragment>
                                 <label className="label">Driver</label>
                                 <div className="field has-addons">
                                     <div className="select">
-                                        <select value={driver.name} onChange={(evt) => setDriver(
-                                            {...driver, ...{name: evt.target.value, settings: buildDefaultDriverWebSerialSettings(evt.target.value)}}
-                                        )}>
+                                        <select value={driverType} onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
                                             {
                                                 Object.values(DriverNames).map(
                                                     (driver, dindex) => {
@@ -166,20 +167,20 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                                                         <div className="modal-background"></div>
                                                         <div className="modal-card">
                                                             <header className="modal-card-head">
-                                                                <p className="modal-card-title">{driver.name} Settings</p>
+                                                                <p className="modal-card-title">{driverType} Settings</p>
                                                                 <button className="delete" aria-label="close"
-                                                                        onClick={() => setDriverModalIsOpen(false)}></button>
+                                                                    onClick={() => setDriverModalIsOpen(false)}></button>
                                                             </header>
                                                             <section className="modal-card-body">
                                                                 {
                                                                     (() => {
-                                                                        switch (driver.name) {
+                                                                        switch (driverType) {
                                                                             case DriverNames.DriverSerialPortWebSerial:
                                                                                 return (
                                                                                     <DriverWebSerialSetup
                                                                                         cfg={tmpDriverSettings as DriverSerialPortWebSerialParameters}
                                                                                         onConfigUpdate={(cfg) => {
-                                                                                            setTmpDriverSettings({...tmpDriverSettings, ...cfg})
+                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
                                                                                         }}
                                                                                     />
                                                                                 )
@@ -189,21 +190,21 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                                                             </section>
                                                             <footer className="modal-card-foot">
                                                                 <button className="button is-success"
-                                                                        onClick={() => {
-                                                                            setDriver({...driver, ...{settings: tmpDriverSettings}});
-                                                                            setDriverModalIsOpen(false)
-                                                                        }}>
+                                                                    onClick={() => {
+                                                                        setDriverSettings(tmpDriverSettings);
+                                                                        setDriverModalIsOpen(false)
+                                                                    }}>
                                                                     Save changes
                                                                 </button>
                                                                 <button className="button"
-                                                                        onClick={() => setDriverModalIsOpen(false)}>
+                                                                    onClick={() => setDriverModalIsOpen(false)}>
                                                                     Cancel
                                                                 </button>
                                                             </footer>
                                                         </div>
                                                     </div>
                                                 )
-                                            } else return (<div/>)
+                                            } else return (<div />)
 
                                         })()
                                     }
@@ -217,31 +218,41 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
             </div>
 
             <CollapseCard title="Custom Html Components">
-                {
-                    htmlElems.map(
-                        (htmlelem, index) => {
-                            return (
-                                <CustomHtmlComponentSetup
-                                    key={htmlelem.id}
-                                    cfg={htmlelem}
-                                    onConfigChange={(newHtmlElem) =>
-                                        setHtmlElems(
-                                            htmlElems.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return {...val, ...newHtmlElem}
-                                                else
-                                                    return val
-                                            }))}
-                                    onDelete={() => setHtmlElems(htmlElems.filter((val, n_index) => {
-                                        return n_index != index
-                                    }))}
-                                />
-                            )
+                    {
+                        htmlElems.map(
+                            (htmlelem, index) => {
+                                return (
+                                    <CustomHtmlComponentSetup
+                                        key={htmlelem.id}
+                                        cfg={htmlelem}
+                                        onConfigChange={(newHtmlElem) =>
+                                            setHtmlElems(
+                                                htmlElems.map((val, n_index) => {
+                                                    if (n_index == index)
+                                                        return { ...val, ...newHtmlElem }
+                                                    else
+                                                        return val
+                                                }))}
+                                        onDelete={() => setHtmlElems(htmlElems.filter((val, n_index) => {
+                                            return n_index != index
+                                        }))}
+                                        onSortUp={() => {
+                                            if (htmlElems.length > 0 && index > 0) {
+                                                setHtmlElems([...htmlElems.slice(0, index-1), htmlelem, htmlElems[index-1], ...htmlElems.slice(index+1)])
+                                            }
+                                        }}
+                                        onSortDown={() => {
+                                            if (htmlElems.length > 0 && index < (htmlElems.length - 1)) {
+                                                setHtmlElems([...htmlElems.slice(0, index), htmlElems[index+1], htmlelem, ...htmlElems.slice(index+2)])
+                                            }
+                                        }}
+                                    />
+                                )
 
-                        }
-                    )
-                }
-                <button className="button is-primary" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
+                            }
+                        )
+                    }
+                <button className="button is-primary mt-4" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
             </CollapseCard>
 
             <CollapseCard title="Global styles">
@@ -256,7 +267,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                                         setStyles(
                                             styles.map((val, n_index) => {
                                                 if (n_index == index)
-                                                    return {...val, ...newStyle}
+                                                    return { ...val, ...newStyle }
                                                 else
                                                     return val
                                             }))}
@@ -269,7 +280,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                         }
                     )
                 }
-                <button className="button is-primary" onClick={() => addNewGlobalStyle()}>Add New</button>
+                <button className="button is-primary mt-4" onClick={() => addNewGlobalStyle()}>Add New</button>
             </CollapseCard>
 
             <CollapseCard title="Global scripts">
@@ -284,7 +295,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                                         setScripts(
                                             scripts.map((n_script, n_index) => {
                                                 if (n_index == index)
-                                                    return {...n_script, ...newScript}
+                                                    return { ...n_script, ...newScript }
                                                 else
                                                     return n_script
                                             }))}
@@ -297,7 +308,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                         }
                     )
                 }
-                <button className="button is-primary" onClick={() => addNewGlobalScript()}>Add New</button>
+                <button className="button is-primary mt-4" onClick={() => addNewGlobalScript()}>Add New</button>
             </CollapseCard>
 
             <CollapseCard title="Custom parsers">
@@ -312,7 +323,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                                         setParsers(
                                             parsers.map((val, n_index) => {
                                                 if (n_index == index)
-                                                    return {...val, ...newScript}
+                                                    return { ...val, ...newScript }
                                                 else
                                                     return val
                                             }))}
@@ -325,8 +336,74 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                         }
                     )
                 }
-                <button className="button is-primary" onClick={() => addNewCustomParser()}>Add New</button>
+                <button className="button is-primary mt-4" onClick={() => addNewCustomParser()}>Add New</button>
             </CollapseCard>
+            <CollapseCard title="Custom builders">
+                {
+                    builders.map(
+                        (builder, index) => {
+                            return (
+                                <CustomBuildersSetup
+                                    key={builder.id}
+                                    cfg={builder}
+                                    onConfigChange={(newScript) =>
+                                        setBuilders(
+                                            builders.map((val, n_index) => {
+                                                if (n_index == index)
+                                                    return { ...val, ...newScript }
+                                                else
+                                                    return val
+                                            }))}
+                                    onDelete={() => setBuilders(builders.filter((val, n_index) => {
+                                        return n_index != index
+                                    }))}
+                                />
+                            )
+
+                        }
+                    )
+                }
+                <button className="button is-primary mt-4" onClick={() => addNewCustomBuilder()}>Add New</button>
+            </CollapseCard>
+            <CollapseCard title="Actions">
+                {
+                    actions.map(
+                        (action, index) => {
+                            return (
+                                <Action
+                                    key={action.id}
+                                    cfg={action}
+                                    customBuilders={builders}
+                                    onConfigChange={(newScript) =>
+                                        setActions(
+                                            actions.map((val, n_index) => {
+                                                if (n_index == index)
+                                                    return { ...val, ...newScript }
+                                                else
+                                                    return val
+                                            }))}
+                                    onDelete={() => setActions(actions.filter((val, n_index) => {
+                                        return n_index != index
+                                    }))}
+                                    onSortUp={() => {
+                                        if (views.length > 0 && index > 0) {
+                                            setActions([...actions.slice(0, index-1), action, actions[index-1], ...actions.slice(index+1)])
+                                        }
+                                    }}
+                                    onSortDown={() => {
+                                        if (views.length > 0 && index < (views.length - 1)) {
+                                            setActions([...actions.slice(0, index), actions[index+1], action, ...actions.slice(index+2)])
+                                        }
+                                    }}
+                                />
+                            )
+
+                        }
+                    )
+                }
+                <button className="button is-primary mt-4" onClick={() => addNewCustomAction()}>Add New</button>
+            </CollapseCard>
+
             <div className="mt-4">
                 <div className="field is-grouped">
                     <div className="is-flex control is-align-items-center">
@@ -334,34 +411,126 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                     </div>
                     <div className="control">
                         <div className="button is-success is-quad-button" onClick={() => addNewView()}>
-                        <span className="icon is-large">
-                            <i className="fas fa-plus"></i>
-                        </span>
+                            <span className="icon is-large">
+                                <i className="fas fa-plus"></i>
+                            </span>
+                        </div>
+                    </div>
+                </div>
+                    {
+                        views.map((val, index) => {
+                            return <CollapseCard key={val.id} title={val.name} deleteIcon deleteClick={() => {
+                                setViews(views.filter((val, n_index) => {
+                                    return n_index != index
+                                }))
+                            }}
+                            sortArrowIcon={true}
+                            sortUpClick={() => {
+                                if (views.length > 0 && index > 0) {
+                                    setViews([...views.slice(0, index-1), val, views[index-1], ...views.slice(index+1)])
+                                }
+                            }}
+                            sortDownClick={() => {
+                                if (views.length > 0 && index < (views.length - 1)) {
+                                    setViews([...views.slice(0, index), views[index+1], val, ...views.slice(index+2)])
+                                }
+                            }}
+                            >
+                                <ViewSetup
+                                    cfg={val}
+                                    customParsers={parsers}
+                                    customHtmlComponents={htmlElems}
+                                    widgetsGroups={widgetGroups}
+                                    onConfigChange={(newView) =>
+                                        setViews(
+                                            views.map((val, n_index) => {
+                                                if (n_index == index)
+                                                    return { ...val, ...newView }
+                                                else
+                                                    return val
+                                            }))}
+                                />
+                            </CollapseCard>
+                        })
+                    }
+            </div>
+
+            <div className="mt-4">
+                <div className="field is-grouped">
+                    <div className="is-flex control is-align-items-center">
+                        <label className="label">Interactive Widgets</label>
+                    </div>
+                    <div className="control">
+                        <div className="button is-success is-quad-button" onClick={() => addNewInteractiveWidget()}>
+                            <span className="icon is-large">
+                                <i className="fas fa-plus"></i>
+                            </span>
                         </div>
                     </div>
                 </div>
                 {
-                    views.map((val, index) => {
-                        return <CollapseCard key={val.id} title={val.name}>
-                            <ViewSetup
+                    widgetGroups.map((val, index) => {
+                        return <CollapseCard key={val.id} title={val.name} deleteIcon deleteClick={() => setWidgetGroups(widgetGroups.filter((val, n_index) => {
+                            return n_index != index
+                        }))}
+                        sortArrowIcon={true}
+                        sortUpClick={() => {
+                            if (views.length > 0 && index > 0) {
+                                setWidgetGroups([...widgetGroups.slice(0, index-1), val, widgetGroups[index-1], ...widgetGroups.slice(index+1)])
+                            }
+                        }}
+                        sortDownClick={() => {
+                            if (views.length > 0 && index < (views.length - 1)) {
+                                setWidgetGroups([...widgetGroups.slice(0, index), widgetGroups[index+1], val, ...widgetGroups.slice(index+2)])
+                            }
+                        }}>
+                            <WidgetGroup
                                 cfg={val}
-                                customParsers={parsers}
                                 customHtmlComponents={htmlElems}
+                                availableActions={actions}
                                 onConfigChange={(newView) =>
-                                    setViews(
-                                        views.map((val, n_index) => {
+                                    setWidgetGroups(
+                                        widgetGroups.map((val, n_index) => {
                                             if (n_index == index)
-                                                return {...val, ...newView}
+                                                return { ...val, ...newView }
                                             else
                                                 return val
                                         }))}
-                                onDelete={() => setViews(views.filter((val, n_index) => {
-                                    return n_index != index
-                                }))}
                             />
                         </CollapseCard>
                     })
                 }
+            </div>
+
+            <div className="mt-4">
+                <CollapseCard title="Settings">
+
+
+                    <div className="field">
+                        <div className="control">
+                            <label className="checkbox">
+                                <input type="checkbox" checked={globalSettings.shareDataBetweenViews} onChange={(evt) => {
+                                    setGlobalSettings({ ...globalSettings, ...{ shareDataBetweenViews: evt.target.checked } })
+                                }} />
+                                &nbsp;Share data between views
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="field">
+                        <label className="label">Maximum items per view</label>
+                        <div className="control">
+                            <input
+                                className="input is-success"
+                                type="number"
+                                value={globalSettings.maximumItemsPerView}
+                                onChange={(evt) => {
+                                    setGlobalSettings({ ...globalSettings, ...{ maximumItemsPerView: parseInt(evt.target.value) } })
+                                }}
+                            />
+                        </div>
+                    </div>
+                </CollapseCard>
             </div>
 
         </div>

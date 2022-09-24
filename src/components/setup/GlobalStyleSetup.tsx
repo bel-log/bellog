@@ -1,37 +1,53 @@
-import {useStateWithCallback} from "../../utility/customHooks";
+import { usePropagator, useStateWithCallback } from "../../utility/customHooks";
 import * as React from "react";
 import CodeMirror from '@uiw/react-codemirror';
-import {css} from "@codemirror/lang-css";
-import {SetupGlobalStyleProperties} from "../../app/setup/SetupInterfaces";
+import { css } from "@codemirror/lang-css";
+import { SetupGlobalStyleProperties } from "../../app/setup/SetupInterfaces";
+import { EditableText } from "../EditableText";
+import { useState } from "react";
 
-export const GlobalStyleSetup = (props : {cfg: SetupGlobalStyleProperties, onConfigChange: any, onDelete?: any}) => {
+export const GlobalStyleSetup = (props: { cfg: SetupGlobalStyleProperties, onConfigChange: any, onDelete?: any }) => {
 
-    const [code, setCode] = useStateWithCallback(props.cfg.code, (newCode) => {
-        props.onConfigChange({code: newCode})
-    })
+    const [p, applyCache] = usePropagator<SetupGlobalStyleProperties>(props.cfg, props.onConfigChange)
+
+    const [name, setName] = [p.name.val, p.name.set]
+    const [code, setCode] = [p.code.val, p.code.set]
+
+    const [visible, setVisible] = useState(false)
 
     return (
-        <div className="columns is-mobile">
+        <div>
+            <a>
+                <span className="icon-text mb-1">
+                    <div className="is-flex control is-align-items-center">
+                        <span className="icon">
+                            <i className="fas fa-scroll"></i>
+                        </span>
+
+                        <strong>
+                            <EditableText
+                                text={name ?? "Undefined"}
+                                onChange={(text) => { setName(text) }} /></strong>
+
+
+                        <button className="button is-info ml-5 is-small" onClick={() => setVisible(!visible)}>View Code</button>
+                        <button className="button is-danger ml-5 is-small" onClick={() => props.onDelete()}>Delete</button>
+
+                    </div>
+
+                </span>
+            </a>
+
             <CodeMirror
-                className="column is-10 "
+                className={`column is-10 ${visible ? "" : "is-hidden"}`}
                 value={code}
-                height="200px"
+                minHeight="100px"
+                maxHeight="800px"
                 extensions={[css()]}
                 onChange={(value, viewUpdate) => {
                     setCode(value)
-                }}  />
-            <br/>
-            {
-                props.onDelete ?
-                    <div className="column">
-                    <span className="icon is-large is-clickable" onClick={() => props.onDelete()}>
-                      <span className="fa-stack fa-lg">
-                        <i className="fas fa-trash has-text-danger"></i>
-                      </span>
-                    </span>
-                    </div> : <div/>
-            }
-        </div>
+                }} />
 
+        </div>
     )
 }

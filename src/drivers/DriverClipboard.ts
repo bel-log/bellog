@@ -7,6 +7,7 @@ export const DriverClipboardDefaults = {}
 export class DriverClipboard implements Driver {
 
     private onReceiveCb: (data: Uint8Array | string) => void
+    private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onError: () => void
     readonly name: string;
@@ -23,16 +24,23 @@ export class DriverClipboard implements Driver {
         document.addEventListener('keydown', this.keydownListener);
     }
 
-    onReceive(cb: (data: Uint8Array) => void) {
+    onReceive(cb: (data: string | Uint8Array) => void): void {
         this.onReceiveCb = cb
+    }
+
+    onTransmit(cb: (data: string | Uint8Array) => void): void {
+        this.onTransmitCb = cb
     }
 
     onStatusChange(cb: (status: DriverStatus) => void) {
         this.onStatusChangeCb = cb
     }
 
-    send(data: Uint8Array) {
-
+    send(data: Uint8Array | string) {
+        if(typeof data === "string") {
+            navigator.clipboard.writeText(data as string)
+            this.onTransmitCb?.(data as string)
+        }
     }
 
     destroy() {
@@ -41,7 +49,7 @@ export class DriverClipboard implements Driver {
 
     keydownListener = async (evt) => {
         if (evt.key === 'v' && evt.ctrlKey) {
-            const text = await navigator.clipboard.readText();
+            const text = await navigator.clipboard.readText() + "\r\n";
             this.onReceiveCb?.(text)
         }
     }

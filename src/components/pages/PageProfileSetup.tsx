@@ -1,5 +1,4 @@
 import * as React from "react";
-import { RendererList } from "../../renderers/rendererslist";
 import {
     createContext, useEffect,
     useState
@@ -9,10 +8,12 @@ import ProfileSetup from "../setup/ProfileSetup";
 import { buildToolbarState, ToolbarContext } from "../Toolbar";
 import { DriverNames } from "../../drivers/Driver";
 import { SetupProfileObject } from "../../app/setup/SetupInterfaces";
-import { buildDefaultProfile } from "../../app/setup/SetupFactories";
+import { buildDefaultGlobalStyle, buildDefaultProfile } from "../../app/setup/SetupFactories";
 import { useLiveQuery } from "dexie-react-hooks";
 import { db } from "../../app/db/db";
 import { useParams } from "react-router-dom";
+import { normalizeProfile } from "../../app/setup/SetupNormalizer";
+import { checkVersionForRedirection } from "../../Version";
 
 export const PageProfileSetup = () => {
 
@@ -27,7 +28,10 @@ export const PageProfileSetup = () => {
 
     useLiveQuery(async () => {
         let profile = await db.profiles.get(parseInt(profileId))
-        setTmpProfile(JSON.parse(profile.setup))
+
+        const profileObj = normalizeProfile(JSON.parse(profile.setup) as SetupProfileObject)
+        checkVersionForRedirection(profileObj.setupVersion)
+        setTmpProfile(profileObj)
     });
 
     async function saveProfile() {
@@ -35,7 +39,7 @@ export const PageProfileSetup = () => {
             let id = parseInt(profileId)
             let res = await db.profiles.update(id, {
                 name: tmpProfile.profileName,
-                setup: serialize(tmpProfile)
+                setup: JSON.stringify(tmpProfile)
             })
 
         } catch(e) {
@@ -46,7 +50,7 @@ export const PageProfileSetup = () => {
     function exportProfile() {
         const a = document.createElement('a');
         a.download = (tmpProfile as SetupProfileObject).profileName + ".bll";
-        a.href = URL.createObjectURL(new Blob([serialize(tmpProfile)], { type: 'text/plain' }));
+        a.href = URL.createObjectURL(new Blob([JSON.stringify(tmpProfile)], { type: 'text/plain' }));
         a.click();
         URL.revokeObjectURL(a.href)
     }
@@ -57,7 +61,7 @@ export const PageProfileSetup = () => {
         if (file) {
             let reader = new FileReader();
             reader.onload = function (e) {
-                setTmpProfile(JSON.parse(reader.result as string))
+                setTmpProfile(normalizeProfile(JSON.parse(reader.result as string)))
                 // Force element update (profile prop is read only on first render)
                 setTmpKeyId(tmpKeyId + 1)
             }

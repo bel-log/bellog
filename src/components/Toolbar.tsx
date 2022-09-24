@@ -40,9 +40,12 @@ export const Toolbar = (props: {children: React.ReactNode}) => {
         <ToolbarContext.Provider value={[toolbarState, setToolbarState]}>
                 <div id="bellog_navbar" className={"is-unselectable"}>
                     <div className="left">
-                        <span className={`icon is-large is-clickable` }>
-                            <i className="fas fa-lg fa-bars"></i>
-                        </span>
+                        <a className={`icon is-large is-clickable` } onClick={() => {
+                            let url = window.location.href.replace(window.location.hash, "")
+                            window.location.href = url
+                            }}>
+                            <i className="fas fa-lg fa-home"></i>
+                        </a>
                         <div>{toolbarState.title}</div>
                     </div>
                     <div className="center">

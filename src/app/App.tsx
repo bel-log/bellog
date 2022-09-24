@@ -4,12 +4,12 @@ import {useEffect, useMemo, useRef, useState} from 'react';
 import {DriverStatus} from "../drivers/Driver";
 import {Route, useLocation, Routes} from 'react-router-dom'
 
-import {JsonDiv} from "../renderers/generic/matchrenderer/JsonDiv";
-import {ColoredText} from "../renderers/generic/matchrenderer/ColoredText";
 import {PageProfileSetup} from "../components/pages/PageProfileSetup";
 import Toolbar from "../components/Toolbar";
 import PageHome from '../components/pages/PageHome';
 import { PageProfileRuntime } from '../components/pages/PageProfileRuntime';
+import PageRedirector from '../components/pages/PageRedirector';
+import { PROFILE_VERSION } from '../Version';
 /*
 class GenericRendererParams implements GenericRendererProperties {
     items = [
@@ -89,65 +89,7 @@ class GenericRendererParams implements GenericRendererProperties {
 
 
 const App = () => {
-    const location = useLocation();
 
-    const [driverStatus, setDriverStatus] = useState<DriverStatus>(DriverStatus.CLOSE);
-    const rendererRef = useRef<any>();
-
-    let driver = useRef(null);
-
-    function clearLog() {
-        rendererRef.current.clear()
-    }
-
-    function saveButton() {
-        let cfg = rendererRef.current.getConfig()
-        console.log(cfg)
-    }
-
-    useEffect( () => {
-/*
-        if(location.pathname.endsWith("/SK9072C") )
-        {
-            driver.current = new DriverSerialPortWebSerial(0, 0, {
-                baudRate: 921600
-            })
-        }
-        else if(location.pathname.endsWith("/PCAL"))
-        {
-            driver.current = new DriverSerialPortWebSerial(0, 0, {
-                baudRate: 115200
-            })
-        }
-        else
-        {
-            driver.current = new DriverClipboard()
-        }
-
-        driver.current.onStatusChange((status) => {
-            setDriverStatus(status)
-        })
-
-        driver.current.onReceive((_data) => {
-            rendererRef.current.render(_data)
-        })*/
-    }, [])
-
-/*
-            <Navbar bg="primary" variant="dark">
-                <Container fluid>
-                    <Navbar.Brand onClick={() => setObjIdx(-1)}>App</Navbar.Brand>
-                    <Nav className="me-auto">
-                        {matcher
-                            .filter(object => object.groupup)
-                            .map((object) => {
-                                return <Nav.Link
-                                    onClick={() => setObjIdx(matcher.findIndex(elem => elem.name === object.name))}>{object.name}</Nav.Link>;
-                            })}
-                    </Nav>
-                </Container>
-            </Navbar>
- */
     return (
         <div className='is-flex is-flex-direction-column' style={{height: "100%"}}>
             <Toolbar>
@@ -156,11 +98,11 @@ const App = () => {
                         <PageHome></PageHome>
                     }/>
 
-                    <Route path="/profile/:profileId/setup" element={
+                    <Route path={`/profile/:profileId/setup`} element={
                         <PageProfileSetup/>
                     }/>
 
-                    <Route path="/profile/:profileId/runtime" element={
+                    <Route path={`/profile/:profileId/runtime`} element={
                         <PageProfileRuntime/>
                     }/>
 

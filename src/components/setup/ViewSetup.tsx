@@ -1,41 +1,87 @@
-import {useStateWithCallback} from "../../utility/customHooks";
+import { useGranularEffect, usePropagator, useStateWithCallback, useUpdateEffect } from "../../utility/customHooks";
 import * as React from "react";
 import {
+    ActionProperties,
     SetupCustomHtmlProperties,
     SetupCustomParserProperties,
     ViewSetupMatchResolverType,
     ViewSetupProperties,
+    WidgetGroupSetupProperties,
+    WidgetSetupProperties,
 } from "../../app/setup/SetupInterfaces";
-import {buildDefaultGlobalScript, buildDefaultViewMatch} from "../../app/setup/SetupFactories";
-import {ViewSetupMatch} from "./ViewSetupMatch";
-import {ParserNames} from "../../parsers/Parser";
+import { buildDefaultGlobalScript, buildDefaultViewMatch } from "../../app/setup/SetupFactories";
+import { ViewSetupMatch } from "./ViewSetupMatch";
+import { ParserNames } from "../../parsers/Parser";
+import { useEffect } from "react";
+import { CollapseCard } from "../CollapseCard";
 
-export const ViewSetup = (props: { cfg: ViewSetupProperties, customParsers: SetupCustomParserProperties[], customHtmlComponents: SetupCustomHtmlProperties[], onConfigChange: any, onDelete?: any }) => {
+export const ViewSetup = (props: {
+    cfg: ViewSetupProperties,
+    customParsers: SetupCustomParserProperties[],
+    customHtmlComponents: SetupCustomHtmlProperties[],
+    widgetsGroups: WidgetGroupSetupProperties[],
+    onConfigChange: any
+}) => {
 
-    const [name, setName] = useStateWithCallback(props.cfg.name, (name) => {
-        props.onConfigChange({name: name})
-    })
+    const [p, applyCache] = usePropagator<ViewSetupProperties>(props.cfg, props.onConfigChange)
 
-    const [parser, setParser] = useStateWithCallback(props.cfg.parser, (parser) => {
-        props.onConfigChange({parser: parser})
-    })
-
-    const [autoWrap, setAutoWrap] = useStateWithCallback(props.cfg.autoWrap, (autoWrap) => {
-        props.onConfigChange({autoWrap: autoWrap})
-    })
-
-    const [matchers, setMatchers] = useStateWithCallback(props.cfg.matchers, (matchers) => {
-        props.onConfigChange({matchers: matchers})
-    })
+    const [name, setName] = [p.name.val, p.name.set]
+    const [parserType, setParserType] = [p.parserType.val, p.parserType.set]
+    const [customParserID, setCustomParserID] = [p.customParserID.val, p.customParserID.set]
+    const [parserSettings, setParserSettings] = [p.parserSettings.val, p.parserSettings.set]
+    const [autoWrap, setAutoWrap] = [p.autoWrap.val, p.autoWrap.set]
+    const [matchers, setMatchers] = [p.matchers.val, p.matchers.set]
+    const [widgetFrameSize, setWidgetFrameSize] = [p.widgetFrameSize.val, p.widgetFrameSize.set]
+    const [widgetGroupIds, setWidgetGroupIds] = [p.widgetGroupIds.val, p.widgetGroupIds.set]
 
     const availableParsers = Object.values(ParserNames)
     const availableCustomParsers = props.customParsers
+    const availableWidgetGroups = props.widgetsGroups
 
     function addNewMatch() {
-        let aa = buildDefaultViewMatch(matchers)
-        
-        setMatchers([aa].concat(matchers))
+        let viewMatch = buildDefaultViewMatch(matchers)
+        setMatchers([viewMatch].concat(matchers))
     }
+
+
+    useUpdateEffect(() => {
+        if (parserType === ParserNames.CustomParser && availableCustomParsers.length <= 0)
+            setParserType(ParserNames.LineParser, true)
+        else {
+            const parserObj = availableCustomParsers.find((it) => it.id === customParserID)
+            if (!parserObj) {
+                // Parser got deleted
+                setParserType(ParserNames.LineParser, true)
+                setCustomParserID(0, true)
+            }
+        }
+        applyCache()
+    }, [availableCustomParsers])
+
+
+    useUpdateEffect(() => {
+        if (availableWidgetGroups.length <= 0)
+            setWidgetGroupIds([])
+        else {
+            const widget = availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))
+            if (!widget) {
+                // Widget got deleted
+                setWidgetGroupIds([])
+            }
+        }
+    }, [availableWidgetGroups])
+
+    useUpdateEffect(() => {
+        if (availableWidgetGroups.length <= 0)
+            setWidgetGroupIds([])
+        else {
+            const widget = availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))
+            if (!widget) {
+                // Widget got deleted
+                setWidgetGroupIds([])
+            }
+        }
+    }, [availableWidgetGroups])
 
     return (
         <React.Fragment>
@@ -43,24 +89,21 @@ export const ViewSetup = (props: { cfg: ViewSetupProperties, customParsers: Setu
                 <label className="label">Name</label>
                 <div className="control">
                     <input className="input" type="text" placeholder="Text input" value={name}
-                           onChange={(evt) => setName(evt.target.value)}/>
+                        onChange={(evt) => setName(evt.target.value)} />
                 </div>
             </div>
             <div className="field is-grouped">
-                <div className="control">
+                <div className="control is-grouped">
                     <label className="label">Parser</label>
                     <div className="control">
                         <div className="select">
-                            <select value={parser.name}
-                                    onChange={(evt) => {
-                                        parser.name === ParserNames.CustomParser ?
-                                        setParser({...parser, name: evt.target.value, 
-                                            settings: {name: availableCustomParsers[0]?.name ?? ""}})
-                                        : setParser({...parser, name: evt.target.value})
-                                    }}>
+                            <select value={parserType}
+                                onChange={(evt) => {
+                                    setParserType(evt.target.value as ParserNames)
+                                }}>
                                 {
                                     availableParsers.map((val) => {
-                                        if(val !== ParserNames.CustomParser || availableCustomParsers.length > 0)
+                                        if (val !== ParserNames.CustomParser || availableCustomParsers.length > 0)
                                             return <option key={val}>{val}</option>
                                     })
                                 }
@@ -69,18 +112,18 @@ export const ViewSetup = (props: { cfg: ViewSetupProperties, customParsers: Setu
                     </div>
                 </div>
                 {
-                    parser.name === ParserNames.CustomParser ?
-                    <div className="control">
+                    parserType === ParserNames.CustomParser ?
+                        <div className="control">
                             <label className="label">Custom Parser</label>
                             <div className="control">
                                 <div className="select">
-                                    <select value={parser.name}
-                                            onChange={(evt) => {
-                                                setParser({...parser, settings: {name: evt.target.value}})
-                                            }}>
+                                    <select value={customParserID}
+                                        onChange={(evt) => {
+                                            setCustomParserID(parseInt(evt.target.value))
+                                        }}>
                                         {
                                             availableCustomParsers.map((val) => {
-                                                return <option key={val.name}>{val.name}</option>
+                                                return <option key={val.name} value={val.id}>{val.name}</option>
                                             })
                                         }
                                     </select>
@@ -90,12 +133,52 @@ export const ViewSetup = (props: { cfg: ViewSetupProperties, customParsers: Setu
                 }
             </div>
 
+            <div className={`field is-grouped ${availableWidgetGroups.length > 0 ? "" : "is-hidden"}`}>
+                <div className="control is-grouped">
+                    <label className="label">Widget Group</label>
+                    <div className="control">
+                        <div className="select">
+                            <select value={widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0}
+                                onChange={(evt) => {
+                                    const nval = parseInt(evt.target.value)
+                                    if (nval === 0)
+                                        setWidgetGroupIds([])
+                                    else
+                                        setWidgetGroupIds([{ id: nval }])
+                                }}>
+                                <option key={0} value={0}>None</option>
+                                {
+                                    availableWidgetGroups.map((val) => {
+                                        return <option key={val.id} value={val.id}>{val.name}</option>
+                                    })
+                                }
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div className="field">
+                    <label className="label">Widget Frame Size (%)</label>
+                    <div className="control">
+                        <input
+                            className="input"
+                            type="number"
+                            max={100}
+                            min={0}
+                            value={widgetFrameSize}
+                            onChange={(evt) => {
+                                setWidgetFrameSize(parseInt(evt.target.value))
+                            }}
+                        />
+                    </div>
+                </div>
+
+            </div>
             <div className="field">
                 <div className="control">
                     <label className="checkbox">
                         <input type="checkbox" checked={autoWrap} onChange={(evt) => {
                             setAutoWrap(evt.target.checked)
-                        }}/>
+                        }} />
                         &nbsp;Autowrap
                     </label>
                 </div>
@@ -116,31 +199,56 @@ export const ViewSetup = (props: { cfg: ViewSetupProperties, customParsers: Setu
                 {
                     matchers.map((match, index) => {
                         return (
-                            <div key={match.id} style={{zIndex: ( index)}}>
-                                <ViewSetupMatch cfg={match} customHtmlComponents={props.customHtmlComponents}
-                                                onConfigChange={(newHtmlElem) =>
-                                                    setMatchers(
-                                                        matchers.map((val, n_index) => {
-                                                            if(n_index == index)
-                                                            {
-                                                                const newElem = {...val, ...newHtmlElem}
-                                                                return newElem
-                                                            }
-                                                            else
-                                                                return val
-                                                        }))}
-                                                onDelete={() => setMatchers(matchers.filter((val, n_index) => {
-                                                    return n_index != index
-                                                }))}/>
-                            </div>
+                            <CollapseCard key={match.id} title={match.name}
+                                eyeIcon eyeOff={match.disabled}
+                                eyeClick={(eyeOff) => {
+                                    setMatchers(
+                                        matchers.map((val, n_index) => {
+                                            if (n_index == index) {
+                                                return { ...val, ...{ disabled: !eyeOff } }
+                                            }
+                                            else
+                                                return val
+                                        }))
+                                }}
+                                deleteIcon
+                                deleteClick={() => setMatchers(matchers.filter((val, n_index) => {
+                                    return n_index != index
+                                }))}
+                                sortArrowIcon
+                                sortDownClick={() => {
+                                    if (matchers.length > 0 && index < (matchers.length - 1)) {
+                                        setMatchers([...matchers.slice(0, index), matchers[index + 1], match, ...matchers.slice(index + 2)])
+                                    }
+                                }}
+                                sortUpClick={() => {
+                                    if (matchers.length > 0 && index > 0) {
+                                        setMatchers([...matchers.slice(0, index - 1), match, matchers[index - 1], ...matchers.slice(index + 1)])
+                                    }
+                                }}
+                            >
+                                <div style={{ zIndex: (index) }}>
+                                    <ViewSetupMatch cfg={match}
+                                        customHtmlComponents={props.customHtmlComponents}
+                                        widgets={availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))?.widgets ?? []}
+                                        onConfigChange={(newHtmlElem) =>
+                                            setMatchers(
+                                                matchers.map((val, n_index) => {
+                                                    if (n_index == index) {
+                                                        const newElem = { ...val, ...newHtmlElem }
+                                                        return newElem
+                                                    }
+                                                    else
+                                                        return val
+                                                }))}
+                                    />
+                                </div>
+                            </CollapseCard>
                         )
                     })
                 }
             </div>
+        </React.Fragment>
 
-                <button className="button is-danger mt-4" onClick={() => props.onDelete()}>Delete View</button>
-
-                </React.Fragment>
-
-                )
-            }
+    )
+}

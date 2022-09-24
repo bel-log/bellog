@@ -36,12 +36,10 @@ $navibar_item_gap: 10px;
   background-color: gray;
 }
 
-#bellog_navbar > .icon {
+#bellog_navbar .icon {
   color: $icon-color;
   stroke: $icon-color;
 
-  width: $icon_size;
-  height: $icon_size;
 }
 
 #bellog_navbar > .left {
@@ -66,5 +64,7 @@ $navibar_item_gap: 10px;
 
 #bellog_below_navbar {
   margin-top: $navbar_height;
-  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  height: calc(100% - $navbar_height);
 }

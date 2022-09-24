@@ -1,4 +1,4 @@
-import {Parser} from "./Parser";
+import {Parser, ParserInfoType} from "./Parser";
 
 export interface LineParserParameters {}
 
@@ -7,25 +7,27 @@ export const LineParserDefaults = {}
 export class LineParser implements Parser {
 
     private buffer: string = ""
-    private onRefuseCb: (acc: any) => void
-    private onAcceptCb: (acc: any) => void
+    private onRefuseCb: (acc: any, info: ParserInfoType) => void
+    private onAcceptCb: (acc: any, info: ParserInfoType) => void
 
-    onRefuse(cb: (acc: any) => void) {
+    constructor(readonly driverName: string) {}
+
+    onRefuse(cb: (acc: any, info: ParserInfoType) => void) {
         this.onRefuseCb = cb
     }
 
-    onAccept(cb: (acc: any) => void) {
+    onAccept(cb: (acc: any, info: ParserInfoType) => void) {
         this.onAcceptCb = cb
     }
 
-    put(_data: Uint8Array | string) {
+    put(_data: Uint8Array | string, isTx: boolean) {
         let data = _data
         if(typeof data !== "string")
             data = String.fromCharCode.apply(null, _data);
         for (let i = 0; i < data.length; i++) {
             if (data[i] == '\r' || data[i] == '\n') {
                 if (this.buffer.length > 0) {
-                    this.onAcceptCb?.(this.buffer)
+                    this.onAcceptCb?.(this.buffer, {driverName: this.driverName, isTx: isTx})
                     this.buffer = ""
                 }
             } else {

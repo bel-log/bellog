@@ -4,12 +4,12 @@ import {DriverSerialPortWebSerial, DriverSerialPortWebSerialDefaults, DriverSeri
 
 export class DriverFactory {
 
-    static build(driver: {name: string, settings?: DriverSettings}): Driver {
-        switch (driver.name) {
+    static build(driver: DriverNames, settings: DriverSettings): Driver {
+        switch (driver) {
             case DriverNames.DriverClipboard:
                 return new DriverClipboard()
             case DriverNames.DriverSerialPortWebSerial:
-                return new DriverSerialPortWebSerial(driver.settings as DriverSerialPortWebSerialParameters)
+                return new DriverSerialPortWebSerial(settings as DriverSerialPortWebSerialParameters)
             default:
                 return new DriverClipboard()
         }

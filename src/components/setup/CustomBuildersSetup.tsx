@@ -2,13 +2,13 @@ import {usePropagator, useStateWithCallback} from "../../utility/customHooks";
 import * as React from "react";
 import CodeMirror from '@uiw/react-codemirror';
 import {autoCloseTags, javascript} from "@codemirror/lang-javascript";
-import {SetupCustomParserProperties} from "../../app/setup/SetupInterfaces";
+import {SetupCustomBuilderProperties} from "../../app/setup/SetupInterfaces";
 import { useState } from "react";
 import { EditableText } from "../EditableText";
 
-export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, onConfigChange: any, onDelete?: any}) => {
+export const CustomBuildersSetup = (props : {cfg: SetupCustomBuilderProperties, onConfigChange: any, onDelete?: any}) => {
 
-    const [p, applyCache] = usePropagator<SetupCustomParserProperties>(props.cfg, props.onConfigChange)
+    const [p, applyCache] = usePropagator<SetupCustomBuilderProperties>(props.cfg, props.onConfigChange)
 
     const [name, setName] = [p.name.val, p.name.set]
     const [code, setCode] = [p.code.val, p.code.set]

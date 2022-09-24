@@ -1,4 +1,4 @@
-import {Parser} from "./Parser";
+import {Parser, ParserInfoType} from "./Parser";
 
 export interface RawParserParameters {}
 
@@ -6,19 +6,20 @@ export const RawParserDefaults = {}
 
 export class RawParser implements Parser {
 
-    private buffer: string = ""
-    private onRefuseCb: (acc: any) => void
-    private onAcceptCb: (acc: any) => void
+    private onRefuseCb: (acc: any, info: ParserInfoType) => void
+    private onAcceptCb: (acc: any, info: ParserInfoType) => void
 
-    onRefuse(cb: (acc: any) => void) {
+    constructor(readonly driverName: string) {}
+
+    onRefuse(cb: (acc: any, info: ParserInfoType) => void) {
         this.onRefuseCb = cb
     }
 
-    onAccept(cb: (acc: any) => void) {
+    onAccept(cb: (acc: any, info: ParserInfoType) => void) {
         this.onAcceptCb = cb
     }
 
-    put(_data: Uint8Array) {
-        this.onAcceptCb?.(_data)
+    put(_data: Uint8Array, isTx: boolean) {
+        this.onAcceptCb?.(_data, {driverName: this.driverName, isTx: isTx})
     }
 }

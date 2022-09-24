@@ -13,6 +13,7 @@ import * as serialize from "serialize-javascript"
 import CardItem from "../CardItem";
 import { buildDefaultProfile } from "../../app/setup/SetupFactories";
 import { useNavigate } from "react-router-dom";
+import { PROFILE_VERSION } from "../../Version";
 
 export const PageHome = (props) => {
 
@@ -63,11 +64,11 @@ export const PageHome = (props) => {
     }
 
     function editProfile(id: number) {
-        navigate("/profile/" + id + "/setup")
+        navigate("profile/" + id + "/setup")
     }
 
-    function runProfile(id: number) {
-        navigate("/profile/" + id + "/runtime")
+    function runProfile(id: number, version?: string) {
+        navigate("profile/" + id + "/runtime")
     }
 
     return (

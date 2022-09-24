@@ -1,8 +1,8 @@
 import {RawParserParameters} from "./RawParser";
 import {LineParserParameters} from "./LineParser";
-import {CustomParserParameters} from "./CustomParser";
 
-export type ParserSettings = RawParserParameters | LineParserParameters | CustomParserParameters
+export type ParserInfoType = {driverName: string, isTx: boolean}
+export type ParserSettings = RawParserParameters | LineParserParameters
 
 export enum ParserNames{
     LineParser = "LineParser",
@@ -11,7 +11,7 @@ export enum ParserNames{
 }
 
 export interface Parser {
-    put(data: Uint8Array | string): void
-    onRefuse(cb: (acc: any) => void)
-    onAccept(cb: (acc: any) => void)
+    put(data: Uint8Array | string, isTx: boolean): void
+    onRefuse(cb: (acc: any, info: ParserInfoType) => void)
+    onAccept(cb: (acc: any, info: ParserInfoType) => void)
 }

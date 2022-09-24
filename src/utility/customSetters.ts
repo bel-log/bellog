@@ -23,3 +23,11 @@ export const setParamOfObjectProp = <T, key extends keyof T>(func: Dispatch<SetS
     })
     func(newVal)
 }
+
+export const setItemOfObjectProp = <T, key extends keyof T>(curObj: T, key: string, newFields:Partial<T[key]>) => {
+    const newVal = {...curObj}
+    Object.keys(newFields).forEach((field) => {
+        newVal[key][field] = newFields[field]
+    })
+    return newVal
+}
