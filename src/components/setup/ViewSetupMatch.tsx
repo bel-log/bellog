@@ -121,7 +121,9 @@ export const ViewSetupMatch = (props: {
             
             if (htmlComponent) {
                 const bindings = buildDefaultHtmlBindings(htmlComponent, resolver, resolverParam)
-                setHtmlComponentBindings({code: (bindings as SetupBindingPropertiesCode).code}, true)
+                if(bindings) {
+                    setHtmlComponentBindings({code: (bindings as SetupBindingPropertiesCode).code}, true)
+                }
             } else {
                 // html component deleted?
                 setHtmlComponentType(HtmlComponentType.Div, true)

@@ -44,7 +44,7 @@ export const ViewSetup = (props: {
     }
 
 
-    useUpdateEffect(() => {
+    useEffect(() => {
         if (parserType === ParserNames.CustomParser && availableCustomParsers.length <= 0)
             setParserType(ParserNames.LineParser, true)
         else {
@@ -59,7 +59,7 @@ export const ViewSetup = (props: {
     }, [availableCustomParsers])
 
 
-    useUpdateEffect(() => {
+    useEffect(() => {
         if (availableWidgetGroups.length <= 0)
             setWidgetGroupIds([])
         else {
@@ -71,7 +71,7 @@ export const ViewSetup = (props: {
         }
     }, [availableWidgetGroups])
 
-    useUpdateEffect(() => {
+    useEffect(() => {
         if (availableWidgetGroups.length <= 0)
             setWidgetGroupIds([])
         else {
@@ -82,6 +82,14 @@ export const ViewSetup = (props: {
             }
         }
     }, [availableWidgetGroups])
+
+    function updateParserType(parserType: ParserNames) {
+        if(parserType === ParserNames.CustomParser && availableCustomParsers.length > 0) {
+            setCustomParserID(availableCustomParsers.at(0).id, true)
+        }
+        setParserType(parserType, true)
+        applyCache()
+    }
 
     return (
         <React.Fragment>
@@ -99,7 +107,7 @@ export const ViewSetup = (props: {
                         <div className="select">
                             <select value={parserType}
                                 onChange={(evt) => {
-                                    setParserType(evt.target.value as ParserNames)
+                                    updateParserType(evt.target.value as ParserNames)
                                 }}>
                                 {
                                     availableParsers.map((val) => {
