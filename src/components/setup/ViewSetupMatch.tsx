@@ -237,7 +237,8 @@ export const ViewSetupMatch = (props: {
                                 <CodeMirror
                                     className="column is-10 "
                                     value={code}
-                                    height="200px"
+                                    minHeight="100px"
+                                    maxHeight="800px"
                                     extensions={[javascript({ jsx: false })]}
                                     onChange={(value) => {
                                         const newParam = { ...(resolverParam), ...{ code: value } }
@@ -506,7 +507,8 @@ export const ViewSetupMatch = (props: {
                                     <CodeMirror
                                         className="column is-10 "
                                         value={code}
-                                        height="400px"
+                                        minHeight="100px"
+                                        maxHeight="800px"
                                         extensions={[javascript({ jsx: false })]}
                                         onChange={(value) => {
                                             setHtmlComponentBindings({code: value})

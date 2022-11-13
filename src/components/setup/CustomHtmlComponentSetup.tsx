@@ -119,7 +119,8 @@ export const CustomHtmlComponentSetup = (props: {
             <CodeMirror
                 className={`${selectedTab == TabType.CodeTab ? "" : "is-hidden"}`}
                 value={code}
-                height="300px"
+                minHeight="100px"
+                maxHeight="800px"
                 extensions={[javascript({jsx: true})]}
                 onChange={(value, viewUpdate) => {
                     updateCode(value)
