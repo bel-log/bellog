@@ -4,6 +4,7 @@ import {
     ActionProperties,
     SetupCustomHtmlProperties,
     WidgetGroupSetupProperties,
+    WidgetSetupProperties,
 } from "../../app/setup/SetupInterfaces";
 import { buildDefaultWidget } from "../../app/setup/SetupFactories";
 import { Widget } from "./Widget";
@@ -26,6 +27,12 @@ export const WidgetGroup = (props: {
         setWidgets([...widgets, buildDefaultWidget(widgets, props.availableActions)])
     }
 
+    function cloneWidget(widget: WidgetSetupProperties) {
+        const widgetForNewID = buildDefaultWidget(widgets, props.availableActions)
+        const widgetCopy = {...widget, ...{id: widgetForNewID.id}}
+        setWidgets([...widgets, JSON.parse(JSON.stringify(widgetCopy))])
+    }
+
     return (
         <React.Fragment>
             <div className="field">
@@ -43,6 +50,7 @@ export const WidgetGroup = (props: {
                             <CollapseCard key={widget.id} title={widget.name}
                                 deleteIcon
                                 sortArrowIcon
+                                duplicateIcon
                                 deleteClick={() => setWidgets(widgets.filter((val, n_index) => {
                                     return n_index != index
                                 }))}
@@ -55,6 +63,9 @@ export const WidgetGroup = (props: {
                                     if (widgets.length > 0 && index > 0) {
                                         setWidgets([...widgets.slice(0, index - 1), widget, widgets[index - 1], ...widgets.slice(index + 1)])
                                     }
+                                }}
+                                duplicateClick={() => {
+                                    cloneWidget(widget)
                                 }}
                             >
                                 <div style={{ zIndex: (index) }}>

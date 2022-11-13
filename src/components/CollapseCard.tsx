@@ -9,6 +9,8 @@ export const CollapseCard = (props : {title: string, expanded?: boolean,
     sortArrowIcon?:boolean,
     sortUpClick?:() => void,
     sortDownClick?:() => void,
+    duplicateIcon?: boolean,
+    duplicateClick?:() => void,
     children: React.ReactNode}) => {
 
     const [isExpanded, setIsExpanded] = useState(props.expanded ?? false)
@@ -30,6 +32,11 @@ export const CollapseCard = (props : {title: string, expanded?: boolean,
                     props.sortArrowIcon ? <a className="card-header-icon is-clickable" 
                     onClick={(e) => {e.stopPropagation(); setIsExpanded(false); props?.sortDownClick()}}>
                         <i className={`fa fa-arrow-down`} ></i> </a> : ""
+                }
+                {
+                    props.duplicateIcon ? <a className="card-header-icon is-clickable" 
+                    onClick={(e) => {e.stopPropagation(); props?.duplicateClick()}}>
+                        <i className={`fa fa-copy`} ></i> </a> : ""
                 }
                 {
                     props.eyeIcon ? <a className="card-header-icon is-clickable" 
