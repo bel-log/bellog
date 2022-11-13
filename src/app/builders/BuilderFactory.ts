@@ -19,9 +19,9 @@ export class BuilderFactory {
             case BuilderNames.LineBuilder:
                 return new LineBuilder()
             case BuilderNames.CustomBuilder:
-                const builder = customBuilders.find((it) => it.id === (builder.settings as CustomBuilderParameters).id)
+                const builderCustom = customBuilders.find((it) => it.id === (builder.settings as CustomBuilderParameters).id)
                 return new CustomBuilder(
-                    deserialize(builder.code as CustomBuilderFuncType)
+                    deserialize(builderCustom.code)
                 )
             default:
                 return new LineBuilder()

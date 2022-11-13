@@ -146,10 +146,9 @@ export function buildDefaultCustomBuilder(array: SetupCustomBuilderProperties[])
                     msg: ""
                 }
                 
-                function builderFunc(args, sendFunc) {
-                    // This function will be called to build a packet to send
-                    // Call sendFunc to set the data to send. Can be either a string or Uint8Array
-                    sendFunc(args.prefix + ": " + args.msg + "\\r\\n")
+                function builderFunc(args) {
+                    // Can be either a string or Uint8Array
+                    return args.prefix + ": " + args.msg + "\\r\\n"
                 }
 
                 return [builderArgs, builderFunc];

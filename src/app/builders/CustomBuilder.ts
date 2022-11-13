@@ -1,6 +1,6 @@
 import {Builder} from "./Builder";
 
-export type CustomBuilderFuncType = (args: any) => Uint8Array | string
+export type CustomBuilderFuncType = () => [object, (args:any) => string | Uint8Array]
 
 export interface CustomBuilderParameters {
     id: number
@@ -19,6 +19,7 @@ export class CustomBuilder implements Builder {
     }
 
     build() {
-        return this.proc(this.args)
+        const [_, func] = this.proc()
+        return func(this.args)
     }
 }
