@@ -77,14 +77,14 @@ export const PageHome = (props) => {
                 {
                     profiles?.map((profile) => {
                         return <CardItem key={profile.id} title={profile.name} icon="fa-microchip" 
-                        onClick={() => runProfile(profile.id)}
-                        onDeleteClick={() => deleteProfile(profile.id)}
-                        onEditClick={() => {editProfile(profile.id)}}/>
+                        editHref={`#/profile/${profile.id}/setup`}
+                        profileHref={`#/profile/${profile.id}/runtime`}
+                        onDeleteClick={() => deleteProfile(profile.id)}/>
 
                     })
                 }
 
-                <CardItem title="Add New" icon="fa-plus" onClick={() => addNewProfile()}/>
+                <CardItem title="Add New" icon="fa-plus" onClick={(e) => {e.stopPropagation();addNewProfile()}}/>
 
             </div>
         </React.Fragment>
