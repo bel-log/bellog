@@ -43,9 +43,6 @@ module.exports = {
             [
                 {
                     from: 'src/index.html', to: './'
-                },
-                {
-                    from: 'src/lib/cbor.js', to: './'
                 }
             ]
         })

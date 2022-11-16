@@ -18,7 +18,6 @@ import { CollapseCard } from "../CollapseCard";
 import { buildDefaultActionBindings, buildDefaultHtmlBindings, buildDefaultResolverParam, buildResolverResultKeys } from "../../app/setup/SetupFactories";
 import { setItemOfObjectProp, setParamOfArrayProp, setParamOfObjectProp } from "../../utility/customSetters";
 import { BuilderNames } from "../../app/builders/Builder";
-import * as obj from "../../lib/cbor";
 
 export const Action = (props: {
     cfg: ActionProperties,
