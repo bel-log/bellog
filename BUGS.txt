@@ -1,2 +1,0 @@
-- HTML Bindings GUI se lasciati a default con nuova chiave, i binding non si aggiornano. Rimangono con valore "field1"
-

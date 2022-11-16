@@ -62,15 +62,7 @@ export const PageHome = (props) => {
             console.log(`Failed to add ${name}: ${error}`);
         }
     }
-
-    function editProfile(id: number) {
-        navigate("profile/" + id + "/setup")
-    }
-
-    function runProfile(id: number, version?: string) {
-        navigate("profile/" + id + "/runtime")
-    }
-
+    
     return (
         <React.Fragment>
             <div className="is-flex is-flex-wrap-wrap is-align-items-stretch">
