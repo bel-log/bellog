@@ -1,4 +1,5 @@
 import {Builder} from "./Builder";
+import { Buffer } from 'buffer';
 
 export interface HexStringBuilderParameters {}
 

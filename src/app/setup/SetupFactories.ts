@@ -20,9 +20,9 @@ import {
     SetupBindingPropertiesGui
 } from "./SetupInterfaces";
 import * as beautify from "js-beautify"
-import { DriverFactory } from "../../drivers/DriverFactory";
-import { DriverNames, DriverSettings } from "../../drivers/Driver";
-import { ParserNames } from "../../parsers/Parser";
+import { DriverFactory } from "../drivers/DriverFactory";
+import { DriverNames, DriverSettings } from "../drivers/Driver";
+import { ParserNames } from "../parsers/Parser";
 import { SetupProfileObject } from "./SetupInterfaces";
 import { LineBuilder } from "../builders/LineBuilder";
 import { BuilderNames, BuilderSettings } from "../builders/Builder";
@@ -174,7 +174,7 @@ export function BuildHtmlComponent(htmlType: HtmlComponentType, htmlCustomID: nu
                 return {
                     name: htmlType,
                     id: htmlCustomID,
-                    code: "<span style='color: ${$$color}'>${$$content} </span>",
+                    code: "<span style='color: ${$$color}'>${$$content}</span>",
                     parameters: {
                         color: {type: HtmlComponentParameterType.Color,  default: "#000000"},
                         content: {type: HtmlComponentParameterType.Text, default: ""}

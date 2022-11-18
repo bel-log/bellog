@@ -43,6 +43,12 @@ module.exports = {
             [
                 {
                     from: 'src/index.html', to: './'
+                },
+                {
+                    from: 'src/logo.png', to: './'
+                },
+                {
+                    from: 'src/favicon.png', to: './'
                 }
             ]
         })

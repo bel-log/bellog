@@ -1,16 +1,15 @@
 import * as React from 'react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
-import {DriverStatus} from "../drivers/Driver";
+import {DriverStatus} from "./drivers/Driver";
 import {Route, useLocation, Routes} from 'react-router-dom'
 
-import {PageProfileSetup} from "../components/pages/PageProfileSetup";
-import Toolbar from "../components/Toolbar";
-import PageHome from '../components/pages/PageHome';
-import { PageProfileRuntime } from '../components/pages/PageProfileRuntime';
-import PageRedirector from '../components/pages/PageRedirector';
+import {PageProfileSetup} from "./components/pages/PageProfileSetup";
+import Toolbar from "./components/Toolbar";
+import PageHome from './components/pages/PageHome';
+import { PageProfileRuntime } from './components/pages/PageProfileRuntime';
+import PageRedirector from './components/pages/PageRedirector';
 import { PROFILE_VERSION } from '../Version';
-import DocPageHome from '../components/pages/documentation/DocPageHome';
 
 const App = () => {
 
@@ -23,7 +22,7 @@ const App = () => {
                     }/>
 
                     <Route path="/documentation" element={
-                        <DocPageHome/>
+                        "TODO"
                     }/>
 
                     <Route path={`/profile/:profileId/setup`} element={

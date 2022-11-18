@@ -1,5 +1,5 @@
-import {Driver, DriverNames, DriverSettings} from "../../drivers/Driver";
-import {ParserNames, ParserSettings} from "../../parsers/Parser";
+import {Driver, DriverNames, DriverSettings} from "../drivers/Driver";
+import {ParserNames, ParserSettings} from "../parsers/Parser";
 import { BuilderNames, BuilderSettings } from "../builders/Builder";
 
 export interface GlobalSetupSettings {
