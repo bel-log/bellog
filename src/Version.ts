@@ -10,7 +10,7 @@ export function checkVersionForRedirection(setupVersion: string) {
             fileNameForLocalUse = "index.html"
         }
     
-        const newLoc = `${url}v${setupVersion}/${fileNameForLocalUse}${window.location.hash}`
+        const newLoc = `${url}pv${setupVersion}/${fileNameForLocalUse}${window.location.hash}`
         window.location.replace(newLoc)
     }
 }
