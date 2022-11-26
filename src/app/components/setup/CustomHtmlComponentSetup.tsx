@@ -72,10 +72,6 @@ export const CustomHtmlComponentSetup = (props: {
         }
     }
 
-    useEffect(() => {
-        updateCode(code, true)
-    }, [])
-
     return (
         <React.Fragment>
             <CollapseCard title={name}
@@ -99,7 +95,7 @@ export const CustomHtmlComponentSetup = (props: {
                         </a>
                     </li>
                     <li className={"is-clickable " + (selectedTab == TabType.PreviewTab ? "is-active" : "")}
-                        onClick={() => setSelectedTab(TabType.PreviewTab)}>
+                        onClick={() => {updateCode(code, true); setSelectedTab(TabType.PreviewTab)}}>
                         <a>
                                 <span className="icon is-small"><i className="fas fa-video"
                                                                    aria-hidden="true"></i></span>

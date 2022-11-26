@@ -36,15 +36,17 @@ export const CustomBuildersSetup = (props : {cfg: SetupCustomBuilderProperties, 
                 </span>
             </a>
 
-            <CodeMirror
-                className={`column is-10 ${visible ? "" : "is-hidden"}`}
-                value={code}
-                minHeight="100px"
-                maxHeight="800px"
-                extensions={[javascript({ jsx: false })]}
-                onChange={(value, viewUpdate) => {
-                    setCode(value)
-                }}  />
+            {
+                visible ? <CodeMirror
+                    className={`column is-10`}
+                    value={code}
+                    minHeight="100px"
+                    maxHeight="800px"
+                    extensions={[javascript({ jsx: false })]}
+                    onChange={(value, viewUpdate) => {
+                        setCode(value)
+                    }} /> : ""
+            }
         </div>
 
     )

@@ -38,15 +38,16 @@ export const GlobalScriptSetup = (props: { cfg: SetupGlobalScriptProperties, onC
                 </span>
             </a>
 
-            <CodeMirror
-                className={`column is-10 ${visible ? "" : "is-hidden"}`}
+            {visible ? <CodeMirror
+                className={`column is-10`}
                 value={code}
                 minHeight="100px"
                 maxHeight="800px"
                 extensions={[javascript({ jsx: false })]}
                 onChange={(value, viewUpdate) => {
                     setCode(value)
-                }} />
+                }} /> : ""
+            }
 
         </div>
     )

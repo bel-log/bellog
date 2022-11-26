@@ -36,7 +36,7 @@ export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, on
                 </span>
             </a>
 
-            <CodeMirror
+            {visible ? <CodeMirror
                 className={`column is-10 ${visible ? "" : "is-hidden"}`}
                 value={code}
                 minHeight="100px"
@@ -44,7 +44,8 @@ export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, on
                 extensions={[javascript({ jsx: false })]}
                 onChange={(value, viewUpdate) => {
                     setCode(value)
-                }}  />
+                }} /> : ""}
+
         </div>
 
     )

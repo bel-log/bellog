@@ -373,7 +373,9 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
                     actions.map(
                         (action, index) => {
                             return (
-                                <CollapseCard title={action.name}
+                                <CollapseCard 
+                                key={action.id}
+                                title={action.name}
                                 deleteIcon
                                 sortArrowIcon
                                 duplicateIcon
