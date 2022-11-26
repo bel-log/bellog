@@ -37,13 +37,7 @@ const App = () => {
                 </Routes >
             </Toolbar>
         </div>
-
-
     );
-/*
-childRef.current.doSomething(event);
- <Child ref={childRef} />
-*/ 
 };
 
 export default App;

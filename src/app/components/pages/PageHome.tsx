@@ -13,7 +13,7 @@ import * as serialize from "serialize-javascript"
 import CardItem from "../CardItem";
 import { buildDefaultProfile } from "../../setup/SetupFactories";
 import { useNavigate } from "react-router-dom";
-import { PROFILE_VERSION } from "../../../Version";
+import { PROFILE_VERSION, VERSION } from "../../../Version";
 
 export const PageHome = (props) => {
 
@@ -77,7 +77,7 @@ export const PageHome = (props) => {
                 }
 
                 <CardItem title="Add New" icon="fa-plus" onClick={(e) => {e.stopPropagation();addNewProfile()}}/>
-
+                <div className="m-1 is-unselectable" style={{position: "fixed", bottom: 0, right: 0}}>{VERSION}</div>
             </div>
         </React.Fragment>
 
