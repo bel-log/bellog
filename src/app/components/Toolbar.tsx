@@ -91,7 +91,7 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
                         <div className="navbar-item">
                             <div className="field is-grouped">
                                 <p className="control">
-                                    <a className="button is-primary">
+                                    <a className="button is-primary" href="https://github.com/bel-log/bellog/tree/master/documentation">
                                         <span className="icon">
                                             <i className="fas fa-book" aria-hidden="true"></i>
                                         </span>

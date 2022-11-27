@@ -2,7 +2,7 @@ import * as React from 'react';
 import {useEffect, useMemo, useRef, useState} from 'react';
 
 import {DriverStatus} from "./drivers/Driver";
-import {Route, useLocation, Routes} from 'react-router-dom'
+import {Route, useLocation, Routes, Link} from 'react-router-dom'
 
 import {PageProfileSetup} from "./components/pages/PageProfileSetup";
 import Toolbar from "./components/Toolbar";
@@ -20,11 +20,7 @@ const App = () => {
                     <Route path="/" element={
                         <PageHome></PageHome>
                     }/>
-
-                    <Route path="/documentation" element={
-                        "TODO"
-                    }/>
-
+                    
                     <Route path={`/profile/:profileId/setup`} element={
                         <PageProfileSetup/>
                     }/>
