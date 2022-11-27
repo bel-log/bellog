@@ -103,6 +103,9 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
                         </div>
                     </div>
+                    { views.length <= 0 ? 
+                                    <div>Create a view by editing the profile on the HomePage</div>
+                                : ""}
                     {
                         views.map((val, index) => {
                             return <React.Fragment key={index}>

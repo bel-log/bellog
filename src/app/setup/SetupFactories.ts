@@ -44,7 +44,7 @@ export function buildDefaultProfile(): SetupProfileObject {
         builders: [],
         scripts: [],
         styles: [],
-        views: [],
+        views: [buildDefaultView([])],
         widgetGroups: [],
         globalSettings: {
             shareDataBetweenViews: true,
