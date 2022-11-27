@@ -3,7 +3,7 @@ import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, 
 import ProfileSetup from "../setup/ProfileSetup";
 import { DriverFactory } from "../../drivers/DriverFactory";
 import { buildToolbarState, ToolbarContext } from "../Toolbar";
-import { Driver, DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/Driver";
+import { Driver, DriverNames, DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/Driver";
 import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
 import { ParserFactory } from "../../parsers/ParserFactory";
 import { ViewFactory } from "../../view/ViewFactory";
@@ -31,15 +31,18 @@ export const RuntimeProfileView = forwardRef((props: {
     const viewRef = useRef<HTMLDivElement>()
     const widgetViewRef = useRef<HTMLDivElement>()
     const selectedRef = useRef(props.selected)
-    const elementCountRef = useRef(0)
+    const hasDataRef = useRef(false)
+
+    const defContent = profile.driverType == DriverNames.DriverClipboard ?
+     "<div style=\"width: '100%'\" class=\"has-text-centered is-unselectable\">Paste some text with Ctrl-V</div>" : ""
 
     function buildToolbar(driver: Driver) {
         let toolbarNewState
         const driverOpenClose = driver as DriverOpenClose
         const clearButton = {
             isVisible: true, active: true, onClick: () => {
-                viewRef.current.innerHTML = ""
-                elementCountRef.current = 0
+                viewRef.current.innerHTML = defContent
+                hasDataRef.current = false
                 props.onClearClick?.()
             }
         }
@@ -87,7 +90,10 @@ export const RuntimeProfileView = forwardRef((props: {
                                             profile.builders, profile.html, viewRef, widgetViewRef, globalSettings.maximumItemsPerView)
         
         customView.init()
-
+        
+        viewRef.current.innerHTML = defContent
+        hasDataRef.current = false
+        
         const onReceive = (data) => {
             if (globalSettings.shareDataBetweenViews || selectedRef.current) {
                 // Uint8Array | string
@@ -106,9 +112,17 @@ export const RuntimeProfileView = forwardRef((props: {
         props.dataTxObserver.subscribe(onTransmit)
 
         parser.onAccept((acc, parseInfo) => {
+            if(!hasDataRef.current) {
+                viewRef.current.innerHTML = ""
+                hasDataRef.current = true
+            }
             customView.putParsedObject(acc, true, parseInfo)
         })
         parser.onRefuse((acc, parseInfo) => {
+            if(!hasDataRef.current) {
+                viewRef.current.innerHTML = ""
+                hasDataRef.current = true
+            }
             customView.putParsedObject(acc, false, parseInfo)
         })
 
@@ -179,7 +193,8 @@ export const RuntimeProfileView = forwardRef((props: {
                     : ""
             }
             <div className="is-flex" style={{height: "100%", width: "auto", overflow: "auto"}}>
-                <div ref={viewRef} className="pl-1" style={{...getWrapStyle(view), ...{overflow: "auto", flexGrow: "1"}}}></div>
+                <div ref={viewRef} className="pl-1" style={{...getWrapStyle(view), ...{overflow: "auto", flexGrow: "1"}}}>
+                </div>
             </div>
         </div>
     );
