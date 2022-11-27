@@ -9,6 +9,8 @@ ifdef::env-github[]
 Beautifly and filter your Logs and Serial streams :sparkles: :sparkles:
 </p>
 ++++
+endif::[]
+
 ifndef::env-github[]
 image::src/logo_b.png[align="center"]
 [.text-center]
@@ -43,3 +45,9 @@ npm install
 
 npm run build
 ----
+
+== Roadmap
+
+* Export logs
+* Backend for custom Driver
+* Electron or NW.js executable
