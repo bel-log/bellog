@@ -6,7 +6,7 @@ const isProduction = process.argv[process.argv.indexOf('--mode') + 1] === 'produ
 
 module.exports = {
     entry: "./src/index.tsx",
-    devtool: isProduction ? undefined : "source-map",
+    devtool: "source-map",
     module: {
         rules: [
             {
