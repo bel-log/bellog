@@ -1,9 +1,19 @@
 :figure-caption!:
 
+ifdef::env-github[]
+++++
+<p align="center">
+  <img src="src/logo_b.png">
+</p>
+<p align="center">
+Beautifly and filter your Logs and Serial streams :sparkles: :sparkles:
+</p>
+++++
+ifndef::env-github[]
 image::src/logo_b.png[align="center"]
 [.text-center]
 Beautifly and filter your Logs and Serial streams :sparkles: :sparkles:
-
+endif::[]
 
 == Introduction
 
