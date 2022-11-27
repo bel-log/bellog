@@ -52,8 +52,10 @@ export const ViewSetupMatch = (props: {
     const availableWidgets = props.widgets
 
     useUpdateEffect(() => {
-        updateBindings(htmlComponentBindingType, htmlComponentType, htmlCustomID, resolver, resolverParam)
-        applyCache()
+        if (htmlComponentBindingType !== SetupBindingType.Code) {
+            updateBindings(htmlComponentBindingType, htmlComponentType, htmlCustomID, resolver, resolverParam)
+            applyCache()
+        }
     }, [availableCustomHtmlComponents])
 
     useUpdateEffect(() => {
