@@ -43,10 +43,7 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
         <ToolbarContext.Provider value={[toolbarState, setToolbarState]}>
             <nav className="navbar is-primary is-unselectable" role="navigation" aria-label="main navigation" style={{height: "3.25rem"}}>
                 <div className="navbar-brand">
-                    <a className="navbar-item" onClick={() => {
-                        let url = window.location.href.replace(window.location.hash, "")
-                        window.location.href = url
-                    }}>
+                    <a className="navbar-item" href="index.html">
                         <img src="logo.png" />
                     </a>
 
