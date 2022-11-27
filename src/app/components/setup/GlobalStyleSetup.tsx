@@ -5,6 +5,7 @@ import { css } from "@codemirror/lang-css";
 import { SetupGlobalStyleProperties } from "../../setup/SetupInterfaces";
 import { EditableText } from "../EditableText";
 import { useState } from "react";
+import CodeEditor from "../CodeEditor";
 
 export const GlobalStyleSetup = (props: { cfg: SetupGlobalStyleProperties, onConfigChange: any, onDelete?: any }) => {
 
@@ -39,13 +40,10 @@ export const GlobalStyleSetup = (props: { cfg: SetupGlobalStyleProperties, onCon
             </a>
 
             {
-                visible ? <CodeMirror
-                    className={`column is-10`}
+                visible ? <CodeEditor
                     value={code}
-                    minHeight="100px"
-                    maxHeight="800px"
-                    extensions={[css()]}
-                    onChange={(value, viewUpdate) => {
+                    isCss={true}
+                    onChange={(value) => {
                         setCode(value)
                     }} /> : ""
             }

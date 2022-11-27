@@ -7,6 +7,7 @@ import {useEffect, useRef, useState} from "react";
 import {setParamOfArrayProp, setParamOfObjectProp} from "../../utility/customSetters";
 import {compileTemplate} from "../../utility/customRenderUtils";
 import { CollapseCard } from "../CollapseCard";
+import CodeEditor from "../CodeEditor";
 
 enum TabType {
     CodeTab,
@@ -112,15 +113,16 @@ export const CustomHtmlComponentSetup = (props: {
 
             </div>
 
-            <CodeMirror
-                className={`${selectedTab == TabType.CodeTab ? "" : "is-hidden"}`}
-                value={code}
-                minHeight="100px"
-                maxHeight="800px"
-                extensions={[javascript({jsx: true})]}
-                onChange={(value, viewUpdate) => {
-                    updateCode(value)
-                }}/>
+            {
+                selectedTab == TabType.CodeTab ?
+                <CodeEditor
+                    value={code}
+                    isHtml={true}
+                    onChange={(value) => {
+                        updateCode(value)
+                }}/> : ""
+            }
+
             {
                 Object.keys(parameters).map((name, index) => {
                     return (

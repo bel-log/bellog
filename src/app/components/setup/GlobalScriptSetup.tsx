@@ -5,6 +5,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { SetupGlobalScriptProperties } from "../../setup/SetupInterfaces";
 import { useState } from "react";
 import { EditableText } from "../EditableText";
+import CodeEditor from "../CodeEditor";
 
 export const GlobalScriptSetup = (props: { cfg: SetupGlobalScriptProperties, onConfigChange: any, onDelete?: any }) => {
 
@@ -38,15 +39,12 @@ export const GlobalScriptSetup = (props: { cfg: SetupGlobalScriptProperties, onC
                 </span>
             </a>
 
-            {visible ? <CodeMirror
-                className={`column is-10`}
+            {visible ?            
+             <CodeEditor
                 value={code}
-                minHeight="100px"
-                maxHeight="800px"
-                extensions={[javascript({ jsx: false })]}
-                onChange={(value, viewUpdate) => {
+                onChange={(value) => {
                     setCode(value)
-                }} /> : ""
+                }}/> : ""
             }
 
         </div>

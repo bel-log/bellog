@@ -18,6 +18,7 @@ import { CollapseCard } from "../CollapseCard";
 import { buildDefaultActionBindings, buildDefaultHtmlBindings, buildDefaultResolverParam, buildResolverResultKeys } from "../../setup/SetupFactories";
 import { setItemOfObjectProp, setParamOfArrayProp, setParamOfObjectProp } from "../../utility/customSetters";
 import { BuilderNames } from "../../builders/Builder";
+import CodeEditor from "../CodeEditor";
 
 export const Action = (props: {
     cfg: ActionProperties,
@@ -207,15 +208,11 @@ export const Action = (props: {
                                 case SetupBindingType.Code:
                                     const code = (builderBindings as SetupBindingPropertiesCode).code
                                     return (
-                                        <CodeMirror
-                                            className="column is-10"
+                                        <CodeEditor
                                             value={code}
-                                            minHeight="100px"
-                                            maxHeight="800px"
-                                            extensions={[javascript({ jsx: false })]}
                                             onChange={(value) => {
                                                 setBuilderBindings({code: value})
-                                            }} />
+                                        }} />
                                     )
                             }
                         })()

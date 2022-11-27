@@ -1,6 +1,6 @@
 import { useGranularEffect, usePropagator, useStateWithCallback, useUpdateEffect, useUpdateLayoutEffect } from "../../utility/customHooks";
 import * as React from "react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     SetupCustomHtmlProperties,
     SetupBindingType,
@@ -13,12 +13,13 @@ import {
     SetupBindingPropertiesCode,
     ViewSetupMatchResolverProperties,
 } from "../../setup/SetupInterfaces";
-import CodeMirror from "@uiw/react-codemirror";
+
 import { javascript } from "@codemirror/lang-javascript";
 import { CollapseCard } from "../CollapseCard";
 import { buildDefaultHtmlBindings, buildDefaultResolverParam, BuildHtmlComponent, buildResolverResultKeys } from "../../setup/SetupFactories";
 import { setItemOfObjectProp, setParamOfArrayProp, setParamOfObjectProp } from "../../utility/customSetters";
 import { Resolver } from "webpack";
+import CodeEditor from "../CodeEditor";
 
 export const ViewSetupMatch = (props: {
     cfg: ViewSetupMatchElementProperties,
@@ -45,11 +46,14 @@ export const ViewSetupMatch = (props: {
     const [htmlComponentBindingType, setHtmlComponentBindingType] = [p.htmlComponentBindingType.val, p.htmlComponentBindingType.set]
     const [htmlComponentBindings, setHtmlComponentBindings] = [p.htmlComponentBindings.val, p.htmlComponentBindings.set]
 
+
+
     const availableBindingTypes = Object.values(SetupBindingType)
     const availableResolvers = Object.values(ViewSetupMatchResolverType)
     const availableCustomHtmlComponents = props.customHtmlComponents
     const availableResolverResultField = buildResolverResultKeys(resolverParam, resolver)
     const availableWidgets = props.widgets
+
 
     useUpdateEffect(() => {
         if (htmlComponentBindingType !== SetupBindingType.Code) {
@@ -238,12 +242,8 @@ export const ViewSetupMatch = (props: {
                         case ViewSetupMatchResolverType.ObjectCompare:
                             const code = resolverParam.code
                             return (
-                                <CodeMirror
-                                    className="column is-10 "
+                                <CodeEditor
                                     value={code}
-                                    minHeight="100px"
-                                    maxHeight="800px"
-                                    extensions={[javascript({ jsx: false })]}
                                     onChange={(value) => {
                                         const newParam = { ...(resolverParam), ...{ code: value } }
                                         updateResolverParam(newParam)
@@ -508,12 +508,8 @@ export const ViewSetupMatch = (props: {
                             case SetupBindingType.Code:
                                 const code = (htmlComponentBindings as SetupBindingPropertiesCode).code
                                 return (
-                                    <CodeMirror
-                                        className="column is-10 "
+                                    <CodeEditor
                                         value={code}
-                                        minHeight="100px"
-                                        maxHeight="800px"
-                                        extensions={[javascript({ jsx: false })]}
                                         onChange={(value) => {
                                             setHtmlComponentBindings({code: value})
                                         }} />
