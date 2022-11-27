@@ -106,6 +106,7 @@ export function buildDefaultCustomParser(array: SetupCustomParserProperties[]): 
                 // data: Uin8tArray of received data
                 // onAccept(accumulator, info): call this callback when accumulator is ready and has a valid sequence
                 // onRefuse(accumulator, info): call this to refuse the sequence. Content may be displayed anyway according to view configuration
+                // info: {isTx: boolean, driverName: string}
                 var _accumulator = (accumulator === null || accumulator === undefined) ? "" : accumulator;
                 const _data = String.fromCharCode.apply(null, data);
                 for (let i = 0; i < _data.length; i++) {
@@ -319,7 +320,7 @@ export function buildDefaultResolverParam(resolver: ViewSetupMatchResolverType):
                     function customObjectCompare(state, parsedData, info) {
                         // state: can be set to keep persistent state between compares.
                         // parsedData: string or object according to parser usage
-                        // info: infomations such as driver and if data is from reception or transmission
+                        // info: {isTx: boolean, driverName: string}
                         // retrun an object with key pair of items to render and result status
                         // keys must always be present when the function returns
                         if(parsedData) {
@@ -409,8 +410,8 @@ export function buildDefaultHtmlBindings(htmlComponent: SetupCustomHtmlPropertie
                             // resolvedParsedData is the array of the regex result. item 0 is the whole line matches.
                             // items 1..n are the capturing group matches.
                             // ex. regex "hello (.*)" on "Hello Mark"
-                            // item[0] -> Hello Mark
-                            // item[1] -> Mark
+                            // resolvedParsedData['All'] -> Hello Mark
+                            // resolvedParsedData['Group 1'] -> Mark
                             // available resolvedParsedData keys: ${resolverResultKeys.join(" ")}
                             return {${Object.keys(htmlParameters).map((name) => {
                             return `${name}: ${(htmlParameters[name].type === HtmlComponentParameterType.Text) ? `resolvedParsedData["${resolverResultKeys.at(0)}"]` : injectValue(htmlParameters[name].default, htmlParameters[name].type)}\r\n`
