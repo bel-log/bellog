@@ -100,22 +100,57 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any,
         setActions([...actions, JSON.parse(JSON.stringify(actionCopy))])
     }
 
+    useEffect(() => {
+
+        let script = document.createElement('script');
+        let script_code = scripts.map((script) => {
+            return "try {" + script.code + "} catch(e) {}"
+        }).join("\r\n")
+        script.id="__js"
+        script.type = 'text/javascript';
+        script.innerHTML = script_code
+
+        let style = document.createElement('style');
+        let style_code = styles.map((style) => {
+            return style.code
+        }).join("\r\n")
+        style.id="__css"
+        style.innerHTML = styles.map((style) => {
+            return style.code
+        }).join("\r\n")
+
+        let header = document.head
+
+        let found = false
+        let scriptsa = header.getElementsByTagName("script")
+        for(let i=0; i < scriptsa.length; i++) {
+            if(scriptsa[i].id === "__js") {
+                scriptsa[i].innerHTML = script_code
+                found = true
+                break
+            }
+        }
+
+        if(!found)
+            header.appendChild(script)
+
+        found = false
+        let stylesa = header.getElementsByTagName("style")
+        for(let i=0; i < stylesa.length; i++) {
+            if(stylesa[i].id === "__css") {
+                stylesa[i].innerHTML = style_code
+                found = true
+                break
+            }
+        }
+
+        if(!found)
+            header.appendChild(style)
+
+    }, [scripts, styles])
+
     return (
         <div>
-            <script>
-                {
-                    scripts.map((script) => {
-                        return "try {" + script.code + "} catch(e) {}"
-                    })
-                }
-            </script>
-            <style>
-                {
-                    styles.map((style) => {
-                        return style.code
-                    })
-                }
-            </style>
             <h1 className="title">Setup Profile</h1>
 
             <div className="field">
