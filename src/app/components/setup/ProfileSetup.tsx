@@ -39,7 +39,7 @@ import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
 
 
-const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any, onExportRequest, onImportRequest }) => {
+const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}) => {
 
     const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 

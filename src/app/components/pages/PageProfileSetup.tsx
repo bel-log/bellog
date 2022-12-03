@@ -84,6 +84,20 @@ export const PageProfileSetup = () => {
         )
     }, [])
 
+    useEffect(() => {
+        const saveShortcutListener = async (evt) => {
+            if ((evt.key === 's'|| evt.key === 'S') && evt.ctrlKey) {
+                saveProfile()
+                evt.preventDefault()
+            }
+        }
+        document.addEventListener('keydown', saveShortcutListener);
+
+        return () => {
+            document.removeEventListener('keydown', saveShortcutListener)
+        }   
+    }, [tmpProfile])
+
     return (
         <div style={{overflow: "auto"}}>
             {
@@ -91,12 +105,6 @@ export const PageProfileSetup = () => {
                     <ProfileSetup key={tmpKeyId} profile={tmpProfile}
                         onConfigUpdate={(newData) => {
                             setTmpProfile({ ...tmpProfile, ...newData })
-                        }}
-                        onExportRequest={() => {
-                            saveProfile()
-                        }}
-                        onImportRequest={(e) => {
-                            loadProfile(e)
                         }}
                     />
 
