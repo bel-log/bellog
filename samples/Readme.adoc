@@ -9,7 +9,9 @@ Then select "Import Profile" and press "Save".
 [[App_Log_Template]]
 === App Log Template
 
-Tracks the errors on a separate logs and highlights messages with prefix "info, warning, error".
+Tracks the errors on a separate logs and highlights messages with prefix "info:" and "warn:". If a string contains either "Error", "Fatal" or "Fault" word it will highlight it in red and group it up in a separate view that only tracks errors.
+
+See link:./App_Log_Template.txt[App_Log_Template.txt] and paste the content into Bellog runtime.
 
 [[Json_Lint]]
 === JsonLint

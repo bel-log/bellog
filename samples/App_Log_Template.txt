@@ -1,0 +1,7 @@
+normal message
+
+info: my info message
+Error bad request
+warn: my warning
+
+This is a fatal Error
