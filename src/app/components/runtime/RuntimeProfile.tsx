@@ -62,10 +62,15 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         })
 
         return () => {
-            // onDestroy
             if (isDriverOpenClose(driver)) {
                 const driverOpenClose = driver as DriverOpenClose
-                driverOpenClose.close()
+                if (driverOpenClose.status !== DriverStatus.CLOSE) {
+                    // Remove all callbacks. They may trigger renderings with old driver object
+                    driverOpenClose.onReceive(null)
+                    driverOpenClose.onTransmit(null)
+                    driverOpenClose.onStatusChange(null)
+                    driverOpenClose.close()
+                }
             }
             driver.destroy()
         }
