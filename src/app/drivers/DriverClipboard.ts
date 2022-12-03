@@ -1,4 +1,5 @@
 import {Driver, DriverStatus} from "./Driver";
+import {Buffer} from "buffer"
 
 export interface DriverClipboardParameters {}
 
@@ -40,6 +41,10 @@ export class DriverClipboard implements Driver {
         if(typeof data === "string") {
             navigator.clipboard.writeText(data as string)
             this.onTransmitCb?.(data as string)
+        } else {
+            let dataStr = Buffer.from(data).toString('hex');
+            navigator.clipboard.writeText(dataStr)
+            this.onTransmitCb?.(data)
         }
     }
 
