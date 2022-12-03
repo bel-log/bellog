@@ -99,7 +99,7 @@ By default the following HTMLs elements are available:
 * Div: A simple div with a color that can be set, it terminates the line.
 * Span: A simple span with a color that can be set, does not terminate the line. Useful to work with RawParser.
 * Button: A button, designed to be used for widgets
-* None: Renders nothing, cam be used to filter out data you don't want to see in the view.
+* None: Renders nothing, can be used to filter out data you don't want to see in the view.
 
 A Custom Html object can be defined under the *Custom Html* section. An example is the following:
 
@@ -319,12 +319,12 @@ Some additional settings can also be configured:
 * *Maximum items per views*: Each view can only render up to N html elements.
 
 [[Debugging]]
-= Debugging
+== Debugging
 
 If you are writing custom object with javascript you may be wondering how to debug it.
 
-* Use the console.log() and any other api of the console object.
-* Write debugger; inside the code to trigger a breakpoint as soon as that code is being executed.
+* Use the console.log() and any other api of the console object and check the output on the development instrument page of your browser.
+* Write *debugger;* inside the code to trigger a breakpoint as soon as that code is being executed.
 
 [source, javascript]
 ----
@@ -334,6 +334,20 @@ console.log("STEP 2")
 ----
 
 After getting where you want with the debugger you can also check the call stack and read the source code to debug at a lower level.
+
+[[Common_Issues]]
+== Common Issues
+
+* *Some data is lost using WebSerial Driver* +
+Please check from the developer instrument console if there are errors and investigate them. It is also common to get serial-related errors if there are performance issues with the rendered elements.
+If you are using Widgets and you are updating them very often i suggest to update widgets manually by searching of its 'ID' and writing a custom resolver code to update it and set the html to render as 'None'.
+
+* *Can't see any data with the WebSerial Driver* +
+Try to refresh the page and click on the 'play' icon on the toolbar.
+If by pressing the 'play' icons nothing pops up you are either using a browser that does not support WebSerial API or have a permission issue with your browser or some plugin.
+If you selected the 'COM' port and still you don't see anything ensure you set the right baudrate in the setup page.
+Unlike other serial terminals on Bellog you may not see any data if the parser did not parse anything successfully.
+To dispel any doubt you can add in the setup page a View with a custom parser 'Raw' and then you should see something with any data.
 
 [[Runtime]]
 == Runtime

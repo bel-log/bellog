@@ -1,3 +1,6 @@
+# Mine
+__Internal/*
+
 # IDE
 .vscode/*
 .idea/*
