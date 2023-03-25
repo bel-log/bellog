@@ -57,7 +57,9 @@ export const Widget = (props: {
                 // Valid code
                 Object.keys(newWidgetActions).forEach((key) => {
                     if (key in widgetActionsCopy && key in newWidgetActions) {
-                        if(widgetActionsCopy[key].actionID > 0)
+                        let oldActionId = widgetActionsCopy[key].actionID
+                        // Check if oldActionId still exist
+                        if(widgetActionsCopy[key].actionID > 0 && availableActions.filter(it => it.id === oldActionId).length > 0)
                             newWidgetActions[key].actionID = widgetActionsCopy[key].actionID
                     }
                 })
