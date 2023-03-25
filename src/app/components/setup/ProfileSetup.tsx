@@ -46,14 +46,22 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
     const [profileName, setProfileName] = [p.profileName.val, p.profileName.set]
     const [driverType, setDriverType] = [p.driverType.val, p.driverType.set]
     const [driverSettings, setDriverSettings] = [p.driverSettings.val, p.driverSettings.set]
-    const [scripts, setScripts] = [p.scripts.val, p.scripts.set]
-    const [styles, setStyles] = [p.styles.val, p.styles.set]
-    const [parsers, setParsers] = [p.parsers.val, p.parsers.set]
-    const [builders, setBuilders] = [p.builders.val, p.builders.set]
-    const [actions, setActions] = [p.actions.val, p.actions.set]
-    const [htmlElems, setHtmlElems] = [p.html.val, p.html.set]
-    const [views, setViews] = [p.views.val, p.views.set]
-    const [widgetGroups, setWidgetGroups] = [p.widgetGroups.val, p.widgetGroups.set]
+    const scriptsRef = React.useRef(p.scripts.val);
+    const [scripts, setScripts] = [  p.scripts.val,  (newval) => {    scriptsRef.current = newval;    p.scripts.set(newval);  },];
+    const stylesRef = React.useRef(p.styles.val);
+    const [styles, setStyles] = [  p.styles.val,  (newval) => {    stylesRef.current = newval;    p.styles.set(newval);  },];
+    const parsersRef = React.useRef(p.parsers.val);
+    const [parsers, setParsers] = [  p.parsers.val,  (newval) => {    parsersRef.current = newval;    p.parsers.set(newval);  },];
+    const buildersRef = React.useRef(p.builders.val);
+    const [builders, setBuilders] = [  p.builders.val,  (newval) => {    buildersRef.current = newval;    p.builders.set(newval);  },];
+    const actionsRef = React.useRef(p.actions.val);
+    const [actions, setActions] = [  p.actions.val,  (newval) => {    actionsRef.current = newval;    p.actions.set(newval);  },];
+    const htmlElemsRef = React.useRef(p.html.val);
+    const [htmlElems, setHtmlElems] = [  p.html.val,  (newval) => {    htmlElemsRef.current = newval;    p.html.set(newval);  },];
+    const viewsRef = React.useRef(p.views.val);
+    const [views, setViews] = [  p.views.val,  (newval) => {    viewsRef.current = newval;    p.views.set(newval);  },];
+    const widgetGroupsRef = React.useRef(p.widgetGroups.val);
+    const [widgetGroups, setWidgetGroups] = [  p.widgetGroups.val,  (newval) => {    widgetGroupsRef.current = newval;    p.widgetGroups.set(newval);  },];
     const [globalSettings, setGlobalSettings] = [p.globalSettings.val, p.globalSettings.set]
 
     function addNewGlobalScript() {
@@ -265,7 +273,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                         cfg={htmlelem}
                                         onConfigChange={(newHtmlElem) =>
                                             setHtmlElems(
-                                                htmlElems.map((val, n_index) => {
+                                                htmlElemsRef.current.map((val, n_index) => {
                                                     if (n_index == index)
                                                         return { ...val, ...newHtmlElem }
                                                     else
@@ -303,7 +311,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     cfg={style}
                                     onConfigChange={(newStyle) =>
                                         setStyles(
-                                            styles.map((val, n_index) => {
+                                            stylesRef.current.map((val, n_index) => {
                                                 if (n_index == index)
                                                     return { ...val, ...newStyle }
                                                 else
@@ -331,7 +339,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     cfg={gscript}
                                     onConfigChange={(newScript) =>
                                         setScripts(
-                                            scripts.map((n_script, n_index) => {
+                                            scriptsRef.current.map((n_script, n_index) => {
                                                 if (n_index == index)
                                                     return { ...n_script, ...newScript }
                                                 else
@@ -359,7 +367,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     cfg={parser}
                                     onConfigChange={(newScript) =>
                                         setParsers(
-                                            parsers.map((val, n_index) => {
+                                            parsersRef.current.map((val, n_index) => {
                                                 if (n_index == index)
                                                     return { ...val, ...newScript }
                                                 else
@@ -386,7 +394,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     cfg={builder}
                                     onConfigChange={(newScript) =>
                                         setBuilders(
-                                            builders.map((val, n_index) => {
+                                            buildersRef.current.map((val, n_index) => {
                                                 if (n_index == index)
                                                     return { ...val, ...newScript }
                                                 else
@@ -438,7 +446,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                         customBuilders={builders}
                                         onConfigChange={(newScript) =>
                                             setActions(
-                                                actions.map((val, n_index) => {
+                                                actionsRef.current.map((val, n_index) => {
                                                     if (n_index == index)
                                                         return { ...val, ...newScript }
                                                     else
@@ -493,7 +501,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     widgetsGroups={widgetGroups}
                                     onConfigChange={(newView) =>
                                         setViews(
-                                            views.map((val, n_index) => {
+                                            viewsRef.current.map((val, n_index) => {
                                                 if (n_index == index)
                                                     return { ...val, ...newView }
                                                 else
@@ -540,7 +548,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                 availableActions={actions}
                                 onConfigChange={(newView) =>
                                     setWidgetGroups(
-                                        widgetGroups.map((val, n_index) => {
+                                        widgetGroupsRef.current.map((val, n_index) => {
                                             if (n_index == index)
                                                 return { ...val, ...newView }
                                             else

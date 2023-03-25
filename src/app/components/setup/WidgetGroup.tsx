@@ -20,7 +20,11 @@ export const WidgetGroup = (props: {
     const [p, applyCache] = usePropagator<WidgetGroupSetupProperties>(props.cfg, props.onConfigChange)
 
     const [name, setName] = [p.name.val, p.name.set]
-    const [widgets, setWidgets] = [p.widgets.val, p.widgets.set]
+    const widgetsRef = React.useRef(p.widgets.val)
+    const [widgets, setWidgets] = [p.widgets.val, (newval) =>{
+        widgetsRef.current = newval
+        p.widgets.set(newval)
+    }]
 
 
     function addNewWidget() {
@@ -74,7 +78,7 @@ export const WidgetGroup = (props: {
                                         customHtmlComponents={props.customHtmlComponents}
                                         onConfigChange={(newHtmlElem) =>
                                             setWidgets(
-                                                widgets.map((val, n_index) => {
+                                                widgetsRef.current.map((val, n_index) => {
                                                     if (n_index == index) {
                                                         const newElem = { ...val, ...newHtmlElem }
                                                         return newElem

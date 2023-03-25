@@ -53,11 +53,11 @@ export const CollapseCard = (props : {title: string, expanded?: boolean,
                 </a>
             </header>
             {
-                isExpanded ? <div className={`card-content`}>
+                <div className={`card-content ${isExpanded ? "": "is-hidden"}`}>
                     <div>
                         {props.children}
                     </div>
-                </div> : ""
+                </div> 
             }
         </div>
     )

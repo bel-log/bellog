@@ -30,7 +30,11 @@ export const ViewSetup = (props: {
     const [customParserID, setCustomParserID] = [p.customParserID.val, p.customParserID.set]
     const [parserSettings, setParserSettings] = [p.parserSettings.val, p.parserSettings.set]
     const [autoWrap, setAutoWrap] = [p.autoWrap.val, p.autoWrap.set]
-    const [matchers, setMatchers] = [p.matchers.val, p.matchers.set]
+    const matchersRef = React.useRef(p.matchers.val)
+    const [matchers, setMatchers] = [p.matchers.val, (newval) =>{
+        matchersRef.current = newval
+        p.matchers.set(newval)
+    }]
     const [widgetFrameSize, setWidgetFrameSize] = [p.widgetFrameSize.val, p.widgetFrameSize.set]
     const [widgetGroupIds, setWidgetGroupIds] = [p.widgetGroupIds.val, p.widgetGroupIds.set]
 
@@ -241,7 +245,7 @@ export const ViewSetup = (props: {
                                         widgets={availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))?.widgets ?? []}
                                         onConfigChange={(newHtmlElem) =>
                                             setMatchers(
-                                                matchers.map((val, n_index) => {
+                                                matchersRef.current.map((val, n_index) => {
                                                     if (n_index == index) {
                                                         const newElem = { ...val, ...newHtmlElem }
                                                         return newElem
