@@ -9,6 +9,7 @@ import {
 import { buildDefaultWidget } from "../../setup/SetupFactories";
 import { Widget } from "./Widget";
 import { CollapseCard } from "../CollapseCard";
+import { useLayoutEffect } from "react";
 
 export const WidgetGroup = (props: {
     cfg: WidgetGroupSetupProperties,
@@ -21,7 +22,7 @@ export const WidgetGroup = (props: {
 
     const [name, setName] = [p.name.val, p.name.set]
     const widgetsRef = React.useRef(p.widgets.val)
-    const [widgets, setWidgets] = [p.widgets.val, (newval) =>{
+    const [widgets, setWidgets] = [p.widgets.val, (newval: WidgetSetupProperties[]) =>{
         widgetsRef.current = newval
         p.widgets.set(newval)
     }]
@@ -76,7 +77,7 @@ export const WidgetGroup = (props: {
                                     <Widget cfg={widget}
                                         availableActions={props.availableActions}
                                         customHtmlComponents={props.customHtmlComponents}
-                                        onConfigChange={(newHtmlElem) =>
+                                        onConfigChange={(newHtmlElem: any) =>
                                             setWidgets(
                                                 widgetsRef.current.map((val, n_index) => {
                                                     if (n_index == index) {

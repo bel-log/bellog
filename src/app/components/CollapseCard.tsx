@@ -1,7 +1,7 @@
 import * as React from "react";
-import {useState} from "react";
+import {useLayoutEffect, useState} from "react";
 
-export const CollapseCard = (props : {title: string, expanded?: boolean, 
+export const CollapseCard =  (props : {title: string, expanded?: boolean, 
     eyeIcon?:boolean, eyeOff?:boolean, 
     eyeClick?:(eyeOff: boolean) => void,
     deleteIcon?: boolean,
@@ -13,24 +13,75 @@ export const CollapseCard = (props : {title: string, expanded?: boolean,
     duplicateClick?:() => void,
     children: React.ReactNode}) => {
 
+    const ref = React.useRef<HTMLDivElement>()
+    useLayoutEffect(() => {
+        if(ref.current) {
+            ref.current.getAnimations().forEach((anim) => {
+                anim.cancel()
+            })
+        }
+    })
+
     const [isExpanded, setIsExpanded] = useState(props.expanded ?? false)
 
     function expand() {
         setIsExpanded(!isExpanded)
     }
 
+    function animate(up:boolean, onclick: () => void) {
+
+        let obj1, obj2
+        if(up) {
+            obj1 = ref.current
+            obj2 = ref.current.previousElementSibling
+        } else {
+            obj1 = ref.current.nextElementSibling
+            obj2 = ref.current
+        }
+        if(obj1 === null || obj2 === null)
+            return
+        const anim = obj1.animate(
+            [{ transform: `translateY(-${obj1.clientHeight}px)` }],
+            {
+                duration: 200,
+                iterations: 1,
+                fill: 'forwards'
+            }
+        )
+        const anim2 =obj2.animate(
+            [{ transform: `translateY(${obj2.clientHeight}px)` }],
+            {
+                duration: 200,
+                iterations: 1,
+                fill: 'forwards'
+            }
+        )
+        anim.onfinish =(ev: AnimationPlaybackEvent) => {
+            onclick()
+        }
+    }
+
     return (
-        <div className="card is-fullwidth is-unselectable">
+        <div ref={ref} className="card is-fullwidth is-unselectable">
             <header className="card-header is-clickable"  onClick={() => expand()}>
                 <p className="card-header-title">{props.title}</p>
                 {
                     props.sortArrowIcon ? <a className="card-header-icon is-clickable" 
-                    onClick={(e) => {e.stopPropagation(); setIsExpanded(false); props?.sortUpClick()}}>
+                    onClick={(e) => {
+                            e.stopPropagation(); 
+                            setIsExpanded(false); 
+
+                            animate(true, () => {props?.sortUpClick()})
+                        }}>
                         <i className={`fa fa-arrow-up`} ></i> </a> : ""
                 }
                 {
                     props.sortArrowIcon ? <a className="card-header-icon is-clickable" 
-                    onClick={(e) => {e.stopPropagation(); setIsExpanded(false); props?.sortDownClick()}}>
+                    onClick={(e) => {
+                            e.stopPropagation(); 
+                            setIsExpanded(false); 
+                            animate(false, () => {props?.sortDownClick()})
+                        }}>
                         <i className={`fa fa-arrow-down`} ></i> </a> : ""
                 }
                 {

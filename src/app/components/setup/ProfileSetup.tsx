@@ -426,13 +426,13 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                     return n_index != index
                                 }))}
                                 sortUpClick={() => {
-                                    if (views.length > 0 && index > 0) {
+                                    if (actions.length > 0 && index > 0) {
                                         setActions([...actions.slice(0, index-1), action, actions[index-1], ...actions.slice(index+1)])
                                     }
                                 }}
                                 sortDownClick={() => {
-                                    if (views.length > 0 && index < (views.length - 1)) {
-                                        setActions([...actions.slice(0, index), actions[index+1], action, ...actions.slice(index+2)])
+                                    if (actions.length > 0 && index < (actions.length - 1)) {
+                                        setActions([...actions.slice(0, index), actions[index + 1], action, ...actions.slice(index + 2)])
                                     }
                                 }}
                                 duplicateClick={() => {
