@@ -103,12 +103,13 @@ export function buildDefaultCustomParser(array: SetupCustomParserProperties[]): 
             function (accumulator, data, onAccept, onRefuse, info) {
                 // This is an example line parser. captures each sequence with terminating \\n or \\r
                 // accumulator: use it to accumulate state of the parser then return it
-                // data: Uin8tArray of received data
+                // data: Uin8tArray of received data (or string for clipboard driver)
                 // onAccept(accumulator, info): call this callback when accumulator is ready and has a valid sequence
                 // onRefuse(accumulator, info): call this to refuse the sequence. Content may be displayed anyway according to view configuration
                 // info: {isTx: boolean, driverName: string}
                 var _accumulator = (accumulator === null || accumulator === undefined) ? "" : accumulator;
-                const _data = String.fromCharCode.apply(null, data);
+                // Convert Uint8 to string if necessary
+                const _data = typeof data !== "string" ? String.fromCharCode.apply(null, data) : data;
                 for (let i = 0; i < _data.length; i++) {
                     if (_data[i] == '\\r' || _data[i] == '\\n') {
                         if (_accumulator.length > 0) {
