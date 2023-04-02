@@ -41,6 +41,9 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
         this.usbProductId = params.usbProductId ?? 0
         this.options = params
     }
+    attach(view: HTMLElement): void {
+        
+    }
 
     onReceive(cb: (data: string | Uint8Array) => void): void {
         this.onReceiveCb = cb

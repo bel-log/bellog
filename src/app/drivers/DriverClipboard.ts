@@ -21,8 +21,11 @@ export class DriverClipboard implements Driver {
     constructor() {
         this.name = "Clipboard"
         this._status = DriverStatus.CLOSE
-
-        document.addEventListener('keydown', this.keydownListener);
+    }
+    
+    attach(view: HTMLElement): void {
+        view.removeEventListener('keydown', this.keydownListener)
+        view.addEventListener('keydown', this.keydownListener);
     }
 
     onReceive(cb: (data: string | Uint8Array) => void): void {

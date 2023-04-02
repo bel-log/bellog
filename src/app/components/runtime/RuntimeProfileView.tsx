@@ -90,6 +90,7 @@ export const RuntimeProfileView = forwardRef((props: {
                                             profile.builders, profile.html, viewRef, widgetViewRef, globalSettings.maximumItemsPerView)
         
         customView.init()
+        driver.attach(viewRef.current)
         
         viewRef.current.innerHTML = defContent
         hasDataRef.current = false
@@ -193,7 +194,8 @@ export const RuntimeProfileView = forwardRef((props: {
                     : ""
             }
             <div className="is-flex" style={{height: "100%", width: "auto", overflow: "auto"}}>
-                <div ref={viewRef} className="pl-1" style={{...getWrapStyle(view), ...{overflow: "auto", flexGrow: "1"}}}>
+                <div ref={viewRef} tabIndex={0} className="pl-1" 
+                style={{...getWrapStyle(view), ...{overflow: "auto", flexGrow: "1"}}}>
                 </div>
             </div>
         </div>
