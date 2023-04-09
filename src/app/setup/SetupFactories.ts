@@ -326,19 +326,16 @@ export function buildDefaultResolverParam(resolver: ViewSetupMatchResolverType):
                         // keys must always be present when the function returns
                         if(parsedData) {
                             if (typeof parsedData === "string") {
-                                if(parsedData.toLowerCase().indexOf("error") > 0)
-                                {
-                                    return {result: true, data: {field1: "field1", field2: parsedData}}
-                                }
+                                return {result: true, data: {field1: parsedData}}
                             } else {
                                 // field errorFlag may not exist depending on your parser implementation
                                 // TODO replace with the fields you are providing from the parser
-                                if(parsedData.errorFlag === true)
-                                    return {result: true, data: {field1: "field1", field2: parsedData.errorString}}
+                                return {result: true, data: {field1: parsedData.toString()}}
                             }
                         }
                         // Dummy result is used by setup for previewing available html bindings
-                        return {result: false, data: {field1: "", field2: ""}}
+                        // Any field added in 'data' MUST also be returned by all others returns
+                        return {result: false, data: {field1: ""}}
                     }`, beautifyOptions
                 )
             }
