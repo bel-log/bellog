@@ -37,6 +37,7 @@ import { SetupProfileObject } from "../../setup/SetupInterfaces";
 import { CustomBuildersSetup } from "./CustomBuildersSetup";
 import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
+import { CollpaseGroup } from "../CollapseGroup";
 
 
 const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}) => {
@@ -264,40 +265,29 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
             </div>
 
             <CollapseCard title="Custom Html Components">
-                    {
-                        htmlElems.map(
-                            (htmlelem, index) => {
-                                return (
-                                    <CustomHtmlComponentSetup
-                                        key={htmlelem.id}
-                                        cfg={htmlelem}
-                                        onConfigChange={(newHtmlElem) =>
-                                            setHtmlElems(
-                                                htmlElemsRef.current.map((val, n_index) => {
-                                                    if (n_index == index)
-                                                        return { ...val, ...newHtmlElem }
-                                                    else
-                                                        return val
-                                                }))}
-                                        onDelete={() => setHtmlElems(htmlElems.filter((val, n_index) => {
-                                            return n_index != index
-                                        }))}
-                                        onSortUp={() => {
-                                            if (htmlElems.length > 0 && index > 0) {
-                                                setHtmlElems([...htmlElems.slice(0, index-1), htmlelem, htmlElems[index-1], ...htmlElems.slice(index+1)])
-                                            }
-                                        }}
-                                        onSortDown={() => {
-                                            if (htmlElems.length > 0 && index < (htmlElems.length - 1)) {
-                                                setHtmlElems([...htmlElems.slice(0, index), htmlElems[index+1], htmlelem, ...htmlElems.slice(index+2)])
-                                            }
-                                        }}
-                                    />
-                                )
+                <CollpaseGroup array={htmlElems} deleteIcon
+                    getTitle={(index) => htmlElems[index].name}
+                    getId={(index) => htmlElems[index].id}
 
-                            }
+                    setNewArray={(array) => { setHtmlElems(array) }}
+                >
+                    {
+                        (htmlelem, index) => (
+                            <CustomHtmlComponentSetup
+                                key={htmlelem.id}
+                                cfg={htmlelem}
+                                onConfigChange={(newHtmlElem) =>
+                                    setHtmlElems(
+                                        htmlElemsRef.current.map((val, n_index) => {
+                                            if (n_index == index)
+                                                return { ...val, ...newHtmlElem }
+                                            else
+                                                return val
+                                        }))}
+                            />
                         )
                     }
+                </CollpaseGroup>
                 <button className="button is-primary mt-4" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
             </CollapseCard>
 
@@ -412,53 +402,31 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                 <button className="button is-primary mt-4" onClick={() => addNewCustomBuilder()}>Add New</button>
             </CollapseCard>
             <CollapseCard title="Actions">
-                {
-                    actions.map(
-                        (action, index) => {
-                            return (
-                                <CollapseCard 
-                                key={action.id}
-                                title={action.name}
-                                deleteIcon
-                                sortArrowIcon
-                                duplicateIcon
-                                deleteClick={() => setActions(actions.filter((val, n_index) => {
-                                    return n_index != index
-                                }))}
-                                sortUpClick={() => {
-                                    if (actions.length > 0 && index > 0) {
-                                        setActions([...actions.slice(0, index-1), action, actions[index-1], ...actions.slice(index+1)])
-                                    }
-                                }}
-                                sortDownClick={() => {
-                                    if (actions.length > 0 && index < (actions.length - 1)) {
-                                        setActions([...actions.slice(0, index), actions[index + 1], action, ...actions.slice(index + 2)])
-                                    }
-                                }}
-                                duplicateClick={() => {
-                                    cloneAction(action)
-                                }}
-                                >
-                                    
-                                    <Action
-                                        key={action.id}
-                                        cfg={action}
-                                        customBuilders={builders}
-                                        onConfigChange={(newScript) =>
-                                            setActions(
-                                                actionsRef.current.map((val, n_index) => {
-                                                    if (n_index == index)
-                                                        return { ...val, ...newScript }
-                                                    else
-                                                        return val
-                                                }))}
-                                    />
-                                </CollapseCard>
-                            )
 
+                <CollpaseGroup array={actions} deleteIcon
+                                getTitle={(index) => actions[index].name}
+                                getId={(index) => actions[index].id}
+
+                                setNewArray={(array) => {setActions(array)}}
+                    >
+                        {
+                            (action, index) => (  
+                                <Action
+                                key={action.id}
+                                cfg={action}
+                                customBuilders={builders}
+                                onConfigChange={(newScript) =>
+                                    setActions(
+                                        actionsRef.current.map((val, n_index) => {
+                                            if (n_index == index)
+                                                return { ...val, ...newScript }
+                                            else
+                                                return val
+                                        }))}
+                            />
+                            )
                         }
-                    )
-                }
+                    </CollpaseGroup>
                 <button className="button is-primary mt-4" onClick={() => addNewCustomAction()}>Add New</button>
             </CollapseCard>
 
@@ -475,42 +443,31 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                         </div>
                     </div>
                 </div>
+                <CollpaseGroup array={views} deleteIcon
+                               getTitle={(index) => views[index].name}
+                               getId={(index) => views[index].id}
+
+                               setNewArray={(array) => {setViews(array)}}
+                >
                     {
-                        views.map((val, index) => {
-                            return <CollapseCard key={val.id} title={val.name} deleteIcon deleteClick={() => {
-                                setViews(views.filter((val, n_index) => {
-                                    return n_index != index
-                                }))
-                            }}
-                            sortArrowIcon={true}
-                            sortUpClick={() => {
-                                if (views.length > 0 && index > 0) {
-                                    setViews([...views.slice(0, index-1), val, views[index-1], ...views.slice(index+1)])
-                                }
-                            }}
-                            sortDownClick={() => {
-                                if (views.length > 0 && index < (views.length - 1)) {
-                                    setViews([...views.slice(0, index), views[index+1], val, ...views.slice(index+2)])
-                                }
-                            }}
-                            >
+                        (view, index) => (
                                 <ViewSetup
-                                    cfg={val}
-                                    customParsers={parsers}
-                                    customHtmlComponents={htmlElems}
-                                    widgetsGroups={widgetGroups}
-                                    onConfigChange={(newView) =>
-                                        setViews(
-                                            viewsRef.current.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...val, ...newView }
-                                                else
-                                                    return val
-                                            }))}
-                                />
-                            </CollapseCard>
-                        })
+                                cfg={view}
+                                customParsers={parsers}
+                                customHtmlComponents={htmlElems}
+                                widgetsGroups={widgetGroups}
+                                onConfigChange={(newView) =>
+                                    setViews(
+                                        viewsRef.current.map((val, n_index) => {
+                                            if (n_index == index)
+                                                return { ...val, ...newView }
+                                            else
+                                                return val
+                                        }))}
+                            />
+                        )
                     }
+                </CollpaseGroup>
             </div>
 
             <div className="mt-4">
@@ -527,22 +484,16 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                     </div>
                 </div>
                 {
-                    widgetGroups.map((val, index) => {
-                        return <CollapseCard key={val.id} title={val.name} deleteIcon deleteClick={() => setWidgetGroups(widgetGroups.filter((val, n_index) => {
-                            return n_index != index
-                        }))}
-                        sortArrowIcon={true}
-                        sortUpClick={() => {
-                            if (views.length > 0 && index > 0) {
-                                setWidgetGroups([...widgetGroups.slice(0, index-1), val, widgetGroups[index-1], ...widgetGroups.slice(index+1)])
-                            }
-                        }}
-                        sortDownClick={() => {
-                            if (views.length > 0 && index < (views.length - 1)) {
-                                setWidgetGroups([...widgetGroups.slice(0, index), widgetGroups[index+1], val, ...widgetGroups.slice(index+2)])
-                            }
-                        }}>
-                            <WidgetGroup
+
+                    <CollpaseGroup array={widgetGroups} deleteIcon
+                        getTitle={(index) => widgetGroups[index].name}
+                        getId={(index) => widgetGroups[index].id}
+
+                        setNewArray={(array) => { setWidgetGroups(array) }}
+                    >
+                        {
+                            (val, index) => (
+                                <WidgetGroup
                                 cfg={val}
                                 customHtmlComponents={htmlElems}
                                 availableActions={actions}
@@ -555,8 +506,9 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                                 return val
                                         }))}
                             />
-                        </CollapseCard>
-                    })
+                            )
+                        }
+                    </CollpaseGroup>
                 }
             </div>
 

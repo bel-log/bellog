@@ -16,10 +16,7 @@ enum TabType {
 
 export const CustomHtmlComponentSetup = (props: { 
         cfg: SetupCustomHtmlProperties, 
-        onConfigChange: any, 
-        onDelete?: any,
-        onSortUp: () => void,
-        onSortDown: () => void,
+        onConfigChange: any
     }) => {
 
     const [p, applyCache] = usePropagator<SetupCustomHtmlProperties>(props.cfg, props.onConfigChange)
@@ -75,10 +72,6 @@ export const CustomHtmlComponentSetup = (props: {
 
     return (
         <React.Fragment>
-            <CollapseCard title={name}
-                deleteIcon deleteClick={() => {props?.onDelete()}}
-                sortArrowIcon={true} sortUpClick={props.onSortUp} sortDownClick={props.onSortDown}>
-
             <div className="field is-grouped">
                 <div className="control is-expanded">
                     <input className="input" type="text" placeholder="Text input" value={name}
@@ -162,8 +155,6 @@ export const CustomHtmlComponentSetup = (props: {
                     )
                 })
             }
-            </CollapseCard>
         </React.Fragment>
-
     )
 }

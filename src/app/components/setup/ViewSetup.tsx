@@ -4,6 +4,7 @@ import {
     ActionProperties,
     SetupCustomHtmlProperties,
     SetupCustomParserProperties,
+    ViewSetupMatchElementProperties,
     ViewSetupMatchResolverType,
     ViewSetupProperties,
     WidgetGroupSetupProperties,
@@ -14,6 +15,7 @@ import { ViewSetupMatch } from "./ViewSetupMatch";
 import { ParserNames } from "../../parsers/Parser";
 import { useEffect } from "react";
 import { CollapseCard } from "../CollapseCard";
+import { CollpaseGroup } from "../CollapseGroup";
 
 export const ViewSetup = (props: {
     cfg: ViewSetupProperties,
@@ -93,6 +95,12 @@ export const ViewSetup = (props: {
         }
         setParserType(parserType, true)
         applyCache()
+    }
+
+    function cloneMatch(match: ViewSetupMatchElementProperties) {
+        const matcherForNewId = buildDefaultViewMatch(matchers)
+        const matchCopy = {...match, ...{id: matcherForNewId.id}}
+        setMatchers([...matchers, JSON.parse(JSON.stringify(matchCopy))])
     }
 
     return (
@@ -208,57 +216,32 @@ export const ViewSetup = (props: {
                 </div>
             </div>
             <div className="is-flex is-flex-direction-column">
-                {
-                    matchers.map((match, index) => {
-                        return (
-                            <CollapseCard key={match.id} title={match.name}
-                                eyeIcon eyeOff={match.disabled}
-                                eyeClick={(eyeOff) => {
-                                    setMatchers(
-                                        matchers.map((val, n_index) => {
-                                            if (n_index == index) {
-                                                return { ...val, ...{ disabled: !eyeOff } }
-                                            }
-                                            else
-                                                return val
-                                        }))
-                                }}
-                                deleteIcon
-                                deleteClick={() => setMatchers(matchers.filter((val, n_index) => {
-                                    return n_index != index
-                                }))}
-                                sortArrowIcon
-                                sortDownClick={() => {
-                                    if (matchers.length > 0 && index < (matchers.length - 1)) {
-                                        setMatchers([...matchers.slice(0, index), matchers[index + 1], match, ...matchers.slice(index + 2)])
-                                    }
-                                }}
-                                sortUpClick={() => {
-                                    if (matchers.length > 0 && index > 0) {
-                                        setMatchers([...matchers.slice(0, index - 1), match, matchers[index - 1], ...matchers.slice(index + 1)])
-                                    }
-                                }}
-                            >
-                                <div style={{ zIndex: (index) }}>
-                                    <ViewSetupMatch cfg={match}
-                                        customHtmlComponents={props.customHtmlComponents}
-                                        widgets={availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))?.widgets ?? []}
-                                        onConfigChange={(newHtmlElem) =>
-                                            setMatchers(
-                                                matchersRef.current.map((val, n_index) => {
-                                                    if (n_index == index) {
-                                                        const newElem = { ...val, ...newHtmlElem }
-                                                        return newElem
-                                                    }
-                                                    else
-                                                        return val
-                                                }))}
-                                    />
-                                </div>
-                            </CollapseCard>
+                <CollpaseGroup array={matchers} eyeIcon deleteIcon duplicateIcon
+                               getTitle={(index) => matchers[index].name}
+                               getId={(index) => matchers[index].id}
+                               getEyeStatus={(index) => matchers[index].disabled}
+                               duplicateClick={(item) => {cloneMatch(item)}}
+                               setNewArray={(array) => {setMatchers(array)}}
+                >
+                    {
+                        (match, index) => (
+                            <ViewSetupMatch cfg={match}
+                            customHtmlComponents={props.customHtmlComponents}
+                            widgets={availableWidgetGroups.find((it) => it.id === (widgetGroupIds.length > 0 ? widgetGroupIds.at(0).id : 0))?.widgets ?? []}
+                            onConfigChange={(newHtmlElem) =>
+                                setMatchers(
+                                    matchersRef.current.map((val, n_index) => {
+                                        if (n_index == index) {
+                                            const newElem = { ...val, ...newHtmlElem }
+                                            return newElem
+                                        }
+                                        else
+                                            return val
+                                    }))}
+                        />
                         )
-                    })
-                }
+                    }
+                </CollpaseGroup>
             </div>
         </React.Fragment>
 

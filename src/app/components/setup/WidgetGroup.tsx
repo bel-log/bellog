@@ -10,6 +10,7 @@ import { buildDefaultWidget } from "../../setup/SetupFactories";
 import { Widget } from "./Widget";
 import { CollapseCard } from "../CollapseCard";
 import { useLayoutEffect } from "react";
+import { CollpaseGroup } from "../CollapseGroup";
 
 export const WidgetGroup = (props: {
     cfg: WidgetGroupSetupProperties,
@@ -22,7 +23,7 @@ export const WidgetGroup = (props: {
 
     const [name, setName] = [p.name.val, p.name.set]
     const widgetsRef = React.useRef(p.widgets.val)
-    const [widgets, setWidgets] = [p.widgets.val, (newval: WidgetSetupProperties[]) =>{
+    const [widgets, setWidgets] = [p.widgets.val, (newval: WidgetSetupProperties[]) => {
         widgetsRef.current = newval
         p.widgets.set(newval)
     }]
@@ -34,7 +35,7 @@ export const WidgetGroup = (props: {
 
     function cloneWidget(widget: WidgetSetupProperties) {
         const widgetForNewID = buildDefaultWidget(widgets, props.availableActions)
-        const widgetCopy = {...widget, ...{id: widgetForNewID.id}}
+        const widgetCopy = { ...widget, ...{ id: widgetForNewID.id } }
         setWidgets([...widgets, JSON.parse(JSON.stringify(widgetCopy))])
     }
 
@@ -49,52 +50,31 @@ export const WidgetGroup = (props: {
             </div>
 
             <div className="is-flex is-flex-direction-column">
-                {
-                    widgets.map((widget, index) => {
-                        return (
-                            <CollapseCard key={widget.id} title={widget.name}
-                                deleteIcon
-                                sortArrowIcon
-                                duplicateIcon
-                                deleteClick={() => setWidgets(widgets.filter((val, n_index) => {
-                                    return n_index != index
-                                }))}
-                                sortDownClick={() => {
-                                    if (widgets.length > 0 && index < (widgets.length - 1)) {
-                                        setWidgets([...widgets.slice(0, index), widgets[index + 1], widget, ...widgets.slice(index + 2)])
-                                    }
-                                }}
-                                sortUpClick={() => {
-                                    if (widgets.length > 0 && index > 0) {
-                                        setWidgets([...widgets.slice(0, index - 1), widget, widgets[index - 1], ...widgets.slice(index + 1)])
-                                    }
-                                }}
-                                duplicateClick={() => {
-                                    cloneWidget(widget)
-                                }}
-                            >
-                                <div style={{ zIndex: (index) }}>
-                                    <Widget cfg={widget}
-                                        availableActions={props.availableActions}
-                                        customHtmlComponents={props.customHtmlComponents}
-                                        onConfigChange={(newHtmlElem: any) =>
-                                            setWidgets(
-                                                widgetsRef.current.map((val, n_index) => {
-                                                    if (n_index == index) {
-                                                        const newElem = { ...val, ...newHtmlElem }
-                                                        return newElem
-                                                    }
-                                                    else
-                                                        return val
-                                                }))}
-                                    />
-                                </div>
-                            </CollapseCard>
+                <CollpaseGroup array={widgets} deleteIcon
+                    getTitle={(index) => widgets[index].name}
+                    getId={(index) => widgets[index].id}
 
+                    setNewArray={(array) => { setWidgets(array) }}
+                >
+                    {
+                        (widget, index) => (
+                            <Widget cfg={widget}
+                                availableActions={props.availableActions}
+                                customHtmlComponents={props.customHtmlComponents}
+                                onConfigChange={(newHtmlElem: any) =>
+                                    setWidgets(
+                                        widgetsRef.current.map((val, n_index) => {
+                                            if (n_index == index) {
+                                                const newElem = { ...val, ...newHtmlElem }
+                                                return newElem
+                                            }
+                                            else
+                                                return val
+                                        }))}
+                            />
                         )
-                    })
-                }
-                
+                    }
+                </CollpaseGroup>
             </div>
             <button className="button is-primary mt-4" onClick={() => addNewWidget()}>Add New</button>
         </React.Fragment>
