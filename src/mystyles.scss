@@ -92,3 +92,18 @@ html, body {
   height: 100%;
   pointer-events: none;
 }
+
+.list-item-collpase {
+  border: 1px solid hsl(0deg, 0%, 93%);
+  align-items: center;
+  color: hsl(0deg, 0%, 21%);
+  display: flex;
+  justify-content: flex-start;
+  padding: 0.25em 0.75em;
+}
+
+.list-item-collpase-container {
+  border: 1px solid hsl(0deg, 0%, 93%);
+  background-color: transparent;
+  padding: 1.5rem;
+}

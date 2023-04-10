@@ -83,7 +83,7 @@ export const CollpaseGroup = (props: {
 
                                 return (
 
-                                    <Draggable className="card is-fullwidth is-unselectable mt-1"
+                                    <Draggable className="card is-fullwidth is-unselectable "
                                         key={props.getId(index)} draggableId={props.getId(index).toString()} index={index}
                                         isDragDisabled={isExpanded}>
                                         {(provided) => (
@@ -94,8 +94,8 @@ export const CollpaseGroup = (props: {
                                                 {...provided.draggableProps}
 
                                             >
-                                                <header className="card-header is-clickable" onClick={() => { expand() }}>
-                                                    <p className="card-header-title">{props.getTitle(index)}</p>
+                                                <header className="list-item-collpase is-clickable" onClick={() => { expand() }}>
+                                                    <p className="is-flex-grow-1">{props.getTitle(index)}</p>
                                                     {
                                                         props.duplicateIcon ? <a className="card-header-icon is-clickable"
                                                             onClick={(e) => { e.stopPropagation(); duplicateClick() }}>
@@ -116,7 +116,7 @@ export const CollpaseGroup = (props: {
                                                     </a>
                                                 </header>
                                                 {
-                                                    <div className={`card-content ${isExpanded ? "" : "is-hidden"}`} style={{ cursor: "auto" }}>
+                                                    <div className={`list-item-collpase-container ${isExpanded ? "" : "is-hidden"}`} style={{ cursor: "auto" }}>
                                                         <div>
                                                             {props.children(elem, index)}
                                                         </div>
