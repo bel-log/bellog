@@ -13,8 +13,6 @@
     "@types/sortablejs": "^1.15.0",
     "@types/w3c-web-serial": "^1.0.2",
     "css-loader": "^6.7.1",
-    "sass": "^1.52.1",
-    "sass-loader": "^13.0.0",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.0",
     "typescript": "^4.7.2",
@@ -38,7 +36,7 @@
     "js-beautify": "^1.14.4",
     "json-format-highlight": "^1.0.4",
     "json-stringify-pretty-compact": "^4.0.0",
-    "node-sass": "^7.0.1",
+    "node-sass": "^8.0.0",
     "react": "^18.1.0",
     "react-beautiful-dnd": "^13.1.1",
     "react-bootstrap": "^2.4.0",
@@ -46,6 +44,7 @@
     "react-icons": "^4.4.0",
     "react-router-dom": "^6.3.0",
     "regex-colorize": "^0.0.3",
+    "sass-loader": "^13.2.2",
     "save-dev": "^0.0.1-security",
     "serialize-javascript": "^6.0.0"
   }

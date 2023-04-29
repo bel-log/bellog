@@ -49,11 +49,10 @@ ifdef::env-github[]
 ++++
 endif::[]
 
+
 == Build
 [source,]
 ----
-npm init
-
 npm install
 
 npm run build
