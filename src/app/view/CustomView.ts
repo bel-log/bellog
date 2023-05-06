@@ -1,5 +1,4 @@
 import { useResolvedPath } from "react-router-dom";
-import { resolve } from "../../../webpack.config";
 import { BuilderNames } from "../builders/Builder";
 import { BuilderFactory } from "../builders/BuilderFactory";
 import { CustomBuilder } from "../builders/CustomBuilder";

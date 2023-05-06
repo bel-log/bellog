@@ -1,11 +1,15 @@
 import {DriverClipboardParameters} from "./DriverClipboard";
 import {DriverSerialPortWebSerialParameters} from "./DriverSerialportWebserial";
+import {DriverBackendSerialPortParameters} from "./DriverBackendSerialPort";
 
-export type DriverSettings = DriverClipboardParameters | DriverSerialPortWebSerialParameters
+export type DriverSettings = DriverClipboardParameters | 
+                    DriverSerialPortWebSerialParameters | 
+                    DriverBackendSerialPortParameters
 
 export enum DriverNames{
     DriverClipboard = "Clipboard",
-    DriverSerialPortWebSerial = "Serialport WebSerial"
+    DriverSerialPortWebSerial = "Serialport WebSerial",
+    DriverBackendSerialPort = "Serialport Backend"
 }
 
 export enum DriverStatus {

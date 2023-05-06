@@ -1,11 +1,13 @@
 {
-  "name": "my-react-app",
+  "name": "bellog",
   "version": "1.0.0",
   "description": "",
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --open --mode development",
-    "build": "webpack --mode production"
+    "backend": "webpack --mode development --env backend",
+    "build_web": "webpack --mode production",
+    "build_frontend": "webpack --mode production --env backend"
   },
   "author": "",
   "devDependencies": {

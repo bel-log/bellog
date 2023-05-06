@@ -38,7 +38,9 @@ import { CustomBuildersSetup } from "./CustomBuildersSetup";
 import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
 import { CollpaseGroup } from "../CollapseGroup";
-
+import isDriverAllowedInWebMode from "./../../utility/env";
+import { DriverBackendSerialPort, DriverBackendSerialPortParameters } from "../../drivers/DriverBackendSerialPort";
+import { DriverBackendSerialPortSetup } from "./DriverBackendSerialPortSetup";
 
 const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}) => {
 
@@ -189,11 +191,16 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                 <label className="label">Driver</label>
                                 <div className="field has-addons">
                                     <div className="select">
-                                        <select value={driverType} onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
+                                        <select value={driverType} className={`${isDriverAllowedInWebMode(driverType) ? "" : "has-text-danger"}`}
+                                                onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
                                             {
                                                 Object.values(DriverNames).map(
                                                     (driver, dindex) => {
-                                                        return <option key={dindex} value={driver}>{driver}</option>
+                                                        if(isDriverAllowedInWebMode(driver)) {
+                                                            return <option className="has-text-black" key={dindex} value={driver}>{driver}</option>
+                                                        } else {
+                                                            return <option className="has-text-danger" key={dindex} value={driver}>{driver}</option>
+                                                        }
                                                     }
                                                 )
                                             }
@@ -206,6 +213,15 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                             Settings
                                         </a>
                                     </p>
+                                    {
+                                        (() => {
+                                            if (isDriverAllowedInWebMode(driverType)) {
+                                                return <div></div>
+                                            } else return <div className="control is-flex is-align-items-center ml-2 has-text-danger">
+                                                <p className="is-justify-content-center">This Driver can only be used with the desktop application.</p>
+                                            </div>
+                                        })()
+                                    }
                                     {
                                         (() => {
                                             if (driverModalIsOpen) {
@@ -231,6 +247,15 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                                                                         }}
                                                                                     />
                                                                                 )
+                                                                                case DriverNames.DriverBackendSerialPort:
+                                                                                    return (
+                                                                                        <DriverBackendSerialPortSetup
+                                                                                            cfg={tmpDriverSettings as DriverBackendSerialPortParameters}
+                                                                                            onConfigUpdate={(cfg) => {
+                                                                                                setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
+                                                                                            }}
+                                                                                        />
+                                                                                    )
                                                                         }
                                                                     })()
                                                                 }
