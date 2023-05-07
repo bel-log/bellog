@@ -1,5 +1,6 @@
 import { DriverError } from "../utility/exception"
 import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
+import { DriverCache } from "./DriverCache"
 
 export interface DriverSerialPortWebSerialParameters extends SerialOptions {
     usbVendorId?: number
@@ -21,8 +22,8 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     private readonly usbProductId: number
     private readonly options: SerialOptions
     private port: SerialPort
-    private readingProcess: Boolean
     private portReader:  ReadableStreamDefaultReader<Uint8Array>
+    private DriverCache: DriverCache
     private onReceiveCb: (data: Uint8Array) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
@@ -41,6 +42,8 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
         this.usbVendorId = params.usbVendorId ?? 0
         this.usbProductId = params.usbProductId ?? 0
         this.options = params
+        this.DriverCache = new DriverCache()
+        this.DriverCache.setTimeout(200, 100)
     }
 
     attach(view: HTMLElement): void {
@@ -90,6 +93,12 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                 this._status = DriverStatus.OPEN
                 this.onStatusChangeCb?.(this._status)
 
+                this.DriverCache.onFlush((data) => {
+                    data.forEach((d) => {
+                        this.onReceiveCb?.(d as Uint8Array)
+                    })
+                })
+
                 while (this.port.readable && this.status == DriverStatus.OPEN) {
                     this.portReader = this.port.readable.getReader();
                     try {
@@ -100,6 +109,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                                 break;
                             }
                             if (value) {
+                                this.DriverCache.add(value)
                                 this.onReceiveCb?.(value)
                             }
                         }
@@ -110,7 +120,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                     }
                 }
 
-                this.readingProcess = false
+                this.DriverCache.clean()
                 await this.port.close();
             }
             catch (error)

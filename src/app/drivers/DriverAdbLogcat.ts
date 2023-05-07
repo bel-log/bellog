@@ -1,6 +1,7 @@
 import { DriverError } from "../utility/exception"
 import { Driver, DriverOpenClose, DriverStatus } from "./Driver"
 import Adb from "webadb"
+import { DriverCache } from "./DriverCache"
 
 export interface DriverAdbLogcatParameters {
     clearLogAtConnection: boolean
@@ -15,6 +16,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     private webusb: any
     private adb: any
     private shell: any
+    private DriverCache: DriverCache
     private onReceiveCb: (data: string) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
@@ -30,6 +32,8 @@ export class DriverAdbLogcat implements DriverOpenClose {
     constructor(readonly params: DriverAdbLogcatParameters) {
         this.name = "WebSerial"
         this._status = DriverStatus.CLOSE
+        this.DriverCache = new DriverCache()
+        this.DriverCache.setTimeout(200, 100)
     }
 
     attach(view: HTMLElement): void {
@@ -73,19 +77,19 @@ export class DriverAdbLogcat implements DriverOpenClose {
                         await shellc.receive()
                     }
 
+                    this.DriverCache.onFlush((data) => {
+                        data.forEach((d) => {
+                            this.onReceiveCb?.(d as string)
+                        })
+                    })
+
                     this.shell = await this.adb.open('shell:logcat');
                     let r = await this.shell.receive();
                     while (r.cmd == "WRTE") {
                         if (r.data != null) {
                             if (this.onReceiveCb) {
-                                acc += decoder.decode(r.data);
-                                console.log(decoder.decode(r.data))
-                                //if(acc.length > 800000)
-                                {
-                                    //console.log(acc)
-                                    this.onReceiveCb(acc);
-                                    acc = "";
-                                }
+                                let data = decoder.decode(r.data)
+                                this.DriverCache.add(data)
                             }
                         }
 
@@ -97,6 +101,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
                     this.shell = null;
                 }
 
+                this.DriverCache.clean()
                 await this.webusb.close();
             }
             catch (error) {
