@@ -28,6 +28,9 @@
     "@codemirror/lang-html": "^6.1.0",
     "@codemirror/lang-javascript": "^6.0.0",
     "@uiw/react-codemirror": "^4.8.1",
+    "@yume-chan/adb": "^0.0.19",
+    "@yume-chan/adb-backend-webusb": "^0.0.19",
+    "@yume-chan/adb-credential-web": "^0.0.19",
     "buffer": "^6.0.3",
     "bulma": "^0.9.4",
     "common-tags": "^1.8.2",
@@ -48,7 +51,6 @@
     "regex-colorize": "^0.0.3",
     "sass-loader": "^13.2.2",
     "save-dev": "^0.0.1-security",
-    "serialize-javascript": "^6.0.0",
-    "webadb": "^1.0.1"
+    "serialize-javascript": "^6.0.0"
   }
 }

@@ -1,7 +1,16 @@
 import { DriverError } from "../utility/exception"
 import { Driver, DriverOpenClose, DriverStatus } from "./Driver"
-import Adb from "webadb"
 import { DriverCache } from "./DriverCache"
+import { AdbWebUsbBackend, AdbWebUsbBackendManager } from "@yume-chan/adb-backend-webusb"
+import {
+    Consumable,
+    InspectStream,
+    ReadableStream,
+    WritableStream,
+    pipeFrom,
+} from "@yume-chan/stream-extra";
+import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
+import { Adb, AdbPacketData, AdbPacketInit } from "@yume-chan/adb"
 
 export interface DriverAdbLogcatParameters {
     clearLogAtConnection: boolean
@@ -13,10 +22,9 @@ export const DriverAdbLogcatDefaults = {
 
 export class DriverAdbLogcat implements DriverOpenClose {
 
-    private webusb: any
-    private adb: any
-    private shell: any
+    private CredentialStore: any
     private DriverCache: DriverCache
+    private logcatReader: ReadableStreamDefaultReader<Uint8Array>
     private onReceiveCb: (data: string) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
@@ -34,6 +42,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
         this._status = DriverStatus.CLOSE
         this.DriverCache = new DriverCache()
         this.DriverCache.setTimeout(200, 100)
+        this.CredentialStore = new AdbWebCredentialStore();
     }
 
     attach(view: HTMLElement): void {
@@ -62,47 +71,86 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
     open() {
         this.readingPromise = async () => {
+
+            let device
+
             try {
-                this.webusb = await Adb.open("WebUSB");
-                this.adb = await this.webusb.connectAdb("host::");
+                //this.webusb = await Adb.open("WebUSB");
+                let readable: ReadableStream<AdbPacketData>;
+                let writable: WritableStream<Consumable<AdbPacketInit>>;
+                const backend = await AdbWebUsbBackendManager.BROWSER!.requestDevice();
+                const streams = await backend.connect()
 
-                if (this.webusb && this.adb) {
-                    let decoder = new TextDecoder();
-                    this._status = DriverStatus.OPEN
-                    this.onStatusChangeCb?.(this._status)
-                    let acc = ""
-
-                    if (this.params.clearLogAtConnection) {
-                        let shellc = await this.adb.shell("logcat -c")
-                        await shellc.receive()
-                    }
-
-                    this.DriverCache.onFlush((data) => {
-                        data.forEach((d) => {
-                            this.onReceiveCb?.(d as string)
-                        })
+                // Use `InspectStream`s to intercept and log packets
+                readable = streams.readable.pipeThrough(
+                    new InspectStream((packet) => {
+                        //GLOBAL_STATE.appendLog("in", packet);
+                        //console.log(packet)
                     })
+                );
 
-                    this.shell = await this.adb.open('shell:logcat');
-                    let r = await this.shell.receive();
-                    while (r.cmd == "WRTE") {
-                        if (r.data != null) {
-                            if (this.onReceiveCb) {
-                                let data = decoder.decode(r.data)
-                                this.DriverCache.add(data)
-                            }
-                        }
+                writable = pipeFrom(
+                    streams.writable,
+                    new InspectStream((packet: Consumable<AdbPacketInit>) => {
+                        //GLOBAL_STATE.appendLog("out", packet.value);
+                        //console.log(packet)
+                    })
+                );
 
-                        this.shell.send("OKAY");
-                        r = await this.shell.receive();
-                    }
+                device = await Adb.authenticate(
+                    { readable, writable },
+                    this.CredentialStore,
+                    undefined
+                );
 
-                    this.shell.close();
-                    this.shell = null;
+                async function dispose() {
+                    // Adb won't close the streams,
+                    // so manually close them.
+                    try {
+                        readable.cancel();
+                    } catch { }
+                    try {
+                        await writable.close();
+                    } catch { }
                 }
 
-                this.DriverCache.clean()
-                await this.webusb.close();
+                device.disconnected.then(
+                    async () => {
+                        await dispose();
+                    },
+                    async (e) => {
+                        await dispose();
+                    }
+                );
+
+
+                this._status = DriverStatus.OPEN
+                this.onStatusChangeCb?.(this._status)
+                let acc = ""
+
+                if (this.params.clearLogAtConnection) {
+                    await device.subprocess.shell("logcat -c")
+                }
+
+                this.DriverCache.onFlush((data) => {
+                    data.forEach((d) => {
+                        this.onReceiveCb?.(d as string)
+                    })
+                })
+
+                let shell = await device.subprocess.shell("logcat")
+                this.logcatReader = await shell.stdout.getReader()
+
+                while (true) {
+                    const { value, done } = await this.logcatReader.read();
+                    if (done) {
+                        // |reader| has been canceled.
+                        break;
+                    }
+                    if (value) {
+                        this.DriverCache.add(value)
+                    }
+                }
             }
             catch (error) {
                 console.error(error)
@@ -115,6 +163,9 @@ export class DriverAdbLogcat implements DriverOpenClose {
                     this.onErrorCb?.(new DriverError("WebUSB is not supported by your browser. Switch to either Chrome or Edge."))
                 }
             }
+
+            device?.close()
+            this.DriverCache.clean()
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)
         }
@@ -123,8 +174,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     }
 
     async close() {
-        if (this.shell)
-            this.shell.close();
+        this?.logcatReader.cancel()
     }
 
     destroy() {

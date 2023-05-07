@@ -110,7 +110,6 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                             }
                             if (value) {
                                 this.DriverCache.add(value)
-                                this.onReceiveCb?.(value)
                             }
                         }
                     } catch (error) {
