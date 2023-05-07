@@ -41,6 +41,8 @@ import { CollpaseGroup } from "../CollapseGroup";
 import isDriverAllowedInWebMode from "./../../utility/env";
 import { DriverBackendSerialPort, DriverBackendSerialPortParameters } from "../../drivers/DriverBackendSerialPort";
 import { DriverBackendSerialPortSetup } from "./DriverBackendSerialPortSetup";
+import { DriverAdbLogcat, DriverAdbLogcatParameters } from "../../drivers/DriverAdbLogcat";
+import { DriverAdbLogcatSetup } from "./DriverAdbSetup";
 
 const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}) => {
 
@@ -256,6 +258,15 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                                                                             }}
                                                                                         />
                                                                                     )
+                                                                                    case DriverNames.DriverAdbLogcat:
+                                                                                        return (
+                                                                                            <DriverAdbLogcatSetup
+                                                                                                cfg={tmpDriverSettings as DriverAdbLogcatParameters}
+                                                                                                onConfigUpdate={(cfg) => {
+                                                                                                    setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
+                                                                                                }}
+                                                                                            />
+                                                                                        )
                                                                         }
                                                                     })()
                                                                 }
