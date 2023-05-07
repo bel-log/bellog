@@ -25,6 +25,10 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         return new Observable()
     }, [])
 
+    const driverErrorObserver = useMemo(() => {
+        return new Observable()
+    }, [])
+
     const driver = useMemo(() => {
         return DriverFactory.build(profile.driverType, profile.driverSettings)
     }, [])
@@ -59,6 +63,10 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
         driver.onTransmit((data) => {
             dataTxObserver.notify(data)
+        })
+
+        driver.onError((error) => {
+            driverErrorObserver.notify(error)
         })
 
         return () => {
@@ -119,6 +127,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                                     driver={driver} view={views[index]} profile={profile} selected={selectedView == index}
                                     dataTxObserver={dataTxObserver}
                                     dataRxObserver={dataRxObserver}
+                                    driverErrorObserver={driverErrorObserver}
                                     onConnectClick={() => { connectButtonOnClick(driver as DriverOpenClose) }}
                                     onClearClick={() => { clearButtononClick() }} />
                             </React.Fragment>

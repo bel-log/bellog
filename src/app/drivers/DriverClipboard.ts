@@ -10,7 +10,8 @@ export class DriverClipboard implements Driver {
     private onReceiveCb: (data: Uint8Array | string) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
-    private onError: () => void
+    private onErrorCb: (ex: Error) => void
+
     readonly name: string;
     private _status: DriverStatus;
 
@@ -28,6 +29,10 @@ export class DriverClipboard implements Driver {
         view.addEventListener('keydown', this.keydownListener);
     }
 
+    onError(cb: (ex: Error) => void): void {
+        this.onErrorCb = cb
+    }
+    
     onReceive(cb: (data: string | Uint8Array) => void): void {
         this.onReceiveCb = cb
     }

@@ -15,7 +15,7 @@ import { WidgetGroup } from "../setup/WidgetGroup";
 export const RuntimeProfileView = forwardRef((props: {
     visible: boolean
     driver: Driver, view: ViewSetupProperties, profile: SetupProfileObject, selected: boolean
-    dataTxObserver: Observable, dataRxObserver: Observable, onConnectClick?: () => void, onClearClick?: () => void
+    dataTxObserver: Observable, dataRxObserver: Observable, driverErrorObserver:Observable, onConnectClick?: () => void, onClearClick?: () => void
 }, ref) => {
 
     const profile = props.profile
@@ -109,8 +109,14 @@ export const RuntimeProfileView = forwardRef((props: {
             }
         }
 
+        const onError = (error) => {
+            customView.putDriverError(error)
+        }
+
+        props.driverErrorObserver.subscribe(onError)
         props.dataRxObserver.subscribe(onReceive)
         props.dataTxObserver.subscribe(onTransmit)
+
 
         parser.onAccept((acc, parseInfo) => {
             if(!hasDataRef.current) {
@@ -132,6 +138,7 @@ export const RuntimeProfileView = forwardRef((props: {
         });
 
         return () => {
+            props.driverErrorObserver.unsubscribe(onError)
             props.dataRxObserver.unsubscribe(onReceive)
             props.dataTxObserver.unsubscribe(onTransmit)
         }

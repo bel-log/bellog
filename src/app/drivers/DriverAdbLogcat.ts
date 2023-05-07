@@ -1,3 +1,4 @@
+import { DriverError } from "../utility/exception"
 import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
 import Adb from "webadb"
 
@@ -17,7 +18,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     private onReceiveCb: (data: string) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
-    private onError: () => void
+    private onErrorCb: (ex: Error) => void
     readonly name: string;
     _status: DriverStatus;
     private readingPromise: () => Promise<void>;
@@ -45,6 +46,10 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
     onStatusChange(cb: (status: DriverStatus) => void) {
         this.onStatusChangeCb = cb
+    }
+
+    onError(cb: (ex: Error) => void) {
+        this.onErrorCb = cb
     }
 
     async send(data: Uint8Array | string) {
@@ -99,7 +104,11 @@ export class DriverAdbLogcat implements DriverOpenClose {
             catch (error)
             {
                 console.error(error)
-                this.onError?.()
+                this.onErrorCb?.(error)
+                if(error.message.indexOf("checksum") > 0) {
+                    // TODO INVESTIGATE
+                    this.onErrorCb?.(new DriverError("Checksum error, please disconnect and reconnect the device"))
+                }
             }
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)

@@ -65,6 +65,12 @@ export class CustomView implements View {
         }
     }
 
+    public putDriverError(error: Error) {
+        const msg = "Bellog Driver Exception: " + error.message
+        // Force a refused message
+        this.putParsedObject(msg, false, {driverName: this.driver.name, isTx: false})
+    }
+
     public putParsedObject(data: any, accepted: boolean, info: ParserInfoType) {
         let str
         let consumed = false
@@ -249,7 +255,7 @@ export class CustomView implements View {
             }
 
         } catch (ex) {
-            const msg = "Rendering error on parsing matcher " + matcher.name
+            const msg = "Begllog Render Error: Rendering error on parsing matcher " + matcher.name + " see browser console for more info"
             if (accepted) {
                 // Force a refused message
                 this.putParsedObject(msg, false, info)

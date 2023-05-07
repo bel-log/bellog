@@ -26,6 +26,7 @@ export interface Driver {
     send(data: Uint8Array | string): void
     onReceive(cb: (data: Uint8Array | string) => void):void
     onTransmit(cb: (data: Uint8Array | string) => void):void
+    onError(cb: (ex: Error) => void):void
     destroy()
 }
 

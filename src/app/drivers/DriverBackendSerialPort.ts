@@ -30,7 +30,8 @@ export class DriverBackendSerialPort implements DriverOpenClose {
     private onReceiveCb: (data: Uint8Array) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
-    private onError: () => void
+    private onErrorCb: (ex: Error) => void
+
     readonly name: string;
     _status: DriverStatus;
 
@@ -55,6 +56,10 @@ export class DriverBackendSerialPort implements DriverOpenClose {
 
     attach(view: HTMLElement): void {
         
+    }
+
+    onError(cb: (ex: Error) => void): void {
+        this.onErrorCb = cb
     }
 
     onReceive(cb: (data: string | Uint8Array) => void): void {

@@ -25,7 +25,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     private onReceiveCb: (data: Uint8Array) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
-    private onError: () => void
+    private onErrorCb: (ex: Error) => void
     readonly name: string;
     _status: DriverStatus;
     private readingPromise: () => Promise<void>;
@@ -41,8 +41,13 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
         this.usbProductId = params.usbProductId ?? 0
         this.options = params
     }
+
     attach(view: HTMLElement): void {
         
+    }
+
+    onError(cb: (ex: Error) => void): void {
+        this.onErrorCb = cb
     }
 
     onReceive(cb: (data: string | Uint8Array) => void): void {
@@ -110,7 +115,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
             catch (error)
             {
                 console.error(error)
-                this.onError?.()
+                this.onError?.(error)
             }
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)

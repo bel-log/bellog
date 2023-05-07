@@ -7,6 +7,7 @@ export class DriverBackend implements DriverOpenClose {
     private onReceiveCb: (data: Uint8Array) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
+    private onErrorCb: (ex: Error) => void
 
     readonly name: string;
     _status: DriverStatus;
@@ -20,7 +21,7 @@ export class DriverBackend implements DriverOpenClose {
         this._status = DriverStatus.CLOSE
         this.socket = null
     }
-    
+
     attach(view: HTMLElement): void {
         
     }
@@ -35,6 +36,10 @@ export class DriverBackend implements DriverOpenClose {
 
     onStatusChange(cb: (status: DriverStatus) => void) {
         this.onStatusChangeCb = cb
+    }
+
+    onError(cb: (ex: Error) => void): void {
+        this.onErrorCb = cb
     }
 
     async send(data: Uint8Array | string) {
