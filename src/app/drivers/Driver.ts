@@ -1,11 +1,9 @@
 import {DriverClipboardParameters} from "./DriverClipboard";
 import {DriverSerialPortWebSerialParameters} from "./DriverSerialportWebserial";
-import {DriverBackendSerialPortParameters} from "./DriverBackendSerialPort";
 import {DriverAdbLogcatParameters} from "./DriverAdbLogcat";
 
 export type DriverSettings = DriverClipboardParameters | 
                     DriverSerialPortWebSerialParameters | 
-                    DriverBackendSerialPortParameters |
                     DriverAdbLogcatParameters
 
 export enum DriverNames{
@@ -37,7 +35,7 @@ export interface DriverOpenClose extends Driver {
     onStatusChange(cb: (this: Driver) => void):void
 }
 
+
 export function isDriverOpenClose(driver: Driver): boolean {
     return !!(driver as DriverOpenClose)?.open;
-
 }

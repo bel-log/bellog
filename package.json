@@ -5,9 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "webpack-dev-server --open --mode development",
-    "backend": "webpack --mode development --env backend",
-    "build_web": "webpack --mode production",
-    "build_frontend": "webpack --mode production --env backend"
+    "build": "webpack --mode production"
   },
   "author": "",
   "devDependencies": {
@@ -51,6 +49,7 @@
     "regex-colorize": "^0.0.3",
     "sass-loader": "^13.2.2",
     "save-dev": "^0.0.1-security",
-    "serialize-javascript": "^6.0.0"
+    "serialize-javascript": "^6.0.0",
+    "streamsaver": "^2.0.6"
   }
 }

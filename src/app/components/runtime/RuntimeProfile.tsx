@@ -7,6 +7,7 @@ import { DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/
 import { Observable } from "../../utility/Observable";
 import { View } from "../../view/View";
 import { ParserNames } from "../../parsers/Parser";
+import streamSaver from "streamsaver"
 
 export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
@@ -16,6 +17,10 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
     const [selectedView, setSelectedView] = useState(0)
     const [tmpKey, setTmpKey] = useState(0)
+    const [logEnabled, setLogEnabled] = useState(false)
+
+    const fileWriterRef = React.useRef(null)
+    
 
     const dataRxObserver = useMemo(() => {
         return new Observable()
@@ -55,10 +60,9 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     }, [])
 
     useEffect(() => {
-
-
         driver.onReceive((data) => {
             dataRxObserver.notify(data)
+            fileWriterRef.current?.write(data)
         })
 
         driver.onTransmit((data) => {
@@ -81,15 +85,30 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                 }
             }
             driver.destroy()
+            fileWriterRef.current?.close()
         }
     }, [])
 
+    useEffect(() => {
+        if(logEnabled) {
+            const fileStream = streamSaver.createWriteStream(profile.profileName + "_" + new Date().toLocaleString('en-GB',{hour12: false}) + ".txt", {})
+            fileWriterRef.current = fileStream.getWriter()
+        } else {
+            fileWriterRef.current?.close()
+            fileWriterRef.current = null
+        }
+    },[logEnabled])
+
+    function onLogEnabledToggle(enabled: boolean) {
+        setLogEnabled(enabled)
+    }
 
     function connectButtonOnClick(driver: DriverOpenClose) {
         if (driver.status === DriverStatus.CLOSE) {
             driver.open()
         } else {
             driver.close()
+            setLogEnabled(false)
         }
     }
 
@@ -99,7 +118,6 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
             setTmpKey(tmpKey + 1)
         }
     }
-
 
     return (
         <React.Fragment key={tmpKey}>
@@ -124,6 +142,8 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                             return <React.Fragment key={index}>
                                 <RuntimeProfileView
                                     visible={selectedView === index}
+                                    logEnabled={logEnabled}
+                                    onLogEnabledToggle={onLogEnabledToggle}
                                     driver={driver} view={views[index]} profile={profile} selected={selectedView == index}
                                     dataTxObserver={dataTxObserver}
                                     dataRxObserver={dataRxObserver}

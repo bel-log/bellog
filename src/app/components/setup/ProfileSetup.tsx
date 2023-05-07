@@ -39,12 +39,10 @@ import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
 import { CollpaseGroup } from "../CollapseGroup";
 import isDriverAllowedInWebMode from "./../../utility/env";
-import { DriverBackendSerialPort, DriverBackendSerialPortParameters } from "../../drivers/DriverBackendSerialPort";
-import { DriverBackendSerialPortSetup } from "./DriverBackendSerialPortSetup";
 import { DriverAdbLogcat, DriverAdbLogcatParameters } from "../../drivers/DriverAdbLogcat";
 import { DriverAdbLogcatSetup } from "./DriverAdbSetup";
 
-const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}) => {
+const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any }) => {
 
     const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 
@@ -52,21 +50,21 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
     const [driverType, setDriverType] = [p.driverType.val, p.driverType.set]
     const [driverSettings, setDriverSettings] = [p.driverSettings.val, p.driverSettings.set]
     const scriptsRef = React.useRef(p.scripts.val);
-    const [scripts, setScripts] = [  p.scripts.val,  (newval) => {    scriptsRef.current = newval;    p.scripts.set(newval);  },];
+    const [scripts, setScripts] = [p.scripts.val, (newval) => { scriptsRef.current = newval; p.scripts.set(newval); },];
     const stylesRef = React.useRef(p.styles.val);
-    const [styles, setStyles] = [  p.styles.val,  (newval) => {    stylesRef.current = newval;    p.styles.set(newval);  },];
+    const [styles, setStyles] = [p.styles.val, (newval) => { stylesRef.current = newval; p.styles.set(newval); },];
     const parsersRef = React.useRef(p.parsers.val);
-    const [parsers, setParsers] = [  p.parsers.val,  (newval) => {    parsersRef.current = newval;    p.parsers.set(newval);  },];
+    const [parsers, setParsers] = [p.parsers.val, (newval) => { parsersRef.current = newval; p.parsers.set(newval); },];
     const buildersRef = React.useRef(p.builders.val);
-    const [builders, setBuilders] = [  p.builders.val,  (newval) => {    buildersRef.current = newval;    p.builders.set(newval);  },];
+    const [builders, setBuilders] = [p.builders.val, (newval) => { buildersRef.current = newval; p.builders.set(newval); },];
     const actionsRef = React.useRef(p.actions.val);
-    const [actions, setActions] = [  p.actions.val,  (newval) => {    actionsRef.current = newval;    p.actions.set(newval);  },];
+    const [actions, setActions] = [p.actions.val, (newval) => { actionsRef.current = newval; p.actions.set(newval); },];
     const htmlElemsRef = React.useRef(p.html.val);
-    const [htmlElems, setHtmlElems] = [  p.html.val,  (newval) => {    htmlElemsRef.current = newval;    p.html.set(newval);  },];
+    const [htmlElems, setHtmlElems] = [p.html.val, (newval) => { htmlElemsRef.current = newval; p.html.set(newval); },];
     const viewsRef = React.useRef(p.views.val);
-    const [views, setViews] = [  p.views.val,  (newval) => {    viewsRef.current = newval;    p.views.set(newval);  },];
+    const [views, setViews] = [p.views.val, (newval) => { viewsRef.current = newval; p.views.set(newval); },];
     const widgetGroupsRef = React.useRef(p.widgetGroups.val);
-    const [widgetGroups, setWidgetGroups] = [  p.widgetGroups.val,  (newval) => {    widgetGroupsRef.current = newval;    p.widgetGroups.set(newval);  },];
+    const [widgetGroups, setWidgetGroups] = [p.widgetGroups.val, (newval) => { widgetGroupsRef.current = newval; p.widgetGroups.set(newval); },];
     const [globalSettings, setGlobalSettings] = [p.globalSettings.val, p.globalSettings.set]
 
     function addNewGlobalScript() {
@@ -107,9 +105,9 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
         applyCache()
     }
 
-    function cloneAction(action:ActionProperties) {
+    function cloneAction(action: ActionProperties) {
         const actionForNewID = buildDefaultAction(actions, builders)
-        const actionCopy = {...action, ...{id: actionForNewID.id}}
+        const actionCopy = { ...action, ...{ id: actionForNewID.id } }
         setActions([...actions, JSON.parse(JSON.stringify(actionCopy))])
     }
 
@@ -119,7 +117,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
         let script_code = scripts.map((script) => {
             return "try {" + script.code + "} catch(e) {}"
         }).join("\r\n")
-        script.id="__js"
+        script.id = "__js"
         script.type = 'text/javascript';
         script.innerHTML = script_code
 
@@ -127,7 +125,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
         let style_code = styles.map((style) => {
             return style.code
         }).join("\r\n")
-        style.id="__css"
+        style.id = "__css"
         style.innerHTML = styles.map((style) => {
             return style.code
         }).join("\r\n")
@@ -136,28 +134,28 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
 
         let found = false
         let scriptsa = header.getElementsByTagName("script")
-        for(let i=0; i < scriptsa.length; i++) {
-            if(scriptsa[i].id === "__js") {
+        for (let i = 0; i < scriptsa.length; i++) {
+            if (scriptsa[i].id === "__js") {
                 scriptsa[i].innerHTML = script_code
                 found = true
                 break
             }
         }
 
-        if(!found)
+        if (!found)
             header.appendChild(script)
 
         found = false
         let stylesa = header.getElementsByTagName("style")
-        for(let i=0; i < stylesa.length; i++) {
-            if(stylesa[i].id === "__css") {
+        for (let i = 0; i < stylesa.length; i++) {
+            if (stylesa[i].id === "__css") {
                 stylesa[i].innerHTML = style_code
                 found = true
                 break
             }
         }
 
-        if(!found)
+        if (!found)
             header.appendChild(style)
 
     }, [scripts, styles])
@@ -194,11 +192,11 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                 <div className="field has-addons">
                                     <div className="select">
                                         <select value={driverType} className={`${isDriverAllowedInWebMode(driverType) ? "" : "has-text-danger"}`}
-                                                onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
+                                            onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
                                             {
                                                 Object.values(DriverNames).map(
                                                     (driver, dindex) => {
-                                                        if(isDriverAllowedInWebMode(driver)) {
+                                                        if (isDriverAllowedInWebMode(driver)) {
                                                             return <option className="has-text-black" key={dindex} value={driver}>{driver}</option>
                                                         } else {
                                                             return <option className="has-text-danger" key={dindex} value={driver}>{driver}</option>
@@ -249,24 +247,15 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                                                                         }}
                                                                                     />
                                                                                 )
-                                                                                case DriverNames.DriverBackendSerialPort:
-                                                                                    return (
-                                                                                        <DriverBackendSerialPortSetup
-                                                                                            cfg={tmpDriverSettings as DriverBackendSerialPortParameters}
-                                                                                            onConfigUpdate={(cfg) => {
-                                                                                                setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
-                                                                                            }}
-                                                                                        />
-                                                                                    )
-                                                                                    case DriverNames.DriverAdbLogcat:
-                                                                                        return (
-                                                                                            <DriverAdbLogcatSetup
-                                                                                                cfg={tmpDriverSettings as DriverAdbLogcatParameters}
-                                                                                                onConfigUpdate={(cfg) => {
-                                                                                                    setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
-                                                                                                }}
-                                                                                            />
-                                                                                        )
+                                                                            case DriverNames.DriverAdbLogcat:
+                                                                                return (
+                                                                                    <DriverAdbLogcatSetup
+                                                                                        cfg={tmpDriverSettings as DriverAdbLogcatParameters}
+                                                                                        onConfigUpdate={(cfg) => {
+                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
+                                                                                        }}
+                                                                                    />
+                                                                                )
                                                                         }
                                                                     })()
                                                                 }
@@ -440,14 +429,14 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
             <CollapseCard title="Actions">
 
                 <CollpaseGroup array={actions} deleteIcon
-                                getTitle={(index) => actions[index].name}
-                                getId={(index) => actions[index].id}
+                    getTitle={(index) => actions[index].name}
+                    getId={(index) => actions[index].id}
 
-                                setNewArray={(array) => {setActions(array)}}
-                    >
-                        {
-                            (action, index) => (  
-                                <Action
+                    setNewArray={(array) => { setActions(array) }}
+                >
+                    {
+                        (action, index) => (
+                            <Action
                                 key={action.id}
                                 cfg={action}
                                 customBuilders={builders}
@@ -460,9 +449,9 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                                                 return val
                                         }))}
                             />
-                            )
-                        }
-                    </CollpaseGroup>
+                        )
+                    }
+                </CollpaseGroup>
                 <button className="button is-primary mt-4" onClick={() => addNewCustomAction()}>Add New</button>
             </CollapseCard>
 
@@ -480,14 +469,14 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                     </div>
                 </div>
                 <CollpaseGroup array={views} deleteIcon
-                               getTitle={(index) => views[index].name}
-                               getId={(index) => views[index].id}
+                    getTitle={(index) => views[index].name}
+                    getId={(index) => views[index].id}
 
-                               setNewArray={(array) => {setViews(array)}}
+                    setNewArray={(array) => { setViews(array) }}
                 >
                     {
                         (view, index) => (
-                                <ViewSetup
+                            <ViewSetup
                                 cfg={view}
                                 customParsers={parsers}
                                 customHtmlComponents={htmlElems}
@@ -530,18 +519,18 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any}
                         {
                             (val, index) => (
                                 <WidgetGroup
-                                cfg={val}
-                                customHtmlComponents={htmlElems}
-                                availableActions={actions}
-                                onConfigChange={(newView) =>
-                                    setWidgetGroups(
-                                        widgetGroupsRef.current.map((val, n_index) => {
-                                            if (n_index == index)
-                                                return { ...val, ...newView }
-                                            else
-                                                return val
-                                        }))}
-                            />
+                                    cfg={val}
+                                    customHtmlComponents={htmlElems}
+                                    availableActions={actions}
+                                    onConfigChange={(newView) =>
+                                        setWidgetGroups(
+                                            widgetGroupsRef.current.map((val, n_index) => {
+                                                if (n_index == index)
+                                                    return { ...val, ...newView }
+                                                else
+                                                    return val
+                                            }))}
+                                />
                             )
                         }
                     </CollpaseGroup>

@@ -3,6 +3,7 @@ export interface ToolbarInterface {
     connectButton: ToolbarInterfaceButton
     autoScrollDownButton: ToolbarInterfaceButton
     clearButton: ToolbarInterfaceButton
+    logButton: ToolbarInterfaceButton
     settingsButton: ToolbarInterfaceButton
     more: Array<{title: string, list: Array<{title: string, onClick: () => {}}>}>
 }

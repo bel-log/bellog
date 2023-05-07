@@ -6,16 +6,7 @@ const webpack = require('webpack');
 const isProduction = process.argv[process.argv.indexOf('--mode') + 1] === 'production';
 
 
-
 module.exports = (env) => {
-
-    let backendMode = false
-    if (env.backend) {
-        backendMode = true
-    }
-
-    console.log("Backend mode: " + backendMode);
-
 
     return {
         entry: "./src/index.tsx",
@@ -66,9 +57,6 @@ module.exports = (env) => {
                             from: 'src/favicon.png', to: './'
                         }
                     ]
-            }),
-            new webpack.DefinePlugin({
-                BACKEND_MODE: JSON.stringify(backendMode)
             })
         ]
     }

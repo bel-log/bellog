@@ -13,10 +13,11 @@ import { ParserNames } from "../../parsers/Parser";
 import { WidgetGroup } from "../setup/WidgetGroup";
 
 export const RuntimeProfileView = forwardRef((props: {
-    visible: boolean
+    visible: boolean, logEnabled: boolean, onLogEnabledToggle: (enabled: boolean) => void,
     driver: Driver, view: ViewSetupProperties, profile: SetupProfileObject, selected: boolean
     dataTxObserver: Observable, dataRxObserver: Observable, driverErrorObserver:Observable, onConnectClick?: () => void, onClearClick?: () => void
 }, ref) => {
+
 
     const profile = props.profile
     const globalSettings = { ...buildDefaultProfile().globalSettings, ...profile?.globalSettings ?? {} }
@@ -24,6 +25,7 @@ export const RuntimeProfileView = forwardRef((props: {
     const htmls = [...profile.html]
     const visible = props.visible
     const widgetViewSize = view.widgetFrameSize
+    const logEnabled = props.logEnabled
 
     const [toolbarState, setToolbarState] = useContext(ToolbarContext)
     const [autoScrollOn, setAutoScrollOn] = useState(false)
@@ -32,6 +34,8 @@ export const RuntimeProfileView = forwardRef((props: {
     const widgetViewRef = useRef<HTMLDivElement>()
     const selectedRef = useRef(props.selected)
     const hasDataRef = useRef(false)
+    const logEnabledRef = useRef(false)
+    const fileWriterRef = useRef(null)
 
     const defContent = profile.driverType == DriverNames.DriverClipboard ?
      "<div style=\"width: '100%'\" class=\"has-text-centered is-unselectable\">Paste some text with Ctrl-V</div>" : ""
@@ -59,12 +63,19 @@ export const RuntimeProfileView = forwardRef((props: {
             }
         }
 
+        const logButton = {
+            isVisible: isDriverOpenClose(driver), active: logEnabled, onClick: () => {
+                props.onLogEnabledToggle(!logEnabled)
+            }
+        }
+
         if (isDriverOpenClose(driver)) {
 
             toolbarNewState = buildToolbarState({
                 settingsButton: { isVisible: false },
                 connectButton: connectButton,
                 clearButton: clearButton,
+                logButton: logButton,
                 autoScrollDownButton: autoScrollButton,
                 title: profile.profileName
             })
@@ -99,6 +110,9 @@ export const RuntimeProfileView = forwardRef((props: {
             if (globalSettings.shareDataBetweenViews || selectedRef.current) {
                 // Uint8Array | string
                 parser.put(data, false)
+                if(fileWriterRef.current && logEnabledRef.current) {
+                    fileWriterRef.current.write(data)
+                }
             }
         }
 
@@ -155,7 +169,7 @@ export const RuntimeProfileView = forwardRef((props: {
         }, 100);
 
         return () => clearInterval(intervalId);
-    }, [props.selected, autoScrollOn])
+    }, [props.selected, autoScrollOn, logEnabled])
 
     function getWrapStyle(view: ViewSetupProperties): React.CSSProperties {
         if (view.autoWrap) {

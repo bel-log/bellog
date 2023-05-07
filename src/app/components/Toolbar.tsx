@@ -21,6 +21,7 @@ export const buildToolbarState = (props: Pick<ToolbarInterface, keyof ToolbarInt
             connectButton: { isVisible: true, active: false, onClick: null },
             autoScrollDownButton: { isVisible: false, active: false, onClick: null },
             clearButton: { isVisible: true, active: false, onClick: null },
+            logButton: { isVisible: false, active: false, onClick: null },
             settingsButton: { isVisible: true, active: false, onClick: null },
             more: []
         }
@@ -72,6 +73,10 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
                         <span className={` icon is-large is-clickable ${toolbarState.clearButton.isVisible ? "" : "is-hidden"}`}
                             onClick={() => toolbarState.clearButton?.onClick()}>
                             <i className="fas fa-lg fa-trash"></i>
+                        </span>
+                        <span className={` icon is-large is-clickable ${toolbarState.logButton.isVisible ? "" : "is-hidden"} ${toolbarState.logButton.active ? "has-text-success" : ""}`}
+                            onClick={() => toolbarState.logButton?.onClick()}>
+                            <i className="fas fa-lg fa-file-arrow-down"></i>
                         </span>
                     </div>
 
