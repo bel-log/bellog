@@ -37,8 +37,6 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
 
     const [toolbarState, setToolbarState] = useState<ToolbarInterface>(buildToolbarState({}))
 
-    const [burgetActive, setBurgetActive] = useState(false)
-
     return (
         <ToolbarContext.Provider value={[toolbarState, setToolbarState]}>
             <nav className="navbar is-primary is-unselectable" role="navigation" aria-label="main navigation" style={{height: "3.25rem"}}>
@@ -50,20 +48,11 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
                     <span className="navbar-item">
                         {toolbarState.title}
                     </span>
-
-                    <a role="button" className={`navbar-burger ${burgetActive ? "is-active" : ""}`}
-                        aria-label="menu" aria-expanded="false" onClick={() => { setBurgetActive(!burgetActive) }}>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                        <span aria-hidden="true"></span>
-                    </a>
                 </div>
 
+                <div className="is-flex is-flex-grow-1">
 
-
-                <div className={`navbar-menu ${burgetActive ? "is-active" : ""}`}>
-
-                    <div className={`centered_toolar_icons ${burgetActive ? "is-hidden" : ""}`}>
+                    <div className={`centered_toolar_icons`}>
                         {
                             toolbarState.connectButton.isVisible ?
                                 <span className={` icon is-large is-clickable`}
