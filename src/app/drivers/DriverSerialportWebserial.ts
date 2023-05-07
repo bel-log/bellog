@@ -1,3 +1,4 @@
+import { DriverError } from "../utility/exception"
 import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
 
 export interface DriverSerialPortWebSerialParameters extends SerialOptions {
@@ -115,7 +116,10 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
             catch (error)
             {
                 console.error(error)
-                this.onError?.(error)
+                this.onErrorCb?.(error)
+                if (!('usb' in navigator)) {
+                    this.onErrorCb?.(new DriverError("WebUSB is not supported by your browser. Switch to either Chrome or Edge."))
+                }
             }
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)

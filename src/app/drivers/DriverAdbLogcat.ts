@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
+import { Driver, DriverOpenClose, DriverStatus } from "./Driver"
 import Adb from "webadb"
 
 export interface DriverAdbLogcatParameters {
@@ -12,9 +12,9 @@ export const DriverAdbLogcatDefaults = {
 
 export class DriverAdbLogcat implements DriverOpenClose {
 
-    private webusb:any
-    private adb:any
-    private shell:any
+    private webusb: any
+    private adb: any
+    private shell: any
     private onReceiveCb: (data: string) => void
     private onTransmitCb: (data: Uint8Array | string) => void
     private onStatusChangeCb: (status: DriverStatus) => void
@@ -33,7 +33,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     }
 
     attach(view: HTMLElement): void {
-        
+
     }
 
     onReceive(cb: (data: string | Uint8Array) => void): void {
@@ -56,58 +56,58 @@ export class DriverAdbLogcat implements DriverOpenClose {
         // No send supported via adb
     }
 
-    open()
-    {
+    open() {
         this.readingPromise = async () => {
-            try
-            {
+            try {
                 this.webusb = await Adb.open("WebUSB");
                 this.adb = await this.webusb.connectAdb("host::");
 
-                if(this.webusb && this.adb) {
+                if (this.webusb && this.adb) {
                     let decoder = new TextDecoder();
                     this._status = DriverStatus.OPEN
                     this.onStatusChangeCb?.(this._status)
                     let acc = ""
 
-                    if(this.params.clearLogAtConnection) {
+                    if (this.params.clearLogAtConnection) {
                         let shellc = await this.adb.shell("logcat -c")
                         await shellc.receive()
                     }
- 
+
                     this.shell = await this.adb.open('shell:logcat');
                     let r = await this.shell.receive();
                     while (r.cmd == "WRTE") {
-                      if (r.data != null) {
-                        if(this.onReceiveCb) {
-                            acc += decoder.decode(r.data);
-                            console.log(decoder.decode(r.data))
-                            //if(acc.length > 800000)
-                            {
-                                //console.log(acc)
-                                this.onReceiveCb(acc);
-                                acc = "";
+                        if (r.data != null) {
+                            if (this.onReceiveCb) {
+                                acc += decoder.decode(r.data);
+                                console.log(decoder.decode(r.data))
+                                //if(acc.length > 800000)
+                                {
+                                    //console.log(acc)
+                                    this.onReceiveCb(acc);
+                                    acc = "";
+                                }
                             }
                         }
-                      }
-            
-                      this.shell.send("OKAY");
-                      r = await this.shell.receive();
+
+                        this.shell.send("OKAY");
+                        r = await this.shell.receive();
                     }
-            
+
                     this.shell.close();
                     this.shell = null;
                 }
 
                 await this.webusb.close();
             }
-            catch (error)
-            {
+            catch (error) {
                 console.error(error)
                 this.onErrorCb?.(error)
-                if(error.message.indexOf("checksum") > 0) {
+                if (error.message.toLowerCase().indexOf("checksum") > 0) {
                     // TODO INVESTIGATE
                     this.onErrorCb?.(new DriverError("Checksum error, please disconnect and reconnect the device"))
+                }
+                if (!('usb' in navigator)) {
+                    this.onErrorCb?.(new DriverError("WebUSB is not supported by your browser. Switch to either Chrome or Edge."))
                 }
             }
             this._status = DriverStatus.CLOSE
@@ -117,13 +117,12 @@ export class DriverAdbLogcat implements DriverOpenClose {
         this.readingPromise()
     }
 
-    async close()
-    {
-        if(this.shell)
+    async close() {
+        if (this.shell)
             this.shell.close();
     }
 
     destroy() {
-        
+
     }
 }
