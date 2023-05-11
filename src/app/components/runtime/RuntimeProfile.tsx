@@ -7,7 +7,6 @@ import { DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/
 import { Observable } from "../../utility/Observable";
 import { View } from "../../view/View";
 import { ParserNames } from "../../parsers/Parser";
-import streamSaver from "streamsaver"
 
 export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
@@ -19,7 +18,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     const [tmpKey, setTmpKey] = useState(0)
     const [logEnabled, setLogEnabled] = useState(false)
 
-    const fileWriterRef = React.useRef(null)
+    const fileWriterRef = React.useRef<FileSystemWritableFileStream>(null)
     
 
     const dataRxObserver = useMemo(() => {
@@ -89,17 +88,14 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         }
     }, [])
 
-    useEffect(() => {
-        if(logEnabled) {
-            const fileStream = streamSaver.createWriteStream(profile.profileName + "_" + new Date().toLocaleString('en-GB',{hour12: false}) + ".txt", {})
-            fileWriterRef.current = fileStream.getWriter()
+    async function onLogEnabledToggle(enabled: boolean) {
+        if(enabled) {
+            const saveFile = await window.showSaveFilePicker({suggestedName: profile.profileName + "_" + new Date().toLocaleString('en-GB',{hour12: false}) + ".txt"});
+            fileWriterRef.current = await saveFile.createWritable()
         } else {
             fileWriterRef.current?.close()
             fileWriterRef.current = null
         }
-    },[logEnabled])
-
-    function onLogEnabledToggle(enabled: boolean) {
         setLogEnabled(enabled)
     }
 

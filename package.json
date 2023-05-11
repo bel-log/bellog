@@ -12,6 +12,7 @@
     "@types/react-dom": "^18.0.5",
     "@types/sortablejs": "^1.15.0",
     "@types/w3c-web-serial": "^1.0.2",
+    "@types/wicg-file-system-access": "^2020.9.6",
     "css-loader": "^6.7.1",
     "style-loader": "^3.3.1",
     "ts-loader": "^9.3.0",
@@ -49,7 +50,6 @@
     "regex-colorize": "^0.0.3",
     "sass-loader": "^13.2.2",
     "save-dev": "^0.0.1-security",
-    "serialize-javascript": "^6.0.0",
-    "streamsaver": "^2.0.6"
+    "serialize-javascript": "^6.0.0"
   }
 }
