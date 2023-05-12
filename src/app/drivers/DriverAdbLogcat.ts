@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import { DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
+import { DriverLoggable, DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
 import { DriverCache } from "./DriverCache"
 import { AdbWebUsbBackendManager } from "@yume-chan/adb-backend-webusb"
 import {
@@ -12,6 +12,7 @@ import {
 import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
 import { Adb, AdbPacketData, AdbPacketInit } from "@yume-chan/adb"
 
+
 export interface DriverAdbLogcatParameters {
     clearLogAtConnection: boolean
 }
@@ -23,13 +24,14 @@ export const DriverAdbLogcatDefaults = {
 export class DriverAdbLogcat implements DriverOpenClose {
 
     private CredentialStore: AdbWebCredentialStore
-    private DriverCache: DriverCache
+    private cache: DriverCache
+    iverCache
     private logcatReader: ReadableStreamDefaultReader<Uint8Array>
     private onReceiveCb: (data: Uint8Array) => void
-    private onTransmitCb: (data: Uint8Array) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
-    private readingPromise: () => Promise<void>;
+    private idlePromise: Promise<void>;
+
     readonly name: string;
     _status: DriverStatus;
 
@@ -40,10 +42,12 @@ export class DriverAdbLogcat implements DriverOpenClose {
     constructor(readonly params: DriverAdbLogcatParameters) {
         this.name = DriverNames.DriverAdbLogcat
         this._status = DriverStatus.CLOSE
-        this.DriverCache = new DriverCache()
-        this.DriverCache.setTimeout(200, 100)
+        this.cache = new DriverCache()
+        this.cache.setTimeout(200, 100)
         this.CredentialStore = new AdbWebCredentialStore();
+        this.idlePromise = null
     }
+
 
     attach(view: HTMLElement): void {
 
@@ -54,7 +58,6 @@ export class DriverAdbLogcat implements DriverOpenClose {
     }
 
     onTransmit(cb: (data: Uint8Array) => void): void {
-        this.onTransmitCb = cb
     }
 
     onStatusChange(cb: (status: DriverStatus) => void) {
@@ -65,14 +68,32 @@ export class DriverAdbLogcat implements DriverOpenClose {
         this.onErrorCb = cb
     }
 
+    async loadImport(file: File) {
+        await this.close()
+        if(this.idlePromise) {
+            await this.idlePromise
+        }
+
+        const stream = file.stream().getReader()
+        const value = (await stream.read()).value
+
+        if (value) {
+            this.cache.add(value)
+        }
+
+        this.cache.clean()
+    }
+
     async send(data: Uint8Array | string) {
         // No send supported via adb
     }
 
-    open() {
-        this.readingPromise = async () => {
+    async open() {
 
-            let device
+        let device: Adb
+
+        this.idlePromise = new Promise(async (resolve) => {
+
 
             try {
                 //this.webusb = await Adb.open("WebUSB");
@@ -132,7 +153,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
                     await device.subprocess.shell("logcat -c")
                 }
 
-                this.DriverCache.onFlush((data) => {
+                this.cache.onFlush((data) => {
                     data.forEach((d) => {
                         this.onReceiveCb?.(d)
                     })
@@ -148,9 +169,11 @@ export class DriverAdbLogcat implements DriverOpenClose {
                         break;
                     }
                     if (value) {
-                        this.DriverCache.add(value)
+                        this.cache.add(value)
                     }
                 }
+
+                this.cache.flush()
             }
             catch (error) {
                 console.error(error)
@@ -161,12 +184,14 @@ export class DriverAdbLogcat implements DriverOpenClose {
             }
 
             device?.close()
-            this.DriverCache.clean()
+            this.cache.clean()
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)
-        }
 
-        this.readingPromise()
+            resolve()
+            this.idlePromise = null
+        })
+
     }
 
     async close() {

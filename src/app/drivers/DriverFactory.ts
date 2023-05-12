@@ -2,6 +2,7 @@ import { Driver, DriverNames, DriverSettings } from "./Driver";
 import { DriverClipboard, DriverClipboardDefaults } from "./DriverClipboard";
 import { DriverSerialPortWebSerial, DriverSerialPortWebSerialDefaults, DriverSerialPortWebSerialParameters } from "./DriverSerialportWebserial";
 import { DriverAdbLogcat, DriverAdbLogcatDefaults, DriverAdbLogcatParameters } from "./DriverAdbLogcat";
+import { DirverLoggerDecorator } from "./DirverLoggerDecorator";
 
 export class DriverFactory {
 
@@ -10,9 +11,9 @@ export class DriverFactory {
             case DriverNames.DriverClipboard:
                 return new DriverClipboard()
             case DriverNames.DriverSerialPortWebSerial:
-                return new DriverSerialPortWebSerial(settings as DriverSerialPortWebSerialParameters)
+                return new DirverLoggerDecorator(new DriverSerialPortWebSerial(settings as DriverSerialPortWebSerialParameters))
             case DriverNames.DriverAdbLogcat:
-                return new DriverAdbLogcat(settings as DriverAdbLogcatParameters)
+                return new DirverLoggerDecorator(new DriverAdbLogcat(settings as DriverAdbLogcatParameters))
             default:
                 return new DriverClipboard()
         }

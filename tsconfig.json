@@ -9,6 +9,6 @@
     "allowJs": true,
     "downlevelIteration": true,
     "moduleResolution": "node",
-    "suppressImplicitAnyIndexErrors": true
-  }
+    "suppressImplicitAnyIndexErrors": true,
+  },
 }

@@ -119,7 +119,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                     }
                 }
 
-                this.DriverCache.clean()
+                this.DriverCache.flush()
                 await this.port.close();
             }
             catch (error)
@@ -130,6 +130,8 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                     this.onErrorCb?.(new DriverError("WebUSB is not supported by your browser. Switch to either Chrome or Edge."))
                 }
             }
+
+            this.DriverCache.clean()
             this._status = DriverStatus.CLOSE
             this.onStatusChangeCb?.(this._status)
         }

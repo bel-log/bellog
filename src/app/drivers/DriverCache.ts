@@ -29,6 +29,14 @@ export class DriverCache {
         }, this.timeout)
     }
 
+    public flush() {
+        if(this.timerID !== -1)
+            window.clearTimeout(this.timerID)
+        this.onFlushCb(this.queue)
+        this.queue = []
+        this.timerID = -1
+    }
+
     public clean() {
         this.queue = []
         if(this.timerID !== -1)

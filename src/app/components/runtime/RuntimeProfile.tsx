@@ -89,13 +89,6 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     }, [])
 
     async function onLogEnabledToggle(enabled: boolean) {
-        if(enabled) {
-            const saveFile = await window.showSaveFilePicker({suggestedName: profile.profileName + "_" + new Date().toLocaleString('en-GB',{hour12: false}) + ".txt"});
-            fileWriterRef.current = await saveFile.createWritable()
-        } else {
-            fileWriterRef.current?.close()
-            fileWriterRef.current = null
-        }
         setLogEnabled(enabled)
     }
 
