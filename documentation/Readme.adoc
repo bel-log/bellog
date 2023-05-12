@@ -52,6 +52,7 @@ Currently the following Drivers are available:
 
 * Clipboard: Paste the stream of data by pasting it with Ctrl-V. iF A Builder sends data to this Driver data is copied into the system clipboard.
 * WebSerial: Receive and send data from a COM port. This feature is only available on Chrome and Edge.
+* Adb: Receive data from an Android device connected via ADB. This feature is only available on Chrome and Edge.
 
 [[Parser]]
 === Parser
@@ -294,6 +295,8 @@ function() {
   return [builderArgs, builderFunc];
 }
 ----
+
+If the builder returns a string it will be supposed to be an hex string (ex. ABFE3322AADD) and converted to Uint8Array before sending it to the driver.
 
 * Binding: Binds the different fields we want to send to the builder. Useful for Custom Builders. +
 If for example we must build a packet for a complex protocol a packet may have fields like ID, SubID, Sequence and more. From the Binding we provide the values and the Builder will merge them and do additional operation like appending a checksum or adding a timestamp. 

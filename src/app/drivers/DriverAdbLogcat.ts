@@ -1,7 +1,7 @@
 import { DriverError } from "../utility/exception"
-import { Driver, DriverOpenClose, DriverStatus } from "./Driver"
+import { DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
 import { DriverCache } from "./DriverCache"
-import { AdbWebUsbBackend, AdbWebUsbBackendManager } from "@yume-chan/adb-backend-webusb"
+import { AdbWebUsbBackendManager } from "@yume-chan/adb-backend-webusb"
 import {
     Consumable,
     InspectStream,
@@ -22,23 +22,23 @@ export const DriverAdbLogcatDefaults = {
 
 export class DriverAdbLogcat implements DriverOpenClose {
 
-    private CredentialStore: any
+    private CredentialStore: AdbWebCredentialStore
     private DriverCache: DriverCache
     private logcatReader: ReadableStreamDefaultReader<Uint8Array>
-    private onReceiveCb: (data: string) => void
-    private onTransmitCb: (data: Uint8Array | string) => void
+    private onReceiveCb: (data: Uint8Array) => void
+    private onTransmitCb: (data: Uint8Array) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
+    private readingPromise: () => Promise<void>;
     readonly name: string;
     _status: DriverStatus;
-    private readingPromise: () => Promise<void>;
 
     public get status(): DriverStatus {
         return this._status;
     }
 
     constructor(readonly params: DriverAdbLogcatParameters) {
-        this.name = "WebSerial"
+        this.name = DriverNames.DriverAdbLogcat
         this._status = DriverStatus.CLOSE
         this.DriverCache = new DriverCache()
         this.DriverCache.setTimeout(200, 100)
@@ -49,11 +49,11 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
     }
 
-    onReceive(cb: (data: string | Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: string | Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -134,7 +134,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
                 this.DriverCache.onFlush((data) => {
                     data.forEach((d) => {
-                        this.onReceiveCb?.(d as string)
+                        this.onReceiveCb?.(d)
                     })
                 })
 
@@ -155,10 +155,6 @@ export class DriverAdbLogcat implements DriverOpenClose {
             catch (error) {
                 console.error(error)
                 this.onErrorCb?.(error)
-                if (error.message.toLowerCase().indexOf("checksum") > 0) {
-                    // TODO INVESTIGATE
-                    this.onErrorCb?.(new DriverError("Checksum error, please disconnect and reconnect the device"))
-                }
                 if (!('usb' in navigator)) {
                     this.onErrorCb?.(new DriverError("WebUSB is not supported by your browser. Switch to either Chrome or Edge."))
                 }

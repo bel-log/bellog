@@ -1,4 +1,4 @@
-import {Driver, DriverStatus} from "./Driver";
+import {Driver, DriverNames, DriverStatus} from "./Driver";
 import {Buffer} from "buffer"
 
 export interface DriverClipboardParameters {}
@@ -20,7 +20,7 @@ export class DriverClipboard implements Driver {
     }
 
     constructor() {
-        this.name = "Clipboard"
+        this.name = DriverNames.DriverClipboard
         this._status = DriverStatus.CLOSE
     }
     
@@ -33,11 +33,11 @@ export class DriverClipboard implements Driver {
         this.onErrorCb = cb
     }
     
-    onReceive(cb: (data: string | Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: string | Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -45,6 +45,7 @@ export class DriverClipboard implements Driver {
         this.onStatusChangeCb = cb
     }
 
+    /* If data is a string, it is assumed to be a hex string */
     send(data: Uint8Array | string) {
         if(typeof data === "string") {
             navigator.clipboard.writeText(data as string)

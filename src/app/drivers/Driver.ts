@@ -22,8 +22,8 @@ export interface Driver {
     readonly name:string
     attach(view: HTMLElement): void
     send(data: Uint8Array | string): void
-    onReceive(cb: (data: Uint8Array | string) => void):void
-    onTransmit(cb: (data: Uint8Array | string) => void):void
+    onReceive(cb: (data: Uint8Array) => void):void
+    onTransmit(cb: (data: Uint8Array) => void):void
     onError(cb: (ex: Error) => void):void
     destroy()
 }

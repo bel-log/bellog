@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import {Driver, DriverOpenClose, DriverStatus} from "./Driver"
+import {Driver, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 
 export interface DriverSerialPortWebSerialParameters extends SerialOptions {
@@ -37,7 +37,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     }
 
     constructor(private readonly params: DriverSerialPortWebSerialParameters) {
-        this.name = "WebSerial"
+        this.name = DriverNames.DriverSerialPortWebSerial
         this._status = DriverStatus.CLOSE
         this.usbVendorId = params.usbVendorId ?? 0
         this.usbProductId = params.usbProductId ?? 0
@@ -54,11 +54,11 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
         this.onErrorCb = cb
     }
 
-    onReceive(cb: (data: string | Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: string | Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -76,7 +76,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
             await writer.write(wdata as Uint8Array)
             writer.releaseLock()
             
-            this.onTransmitCb(data)
+            this.onTransmitCb(wdata)
         }
         catch (error)
         {

@@ -1,15 +1,15 @@
 
 export class DriverCache {
 
-    private queue: (Uint8Array | string)[] = []
+    private queue: (Uint8Array)[] = []
     private timeout: number = 0
     private timerID: number = -1
     private maxElemCount: number = 0
-    private onFlushCb: (data: (Uint8Array | string)[]) => void
+    private onFlushCb: (data: (Uint8Array)[]) => void
 
     constructor() {}
 
-    public onFlush( cb: (data: (Uint8Array | string)[]) => void) {
+    public onFlush( cb: (data: (Uint8Array)[]) => void) {
         this.onFlushCb = cb
     }
 
@@ -18,7 +18,7 @@ export class DriverCache {
         this.maxElemCount = maxElemCount
     }
 
-    public add(data: Uint8Array | string) {
+    public add(data: Uint8Array) {
         this.queue.push(data)
         if(this.timerID !== -1 && this.queue.length >= this.maxElemCount)
             window.clearTimeout(this.timerID)
