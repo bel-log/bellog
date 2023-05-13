@@ -11,5 +11,6 @@ export interface ToolbarInterface {
 export interface ToolbarInterfaceButton {
     isVisible: boolean
     active: boolean
-    onClick?: () => {}
+    onClick?: () => {},
+    onImportClick?: () => {},
 }

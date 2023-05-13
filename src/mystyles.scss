@@ -5,6 +5,8 @@
 // Import only what you need from Bulma
 @import "../node_modules/bulma/bulma.sass";
 
+@import "../node_modules/@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css";
+
 /*
 body {
   font-size: 1rem;
@@ -16,6 +18,11 @@ body {
   -webkit-text-size-adjust: 100%;
   -webkit-tap-highlight-color: transparent;
 }*/
+
+/* Override border under tooltip */
+span[data-tooltip] {
+  border-bottom: 0px;
+}
 
 html {
   overflow-x: auto;

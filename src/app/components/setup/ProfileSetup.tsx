@@ -38,9 +38,11 @@ import { CustomBuildersSetup } from "./CustomBuildersSetup";
 import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
 import { CollpaseGroup } from "../CollapseGroup";
-import isDriverAllowedInWebMode from "./../../utility/env";
+import { isDriverAllowedInWebMode, getDriverWarning } from "./../../utility/env";
 import { DriverAdbLogcat, DriverAdbLogcatParameters } from "../../drivers/DriverAdbLogcat";
 import { DriverAdbLogcatSetup } from "./DriverAdbSetup";
+import { DriverWebSockifySetup } from "./DriverWebsockifySetup";
+import { DriverWebSockifyParameters } from "../../drivers/DriverWebSockify";
 
 const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any }) => {
 
@@ -218,7 +220,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
                                             if (isDriverAllowedInWebMode(driverType)) {
                                                 return <div></div>
                                             } else return <div className="control is-flex is-align-items-center ml-2 has-text-danger">
-                                                <p className="is-justify-content-center">This Driver can only be used with the desktop application.</p>
+                                                <p className="is-justify-content-center">{getDriverWarning(driverType)}</p>
                                             </div>
                                         })()
                                     }
@@ -256,6 +258,16 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
                                                                                         }}
                                                                                     />
                                                                                 )
+                                                                            case DriverNames.DriverWebSockify:
+                                                                                return (
+                                                                                    <DriverWebSockifySetup
+                                                                                        cfg={tmpDriverSettings as DriverWebSockifyParameters}
+                                                                                        onConfigUpdate={(cfg) => {
+                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
+                                                                                        }}
+                                                                                    />
+                                                                                )
+
                                                                         }
                                                                     })()
                                                                 }

@@ -67,23 +67,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     onError(cb: (ex: Error) => void) {
         this.onErrorCb = cb
     }
-
-    async loadImport(file: File) {
-        await this.close()
-        if(this.idlePromise) {
-            await this.idlePromise
-        }
-
-        const stream = file.stream().getReader()
-        const value = (await stream.read()).value
-
-        if (value) {
-            this.cache.add(value)
-        }
-
-        this.cache.clean()
-    }
-
+    
     async send(data: Uint8Array | string) {
         // No send supported via adb
     }
@@ -195,7 +179,7 @@ export class DriverAdbLogcat implements DriverOpenClose {
     }
 
     async close() {
-        this?.logcatReader.cancel()
+        this.logcatReader?.cancel()
     }
 
     destroy() {

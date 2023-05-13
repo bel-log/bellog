@@ -5,16 +5,31 @@ import { DriverCache } from "./DriverCache"
  * Currently only received data is written in the logs.
  * TODO: Create a propietary log format to store logs origin and custom chunk information from DriverDataDescription object
 */
-export class DirverLoggerDecorator implements DriverLoggable {
+export class DirverLoggerDecorator implements DriverLoggable, DriverOpenClose {
     private fileWriter: FileSystemWritableFileStream
     private loggerCache: DriverCache
 
     private onReceiveCb: (data: Uint8Array) => void
     private onTransmitCb: (data: Uint8Array) => void
 
-    constructor(private baseDriver: Driver) {
+    constructor(private baseDriver: DriverOpenClose) {
         this.loggerCache = new DriverCache()
         this.loggerCache.setTimeout(200, 100)
+    }
+
+    get status(): DriverStatus {
+        return this.baseDriver.status
+    }
+
+    open() {
+        this.baseDriver.open()
+    }
+    close() {
+        this.baseDriver.close()
+    }
+
+    onStatusChange(cb: (this: Driver) => void): void {
+        this.baseDriver.onStatusChange(cb)
     }
 
     public get name(): string {

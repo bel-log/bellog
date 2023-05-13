@@ -2,15 +2,11 @@ import { DriverError } from "../utility/exception"
 import { Driver, DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
 import { DriverCache } from "./DriverCache"
 
-export interface DriverAdbLogcatParameters {
-    clearLogAtConnection: boolean
-}
+export interface DriverFileReadParameters {}
 
-export const DriverAdbLogcatDefaults = {
-    clearLogAtConnection: true
-}
+export const DriverFileReadDefaults = {}
 
-export class DriverFileMonitor implements DriverOpenClose {
+export class DriverFileRead implements DriverOpenClose {
 
     private cache: DriverCache
     private fileReader: ReadableStreamDefaultReader<Uint8Array>
@@ -26,8 +22,8 @@ export class DriverFileMonitor implements DriverOpenClose {
         return this._status;
     }
 
-    constructor(readonly params: DriverAdbLogcatParameters) {
-        this.name = DriverNames.DriverFileMonitor
+    constructor() {
+        this.name = DriverNames.DriverFileRead
         this._status = DriverStatus.CLOSE
         this.cache = new DriverCache()
         this.cache.setTimeout(200, 100)
@@ -65,11 +61,15 @@ export class DriverFileMonitor implements DriverOpenClose {
                 const openFile = await window.showOpenFilePicker()
                 const file = await openFile[0].getFile()
                 const stream = file.stream().getReader()
-  
-                const value = (await stream.read()).value
+
+                this.cache.onFlush( (data: (Uint8Array)[]) => {
+                    data.forEach((d) => {
+                        this.onReceiveCb?.(d)
+                    })
+                })
 
                 while (true) {
-                    const { value, done } = await this.fileReader.read();
+                    const { value, done } = await stream.read();
                     if (done) {
                         // |reader| has been canceled.
                         break;

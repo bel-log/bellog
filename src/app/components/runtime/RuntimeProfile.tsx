@@ -3,7 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { DriverFactory } from "../../drivers/DriverFactory";
 import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
 import RuntimeProfileView from "./RuntimeProfileView";
-import { DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/Driver";
+import { DriverLoggable, DriverOpenClose, DriverStatus, isDriverLoggable, isDriverOpenClose } from "../../drivers/Driver";
 import { Observable } from "../../utility/Observable";
 import { View } from "../../view/View";
 import { ParserNames } from "../../parsers/Parser";
@@ -89,7 +89,23 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     }, [])
 
     async function onLogEnabledToggle(enabled: boolean) {
+        if(isDriverLoggable(driver)) {
+            const driverLoggable = (driver as DriverLoggable)
+            if(enabled) {
+                driverLoggable.enableLogging(profile.profileName)
+            } else {
+                driverLoggable.disableLogging()
+            }
+        }
         setLogEnabled(enabled)
+    }
+
+    async function onLogImport() {
+        if(isDriverLoggable(driver)) {
+            setTmpKey(tmpKey + 1)
+            const driverLoggable = (driver as DriverLoggable)
+            driverLoggable.loadImport()
+        }
     }
 
     function connectButtonOnClick(driver: DriverOpenClose) {
@@ -133,6 +149,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                                     visible={selectedView === index}
                                     logEnabled={logEnabled}
                                     onLogEnabledToggle={onLogEnabledToggle}
+                                    onLogImport={onLogImport}
                                     driver={driver} view={views[index]} profile={profile} selected={selectedView == index}
                                     dataTxObserver={dataTxObserver}
                                     dataRxObserver={dataRxObserver}

@@ -1,10 +1,14 @@
 import {DriverClipboardParameters} from "./DriverClipboard";
 import {DriverSerialPortWebSerialParameters} from "./DriverSerialportWebserial";
 import {DriverAdbLogcatParameters} from "./DriverAdbLogcat";
+import { DriverWebSockifyParameters } from "./DriverWebSockify";
+import { DriverFileReadParameters } from "./DriverFileRead";
 
 export type DriverSettings = DriverClipboardParameters | 
                     DriverSerialPortWebSerialParameters | 
-                    DriverAdbLogcatParameters
+                    DriverAdbLogcatParameters |
+                    DriverWebSockifyParameters |
+                    DriverFileReadParameters
 
 export type DriverDataDescription = any
 
@@ -12,7 +16,8 @@ export enum DriverNames{
     DriverClipboard = "Clipboard",
     DriverSerialPortWebSerial = "Serialport WebSerial",
     DriverAdbLogcat = "Adb Logcat",
-    DriverFileMonitor = "File Monitor"
+    DriverFileRead = "File Read",
+    DriverWebSockify = "TCP Socket"
 }
 
 export enum DriverStatus {
@@ -53,7 +58,7 @@ export interface DriverOpenClose extends Driver {
 }
 
 export interface DriverLoggable extends Driver {
-    loadImport(file: File)
+    loadImport()
     enableLogging(prefixName: string)
     disableLogging()
 }

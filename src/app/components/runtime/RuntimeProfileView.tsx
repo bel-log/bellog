@@ -3,7 +3,7 @@ import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, 
 import ProfileSetup from "../setup/ProfileSetup";
 import { DriverFactory } from "../../drivers/DriverFactory";
 import { buildToolbarState, ToolbarContext } from "../Toolbar";
-import { Driver, DriverNames, DriverOpenClose, DriverStatus, isDriverOpenClose } from "../../drivers/Driver";
+import { Driver, DriverLoggable, DriverNames, DriverOpenClose, DriverStatus, isDriverLoggable, isDriverOpenClose } from "../../drivers/Driver";
 import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
 import { ParserFactory } from "../../parsers/ParserFactory";
 import { ViewFactory } from "../../view/ViewFactory";
@@ -13,7 +13,7 @@ import { ParserNames } from "../../parsers/Parser";
 import { WidgetGroup } from "../setup/WidgetGroup";
 
 export const RuntimeProfileView = forwardRef((props: {
-    visible: boolean, logEnabled: boolean, onLogEnabledToggle: (enabled: boolean) => void,
+    visible: boolean, logEnabled: boolean, onLogEnabledToggle: (enabled: boolean) => void, onLogImport: () => void,
     driver: Driver, view: ViewSetupProperties, profile: SetupProfileObject, selected: boolean
     dataTxObserver: Observable, dataRxObserver: Observable, driverErrorObserver:Observable, onConnectClick?: () => void, onClearClick?: () => void
 }, ref) => {
@@ -64,8 +64,12 @@ export const RuntimeProfileView = forwardRef((props: {
         }
 
         const logButton = {
-            isVisible: isDriverOpenClose(driver), active: logEnabled, onClick: () => {
+            isVisible: isDriverLoggable(driver), active: logEnabled, 
+            onClick: () => {
                 props.onLogEnabledToggle(!logEnabled)
+            },
+            onImportClick: () => {
+                props.onLogImport()
             }
         }
 

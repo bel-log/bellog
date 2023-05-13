@@ -1,14 +1,8 @@
 import * as React from "react";
 import {
-    createContext, CSSProperties, Dispatch, SetStateAction, useReducer,
+    Dispatch, SetStateAction,
     useState
 } from "react";
-import * as serialize from "serialize-javascript"
-import { IconContext } from "react-icons";
-import { FaBars } from "react-icons/fa";
-import { DriverStatus } from "../drivers/Driver";
-import { ImBin2, ImFloppyDisk, ImPlay3, ImStop2 } from "react-icons/im";
-import { RiSettings5Fill } from "react-icons/ri";
 import { ToolbarInterface } from "../model/ToolbarInterface";
 
 export const ToolbarContext = React.createContext<[ToolbarInterface, Dispatch<SetStateAction<ToolbarInterface>>]>(null)
@@ -56,7 +50,8 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
                     <div className={`centered_toolar_icons`}>
                         {
                             toolbarState.connectButton.isVisible ?
-                                <span className={` icon is-large is-clickable`}
+                                <span className={`has-tooltip-bottom icon is-large is-clickable`}
+                                    data-tooltip={`${toolbarState.connectButton.active ? "Disconnect" : "Connect"}`}
                                     onClick={() => toolbarState.connectButton?.onClick()}>
                                     {
                                         toolbarState.connectButton.active ?
@@ -66,17 +61,25 @@ export const Toolbar = (props: { children: React.ReactNode }) => {
                                 </span>
                                 : ""
                         }
-                        <span className={` icon is-large is-clickable ${toolbarState.autoScrollDownButton.isVisible ? "" : "is-hidden"}`}
+                        <span className={`has-tooltip-bottom icon is-large is-clickable ${toolbarState.autoScrollDownButton.isVisible ? "" : "is-hidden"}`}
+                            data-tooltip="Lock scroll to bottom"
                             onClick={() => toolbarState.autoScrollDownButton?.onClick()}>
                             <i className={`fas fa-lg fa-angle-double-down ${toolbarState.autoScrollDownButton.active ? "has-text-success" : ""}`}></i>
                         </span>
-                        <span className={` icon is-large is-clickable ${toolbarState.clearButton.isVisible ? "" : "is-hidden"}`}
+                        <span className={`has-tooltip-bottom icon is-large is-clickable ${toolbarState.clearButton.isVisible ? "" : "is-hidden"}`}  
+                            data-tooltip="Clear logs"
                             onClick={() => toolbarState.clearButton?.onClick()}>
-                            <i className="fas fa-lg fa-trash"></i>
+                            <i className="fas fa-lg fa-trash " ></i>
                         </span>
-                        <span className={` icon is-large is-clickable ${toolbarState.logButton.isVisible ? "" : "is-hidden"} ${toolbarState.logButton.active ? "has-text-success" : ""}`}
+                        <span className={`has-tooltip-bottom icon is-large is-clickable ${toolbarState.logButton.isVisible ? "" : "is-hidden"} ${toolbarState.logButton.active ? "has-text-success" : ""}`}
+                            data-tooltip="Log to file"
                             onClick={() => toolbarState.logButton?.onClick()}>
                             <i className="fas fa-lg fa-file-arrow-down"></i>
+                        </span>
+                        <span className={`has-tooltip-bottom icon is-large is-clickable ${toolbarState.logButton.isVisible ? "" : "is-hidden"}`}
+                            data-tooltip="Import log file"
+                            onClick={() => toolbarState.logButton?.onImportClick()}>
+                            <i className="fas fa-lg fa-upload"></i>
                         </span>
                     </div>
 

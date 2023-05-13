@@ -142,7 +142,6 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     close()
     {
         this.portReader?.cancel()
-        this._status = DriverStatus.CLOSE
     }
 
     destroy() {
