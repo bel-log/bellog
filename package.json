@@ -54,6 +54,7 @@
     "sass-loader": "^13.2.2",
     "save-dev": "^0.0.1-security",
     "serialize-javascript": "^6.0.0",
-    "tail": "^2.2.6"
+    "tail": "^2.2.6",
+    "typescript-cookie": "^1.0.6"
   }
 }

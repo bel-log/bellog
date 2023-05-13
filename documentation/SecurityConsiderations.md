@@ -20,3 +20,9 @@ This prevents any cross origin request.
 **Examples are popup or instructions that fakes to be from bellog to ask for money or link to external infected sites**
 
 **TL;DR always ensure to get bellog projects from a trusted source**
+
+## Websockets
+
+TCP driver can be used using Websockets with the Websockify protocol.
+Before setting up a Websocket or TCP Driver be sure to understand how they work to prevent any risk.
+Websocket runs as a server on your PC and any page opened in the browser can potentially connect to it allowing attacks on your devices.
