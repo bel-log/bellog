@@ -37,7 +37,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         return DriverFactory.build(profile.driverType, profile.driverSettings)
     }, [])
 
-    useMemo(()=>{
+    useEffect(()=>{
         // set scripts
         let script = document.createElement('script');
         script.type = 'text/javascript';
@@ -56,6 +56,12 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         }).join("\r\n")
 
         document.head.appendChild(style);
+
+        return () => {
+            document.head.removeChild(script);
+            document.head.removeChild(style);
+            console.log("REMOVE")
+        }
     }, [])
 
     useEffect(() => {
