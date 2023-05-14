@@ -5,15 +5,23 @@ import { DriverNames } from "../drivers/Driver";
 declare const LOCAL_MODE: boolean;
 
 export function isWebMode(): boolean {
-    if(LOCAL_MODE)
-        return false;
+    try {
+        if(LOCAL_MODE)
+            return false;
+    } catch (e) {}
+
     return true;
 }
 
 export function isDriverAllowedInWebMode(driverName: DriverNames): boolean {
-    if (DriverNames.DriverWebSockify === driverName && !LOCAL_MODE) {
+    try {
+        if (DriverNames.DriverWebSockify === driverName && !LOCAL_MODE) {
+            return false;
+        }
+    } catch(e) {
         return false;
     }
+
     return true;
 }
 
