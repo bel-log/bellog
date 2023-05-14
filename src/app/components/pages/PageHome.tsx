@@ -14,12 +14,16 @@ import CardItem from "../CardItem";
 import { buildDefaultProfile } from "../../setup/SetupFactories";
 import { useNavigate } from "react-router-dom";
 import { PROFILE_VERSION, VERSION } from "../../../Version";
+import { ImportPopup } from "../ImportPopup";
+import { isWebMode } from "../../utility/env";
 
 export const PageHome = (props) => {
 
     const navigate = useNavigate()
 
     const [toolbarState, setToolbarState] = React.useContext(ToolbarContext)
+
+    const [importOpen, setImportOpen] = useState(false)
 
     const profiles = useLiveQuery(async () => {
         return await db.profiles
@@ -76,7 +80,20 @@ export const PageHome = (props) => {
                     })
                 }
 
+                <ImportPopup isOpen={importOpen} onSelect={async function (name:string, url: string): Promise<void> {
+                    if(url !== "" && name !== "") {
+                        const response = await fetch(url);
+                        const text = await response.text();
+                        await db.profiles.add({
+                            name: name,
+                            path: "/",
+                            setup: text
+                        });
+                    }
+                    setImportOpen(false)
+                } }/>
                 <CardItem title="Add New" icon="fa-plus" onClick={(e) => {e.stopPropagation();addNewProfile()}}/>
+                { isWebMode() ? <CardItem title="Import sample" icon="fa-upload" onClick={(e) => {setImportOpen(true)}}/> : "" }
                 <div className="m-1 is-unselectable" style={{position: "fixed", bottom: 0, right: 0}}>{VERSION}</div>
             </div>
         </React.Fragment>
