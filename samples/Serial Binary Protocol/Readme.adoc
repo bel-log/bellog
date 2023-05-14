@@ -4,7 +4,7 @@
 To import a semple add a new profile on the Bellog homepage by clicking on the '+' card. +
 Then select "Import Profile" and press "Save".
 
-*By default drivers of samples are set to 'Clipboard'. If you want to use a COM port edit the profile and change the driver.*
+Import the txt log sample from this folder to see the rendering result.
 
 [[Description]]
 === Description
