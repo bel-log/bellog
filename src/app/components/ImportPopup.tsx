@@ -3,39 +3,30 @@ import * as React from "react";
 export const ImportPopup = (props: { isOpen: boolean, onSelect: (name: string, url: string) => void }) => {
 
     const isOpen = props.isOpen
-    const [sampleList, setSampleList] = React.useState([])
 
-    React.useEffect(() => {
-        (async () => {
-            let sampleList = []
-            const url = `https://api.github.com/repos/bel-log/bellog/git/trees/master`;
-            const list = await fetch(url).then(res => res.json());
-            const dir = list.tree.find(node => node.path === "samples");
-            if (dir) {
-                const list = await fetch(dir.url).then(res => res.json());
-                for (let i = 0; i < list.tree.length; i++) {
-                    const sampleFolder = list.tree[i];
-                    const sampleFolderContent = await fetch(sampleFolder.url).then(res => res.json());
-                    for(let w = 0; w < sampleFolderContent.tree.length; w++) {
-                        if(sampleFolderContent.tree[w].path.indexOf(".bll") > 0) {
-                            sampleList.push(
-                                {
-                                    name: sampleFolder.path,
-                                    url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/" + 
-                                    sampleFolder.path + "/" + 
-                                    sampleFolderContent.tree[w].path
-                                }
-                            );
-                            break;
-                        }
-                    }
-                }
-            }
-
-            setSampleList(sampleList);
-        })();
-
-    }, [])
+    /* List is hardcoded to support csp */
+    const sampleList = [
+        {
+            name: "Adb",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Adb/Adb_Sample.bll"
+        },
+        {
+            name: "Generic App",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Generic%20App/App_Log_Template.bll"
+        },
+        {
+            name: "Iot",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Iot/Iot_Log.bll"
+        },
+        {
+            name: "JSON Lint",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/JSON%20Lint/JSONLint.bll"
+        },
+        {
+            name: "Serial Binary Protocol",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Serial%20Binary%20Protocol/Serial_Protocol.bll"
+        }
+    ]
 
     return (
         <div className={`modal ${isOpen ? "is-active" : ""}`}>

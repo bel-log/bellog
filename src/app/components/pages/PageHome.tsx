@@ -93,7 +93,7 @@ export const PageHome = (props) => {
                     setImportOpen(false)
                 } }/>
                 <CardItem title="Add New" icon="fa-plus" onClick={(e) => {e.stopPropagation();addNewProfile()}}/>
-                { isWebMode() ? <CardItem title="Import sample" icon="fa-upload" onClick={(e) => {setImportOpen(true)}}/> : "" }
+                <CardItem title="Import sample" icon="fa-upload" onClick={(e) => {setImportOpen(true)}}/>
                 <div className="m-1 is-unselectable" style={{position: "fixed", bottom: 0, right: 0}}>{VERSION}</div>
             </div>
         </React.Fragment>
