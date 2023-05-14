@@ -1,0 +1,141 @@
+05-07 23:34:52.701 15712 15712 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:34:55.404  2075  2101 D CompatibilityInfo: mCompatibilityFlags - 0
+05-07 23:34:55.404  2075  2101 D CompatibilityInfo: applicationDensity - 440
+05-07 23:34:55.404  2075  2101 D CompatibilityInfo: applicationScale - 1.0
+05-07 23:34:55.450 28525 28525 D GmsGcmMcsSvc: No heartbeat for 10 seconds, connection assumed to be dead after 0 seconds
+05-07 23:34:55.460 28525 28525 D GmsGcmPrefs: learnTimeout: gcm_network_wifi
+05-07 23:34:55.463 28525 28525 D GmsGcmTrigger: Not connected to GCM but should be, asking the service to start up. Triggered by: Intent { act=org.microg.gms.gcm.mcs.RECONNECT flg=0x14 cmp=com.mgoogle.android.gms/org.microg.gms.gcm.TriggerReceiver (has extras) }
+05-07 23:34:55.465 28525 28525 D ForegroundService: Starting in foreground mode.
+05-07 23:34:55.465 1111 1111 D MyCustomApp: {"value": 1, "message": "hello world"}
+05-07 23:34:55.486 28525 28525 D GmsGcmMcsSvc: Started Messaggistica Cloud in foreground mode.
+05-07 23:34:55.498 28525 28525 D GmsGcmMcsSvc: Notification: Notification(channel=foreground-service pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 vis=PRIVATE)
+05-07 23:34:55.523 28525 28558 D GmsGcmMcsSvc: Connect initiated, reason: Intent { act=org.microg.gms.gcm.mcs.RECONNECT flg=0x14 cmp=com.mgoogle.android.gms/org.microg.gms.gcm.TriggerReceiver (has extras) }
+05-07 23:34:55.529 28525 28558 D GmsGcmMcsSvc: No heartbeat for 10 seconds, connection assumed to be dead after 0 seconds
+05-07 23:34:55.542 28525 28558 D GmsGcmPrefs: learnTimeout: gcm_network_wifi
+05-07 23:34:55.559 28525 15702 D GmsGcmMcsSvc: I/O error: java.net.SocketException: socket is closed
+05-07 23:34:55.585 28525 28558 D GmsGcmMcsSvc: Starting MCS connection...
+05-07 23:34:55.630  2291  2291 D StatusBar: onNotificationPosted key=0|com.mgoogle.android.gms|-612713381|null|10153 isUpdate=true
+05-07 23:34:55.637  2291  2291 D StatusBar: updateNotification old=StatusBarNotification(pkg=com.mgoogle.android.gms user=UserHandle{0} id=-612713381 tag=null key=0|com.mgoogle.android.gms|-612713381|null|10153: Notification(channel=foreground-service pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 vis=PRIVATE))
+05-07 23:34:55.637  2291  2291 D StatusBar:     pkgName=com.mgoogle.android.gms appUid=10153 sdk=29 imp=2 sysApp=F priApp=F hasShown=F float=F keyguard=F peek=F fullscreen=F
+05-07 23:34:55.637  2291  2291 D StatusBar:     showMiuiAction=F enableFloat=T enableKeyguard=T floatTime=5000 messageCount=1 persistent=F customHeight=F customHideBorder=F
+05-07 23:34:55.638  3506  3506 V onNotificationPostedCallBack: flags=98
+05-07 23:34:55.641  3506  3506 V h       : ret=0
+05-07 23:34:55.645 28525 28558 D GmsGcmMcsSvc: Connected to mtalk.google.com:5228
+05-07 23:34:55.659  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:34:55.663 28525 28558 D GmsGcmMcsSvc: Activated SSL with mtalk.google.com:5228
+05-07 23:34:55.680  2291  2291 D StatusBar: No peeking: not in use: 0|com.mgoogle.android.gms|-612713381|null|10153
+05-07 23:34:55.681  2291  2291 D StatusBar: updateHeadsUp wasHeadsUp=false shouldPeek=false alertAgain=true
+05-07 23:34:55.691  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:34:55.752 28525 15717 I ActivityThread: com.mgoogle.android.gms.microg.settings acquiringCount 2
+05-07 23:34:55.767 28525 15717 D GmsGcmMcsSvc: Sending login request...
+05-07 23:34:55.774 28525 28558 D GmsGcmMcsSvc: Scheduling heartbeat in 0 seconds...
+05-07 23:34:55.787 28525 28558 D GmsGcmMcsSvc: Teardown initiated, reason: java.net.SocketException: socket is closed
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: java.net.SocketException: socket is closed
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 	at com.android.org.conscrypt.ConscryptFileDescriptorSocket$SSLInputStream.read(ConscryptFileDescriptorSocket.java:551)
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 	at com.android.org.conscrypt.ConscryptFileDescriptorSocket$SSLInputStream.read(ConscryptFileDescriptorSocket.java:517)
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 	at org.microg.gms.gcm.McsInputStream.ensureVersionRead(Unknown Source:7)
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 	at org.microg.gms.gcm.McsInputStream.read(Unknown Source:1)
+05-07 23:34:55.789 28525 15716 W GmsGcmMcsInput: 	at org.microg.gms.gcm.McsInputStream.run(Unknown Source:14)
+05-07 23:34:55.792 28525 28558 I ActivityThread: com.mgoogle.android.gms.microg.settings acquiringCount 2
+05-07 23:34:55.803 28525 15716 D GmsGcmMcsSvc: I/O error: java.net.SocketException: socket is closed
+05-07 23:34:55.805 28525 28558 D GmsGcmMcsSvc: Scheduling reconnect in 10 seconds...
+05-07 23:34:55.830 28525 28558 D GmsGcmMcsSvc: Teardown initiated, reason: java.net.SocketException: socket is closed
+05-07 23:34:55.835 28525 28558 D GmsGcmMcsSvc: Scheduling reconnect in 20 seconds...
+05-07 23:34:56.270  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:34:57.710 15718 15718 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:34:58.322 15066 15076 I ndroid.setting: ThreadFlipBegin blocked for 5.170ms
+05-07 23:34:58.337  2075  7033 D CompatibilityInfo: mCompatibilityFlags - 0
+05-07 23:34:58.337  2075  7033 D CompatibilityInfo: applicationDensity - 440
+05-07 23:34:58.337  2075  7033 D CompatibilityInfo: applicationScale - 1.0
+05-07 23:35:00.272  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:01.671 28109 28109 D MiuiFastConnectService: handleMessage: what: 8, msg.arg1: 0, msg.arg2: 0
+05-07 23:35:02.183  3035  3035 I CNSS    : cnss_open_log_file: directory /data/vendor/wlan_logs/ created
+05-07 23:35:02.712 15719 15719 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:35:03.167  2291  2600 D MobileSignalController: onSignalStrengthsChanged: SignalStrength: 99 0 -120 -160 -120 -160 -1 22 -110 -19 16 2147483647 0 2147483647 99 255 2147483647 gsm|lte use_rsrp_and_rssnr_for_lte_level  [-120, -115, -110, -105, -97] [-115, -105, -95, -85]
+05-07 23:35:03.167  2291  2600 D NetworkController.MobileSignalController(2): 4G level = 3
+05-07 23:35:04.274  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:06.047  2291  2600 D MobileSignalController: onSignalStrengthsChanged: SignalStrength: 99 0 -120 -160 -120 -160 -1 20 -109 -16 22 2147483647 0 2147483647 99 255 2147483647 gsm|lte use_rsrp_and_rssnr_for_lte_level  [-120, -115, -110, -105, -97] [-115, -105, -95, -85]
+05-07 23:35:06.048  2291  2600 D NetworkController.MobileSignalController(2): 4G level = 3
+05-07 23:35:07.731 15721 15721 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:35:08.278  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:12.280  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:12.438  2291  2600 D MobileSignalController: onSignalStrengthsChanged: SignalStrength: 99 0 -120 -160 -120 -160 -1 17 -110 -11 40 2147483647 0 2147483647 99 255 2147483647 gsm|lte use_rsrp_and_rssnr_for_lte_level  [-120, -115, -110, -105, -97] [-115, -105, -95, -85]
+05-07 23:35:12.438  2291  2600 D NetworkController.MobileSignalController(2): 4G level = 3
+05-07 23:35:12.744 15722 15722 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:35:15.009  2291  2600 D MobileSignalController: onSignalStrengthsChanged: SignalStrength: 99 0 -120 -160 -120 -160 -1 17 -110 -13 26 2147483647 0 2147483647 99 255 2147483647 gsm|lte use_rsrp_and_rssnr_for_lte_level  [-120, -115, -110, -105, -97] [-115, -105, -95, -85]
+05-07 23:35:15.009  2291  2600 D NetworkController.MobileSignalController(2): 4G level = 3
+05-07 23:35:15.846  2075  2101 D CompatibilityInfo: mCompatibilityFlags - 0
+05-07 23:35:15.846  2075  2101 D CompatibilityInfo: applicationDensity - 440
+05-07 23:35:15.846  2075  2101 D CompatibilityInfo: applicationScale - 1.0
+05-07 23:35:15.869  2291  2291 D KeyguardUpdateMonitor: handleTimeUpdate
+05-07 23:35:15.871  2291  2291 I KeyguardIndication: updateIndication: mVisible true mDozing false mTransientIndication null mPowerPluggedIn true mUpArrowIndication null
+05-07 23:35:15.902  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:35:15.911 28525 28525 D GmsGcmMcsSvc: Connection is not enabled or dead.
+05-07 23:35:15.911 28525 28525 D GmsGcmTrigger: Not connected to GCM but should be, asking the service to start up. Triggered by: Intent { act=org.microg.gms.gcm.mcs.RECONNECT flg=0x14 cmp=com.mgoogle.android.gms/org.microg.gms.gcm.TriggerReceiver (has extras) }
+05-07 23:35:15.912 28525 28525 D ForegroundService: Starting in foreground mode.
+05-07 23:35:15.928 28525 28525 D GmsGcmMcsSvc: Started Messaggistica Cloud in foreground mode.
+05-07 23:35:15.930  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:35:15.934  2936 15223 I GCoreUlr: Successfully inserted 1 locations
+05-07 23:35:15.934 28525 28525 D GmsGcmMcsSvc: Notification: Notification(channel=foreground-service pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x2 color=0x00000000 vis=PRIVATE)
+05-07 23:35:15.949 28525 28558 D GmsGcmMcsSvc: Connect initiated, reason: Intent { act=org.microg.gms.gcm.mcs.RECONNECT flg=0x14 cmp=com.mgoogle.android.gms/org.microg.gms.gcm.TriggerReceiver (has extras) }
+05-07 23:35:15.949 28525 28558 D GmsGcmMcsSvc: Connection is not enabled or dead.
+05-07 23:35:15.987 28525 28558 D GmsGcmMcsSvc: Starting MCS connection...
+05-07 23:35:16.045 28525 28558 D GmsGcmMcsSvc: Connected to mtalk.google.com:5228
+05-07 23:35:16.049  2936 15626 I SemanticLocation: [Inferrer] IncrementalTimelineInferrer.predict() logs: 
+05-07 23:35:16.049  2936 15626 I SemanticLocation: Timeline Paths Enabled! Start Computing the timeline paths.
+05-07 23:35:16.049  2936 15626 I SemanticLocation: 
+05-07 23:35:16.049  2936 15626 I SemanticLocation: [CONTEXT service_id=173 ]
+05-07 23:35:16.055 28525 28558 D GmsGcmMcsSvc: Activated SSL with mtalk.google.com:5228
+05-07 23:35:16.066  2291  2291 D StatusBar: onNotificationPosted key=0|com.mgoogle.android.gms|-612713381|null|10153 isUpdate=true
+05-07 23:35:16.068  2291  2291 D StatusBar: updateNotification old=StatusBarNotification(pkg=com.mgoogle.android.gms user=UserHandle{0} id=-612713381 tag=null key=0|com.mgoogle.android.gms|-612713381|null|10153: Notification(channel=foreground-service pri=0 contentView=null vibrate=null sound=null defaults=0x0 flags=0x62 color=0x00000000 vis=PRIVATE))
+05-07 23:35:16.068  2291  2291 D StatusBar:     pkgName=com.mgoogle.android.gms appUid=10153 sdk=29 imp=2 sysApp=F priApp=F hasShown=F float=F keyguard=F peek=F fullscreen=F
+05-07 23:35:16.068  2291  2291 D StatusBar:     showMiuiAction=F enableFloat=T enableKeyguard=T floatTime=5000 messageCount=1 persistent=F customHeight=F customHideBorder=F
+05-07 23:35:16.071  3506  3506 V onNotificationPostedCallBack: flags=98
+05-07 23:35:16.072  3506  3506 V h       : ret=0
+05-07 23:35:16.089  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:35:16.104  2291  2291 D StatusBar: No peeking: not in use: 0|com.mgoogle.android.gms|-612713381|null|10153
+05-07 23:35:16.104  2291  2291 D StatusBar: updateHeadsUp wasHeadsUp=false shouldPeek=false alertAgain=true
+05-07 23:35:16.114  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:35:16.135 28525 15728 I ActivityThread: com.mgoogle.android.gms.microg.settings acquiringCount 2
+05-07 23:35:16.144 28525 15728 D GmsGcmMcsSvc: Sending login request...
+05-07 23:35:16.151 28525 28558 D GmsGcmMcsSvc: Scheduling heartbeat in 0 seconds...
+05-07 23:35:16.155 28525 15728 D GmsGcmMcsOutput: Outgoing message: LoginRequest{id=android-28, domain=mcs.android.com, user=4001676600525083355, resource=4001676600525083355, auth_token=711750439750073856, device_id=android-3788cfaa984a52db, setting=[Setting{name=new_vc, value=1}], adaptive_heartbeat=false, use_rmq2=true, auth_service=ANDROID_ID, network_type=1}
+05-07 23:35:16.155 28525 15728 D GmsGcmMcsOutput: Write MCS version code: 41
+05-07 23:35:16.186 28525 15727 D GmsGcmMcsInput: Reading from MCS version: 41
+05-07 23:35:16.216 28525 15727 D GmsGcmMcsInput: Incoming message: LoginResponse{id=android-28, jid=user@firebase.com/notifications, last_stream_id_received=1, server_timestamp=1683495316307}
+05-07 23:35:16.234 28525 15727 D GmsGcmMcsSvc: Logged in
+05-07 23:35:16.235 28525 15727 D GmsGcmMcsInput: Incoming message: IqStanza{type=SET, id=, extension=Extension{id=12, data=[size=0]}}
+05-07 23:35:16.235 28525 15727 W GmsGcmMcsSvc: Unknown message: IqStanza{type=SET, id=, extension=Extension{id=12, data=[size=0]}}
+05-07 23:35:16.283  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:16.377  3506 12049 I PowerCenterProvider: call METHOD_GET_BATTERY_INFO
+05-07 23:35:16.380  3506 12049 W BatteryHistoryLoadMgr: getHistoryInfo begin
+05-07 23:35:16.410   692   692 D vendor.qti.bluetooth@1.0-ibs_handler: SerialClockVote: vote for UART CLK ON
+05-07 23:35:16.412   692   692 D vendor.qti.bluetooth@1.0-wake_lock: Acquire wakelock is acquired 
+05-07 23:35:16.412   692   692 I vendor.qti.bluetooth@1.0-ibs_handler: DeviceWakeUp: Writing IBS_WAKE_IND
+05-07 23:35:16.418   692  2918 I vendor.qti.bluetooth@1.0-ibs_handler: ProcessIbsCmd: Received IBS_WAKE_ACK: 0xFC
+05-07 23:35:16.423   692  2918 I vendor.qti.bluetooth@1.0-ibs_handler: ProcessIbsCmd: Received IBS_WAKE_IND: 0xFD
+05-07 23:35:16.423   692  2918 I vendor.qti.bluetooth@1.0-ibs_handler: ProcessIbsCmd: Writing IBS_WAKE_ACK
+05-07 23:35:16.464   692  2918 I vendor.qti.bluetooth@1.0-ibs_handler: ProcessIbsCmd: Received IBS_SLEEP_IND: 0xFE
+05-07 23:35:16.537  3506 12049 W BatteryHistoryLoadMgr: get firstHistoryInfo time: 12966136
+05-07 23:35:16.537  3506 12049 D BatteryHistoryLoadMgr: getHistoryInfo end
+05-07 23:35:16.542  3506 12049 I PowerUtils: Device name:whyred
+05-07 23:35:16.542  3506 12049 W PowerUtils: should not use this capacity value 4000
+05-07 23:35:16.544  3506 12049 I PowerUtils: Device name:whyred
+05-07 23:35:16.544  3506 12049 W PowerUtils: should not use this capacity value 4000
+05-07 23:35:16.547  3506 12049 I BatteryChargeTimeHelper: Mixed(calc) charge time, 0.11 31m22s950ms
+05-07 23:35:16.552  3506 12049 I PowerUtils: Device name:whyred
+05-07 23:35:16.552  3506 12049 W PowerUtils: should not use this capacity value 4000
+05-07 23:35:16.576  2291  2291 E DeviceLevelUtils: isLowGpuDevice:-1
+05-07 23:35:17.245  2291  2600 D MobileSignalController: onSignalStrengthsChanged: SignalStrength: 99 0 -120 -160 -120 -160 -1 17 -110 -11 40 2147483647 0 2147483647 99 255 2147483647 gsm|lte use_rsrp_and_rssnr_for_lte_level  [-120, -115, -110, -105, -97] [-115, -105, -95, -85]
+05-07 23:35:17.245  2291  2600 D NetworkController.MobileSignalController(2): 4G level = 3
+05-07 23:35:17.421   692  2926 I vendor.qti.bluetooth@1.0-ibs_handler: DeviceSleep: TX Awake, Sending SLEEP_IND
+05-07 23:35:17.421   692  2926 D vendor.qti.bluetooth@1.0-ibs_handler: SerialClockVote: vote for UART CLK OFF
+05-07 23:35:17.572   692  2755 D vendor.qti.bluetooth@1.0-wake_lock: Release wakelock is released 
+05-07 23:35:17.762 15730 15730 F linker  : CANNOT LINK EXECUTABLE "/system/bin/dpmd": "/system/lib64/libdpmframework.so" is 32-bit instead of 64-bit
+05-07 23:35:20.284  2716  5116 I DPMJ    : |REQ:RCVR| DPM creating socket
+05-07 23:35:21.184 28525 28558 D GmsGcmMcsSvc: Heartbeat initiated, reason: Intent { act=org.microg.gms.gcm.mcs.HEARTBEAT flg=0x4 cmp=com.mgoogle.android.gms/org.microg.gms.gcm.McsService (has extras) }
+05-07 23:35:21.200 28525 28558 D GmsGcmMcsSvc: No heartbeat for 5 seconds, connection assumed to be dead after 0 seconds
+05-07 23:35:21.223 28525 28558 D GmsGcmPrefs: learnTimeout: gcm_network_wifi
+05-07 23:35:21.244 28525 28558 D GmsGcmMcsSvc: Ignoring heartbeat, not connected!
+05-07 23:35:21.257 28525 28558 D GmsGcmMcsSvc: Scheduling reconnect in 5 seconds...

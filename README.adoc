@@ -43,6 +43,7 @@ ifdef::env-github[]
 <p align="center">
   <img src="images/setup_screen.jpg" style="width: 40%; height: 40%">
   <img src="images/Serial_Protocol.jpeg" style="width: 40%; height: 40%">
+  <img src="images/screen4.jpg" style="width: 40%; height: 40%">
   <img src="images/screen3.jpg" style="width: 40%; height: 40%">
   <img src="images/screen2.jpg" style="width: 40%; height: 40%">
 </p>
@@ -60,6 +61,6 @@ npm run build
 
 == Roadmap
 
-* Export logs
-* Backend for custom Driver
-* Electron or NW.js executable
+* Web HID
+* Can bus (?)
+

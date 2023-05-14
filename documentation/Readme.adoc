@@ -53,6 +53,8 @@ Currently the following Drivers are available:
 * Clipboard: Paste the stream of data by pasting it with Ctrl-V. iF A Builder sends data to this Driver data is copied into the system clipboard.
 * WebSerial: Receive and send data from a COM port. This feature is only available on Chrome and Edge.
 * Adb: Receive data from an Android device connected via ADB. This feature is only available on Chrome and Edge.
+* TCP Client: Send e receive data connecting to a TCP Server. This driver uses Websockify since it is not currently possible to open sockets from browser.
+See related guide for more informations.
 
 [[Parser]]
 === Parser

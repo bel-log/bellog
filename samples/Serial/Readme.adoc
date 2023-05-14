@@ -1,0 +1,25 @@
+
+== Serial
+
+To import a semple add a new profile on the Bellog homepage by clicking on the '+' card. +
+Then select "Import Profile" and press "Save".
+
+*By default drivers of samples are set to 'Clipboard'. If you want to use a COM port edit the profile and change the driver.*
+
+[[Description]]
+=== Description
+
+Send and Receive raw binary packets with the following format:
+
+[width="100%",options="header,footer"]
+|====================
+| Byte 0 | Byte 1 | ... | Byte N-2 | Byte N-1 | Byte N
+^| CMD | Data len | Data 2.1+^| CRC16 | 0xF5
+|====================
+
+*Note:* This is an example. A real protocol has at least some byte stuffing.
+
+[[Contributions]]
+=== Contributions
+
+Please make a Pull Request if you have a sample to share or improve.
