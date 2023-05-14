@@ -12,9 +12,9 @@ To support this driver must be configured as follows:
 * **Websockify port** set to the **source_port** provided when websockify was run on your computer
 
 ```
-# source_addr and source_port are the github ip and port set on driver settings
+# source_port free port of your PC set in the driver settings
 # target_addr and target_port of the device you want to connect to
-websockify [source_addr:]source_port [target_addr:target_port]
+websockify :source_port [target_addr:target_port]
 ```
 
 ## Running on your pc
