@@ -38,30 +38,43 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     }, [])
 
     useEffect(()=>{
+
+        // Remove existing
+        let scriptsa = document.head.getElementsByTagName("script")
+        for (let i = 0; i < scriptsa.length; i++) {
+            if (scriptsa[i].id === "__js") {
+                document.head.removeChild(scriptsa[i])
+                break
+            }
+        }
+        let stylesa = document.head.getElementsByTagName("style")
+        for (let i = 0; i < stylesa.length; i++) {
+            if (stylesa[i].id === "__css") {
+                document.head.removeChild(stylesa[i])
+                break
+            }
+        }
+
         // set scripts
         let script = document.createElement('script');
+        script.id = "__js"
         script.type = 'text/javascript';
-        script.innerHTML = "try {" +
+        script.innerHTML =
             profile.scripts?.map((script) => {
                 return script.code
             }).join("\r\n")
-            + "} catch(e) {}";
 
         document.head.appendChild(script);
-
+        
         // set style
         let style = document.createElement('style');
+        style.id = "__css"
         style.innerHTML = profile.styles?.map((style) => {
             return style.code
         }).join("\r\n")
 
         document.head.appendChild(style);
 
-        return () => {
-            document.head.removeChild(script);
-            document.head.removeChild(style);
-            console.log("REMOVE")
-        }
     }, [])
 
     useEffect(() => {

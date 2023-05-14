@@ -124,9 +124,6 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
         script.innerHTML = script_code
 
         let style = document.createElement('style');
-        let style_code = styles.map((style) => {
-            return style.code
-        }).join("\r\n")
         style.id = "__css"
         style.innerHTML = styles.map((style) => {
             return style.code
@@ -134,31 +131,25 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
 
         let header = document.head
 
-        let found = false
         let scriptsa = header.getElementsByTagName("script")
         for (let i = 0; i < scriptsa.length; i++) {
             if (scriptsa[i].id === "__js") {
-                scriptsa[i].innerHTML = script_code
-                found = true
+                header.removeChild(scriptsa[i])
                 break
             }
         }
+        
+        header.appendChild(script)
 
-        if (!found)
-            header.appendChild(script)
-
-        found = false
         let stylesa = header.getElementsByTagName("style")
         for (let i = 0; i < stylesa.length; i++) {
             if (stylesa[i].id === "__css") {
-                stylesa[i].innerHTML = style_code
-                found = true
+                header.removeChild(stylesa[i])
                 break
             }
         }
 
-        if (!found)
-            header.appendChild(style)
+        header.appendChild(style)
 
     }, [scripts, styles])
 
