@@ -1,5 +1,5 @@
 import * as React from "react";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useLayoutEffect, useMemo, useState } from "react";
 import { DriverFactory } from "../../drivers/DriverFactory";
 import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
 import RuntimeProfileView from "./RuntimeProfileView";
@@ -37,7 +37,8 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         return DriverFactory.build(profile.driverType, profile.driverSettings)
     }, [])
 
-    useEffect(()=>{
+    /* Script must be loaded before any other useEffect */
+    useLayoutEffect(()=>{
 
         // Remove existing
         let scriptsa = document.head.getElementsByTagName("script")
