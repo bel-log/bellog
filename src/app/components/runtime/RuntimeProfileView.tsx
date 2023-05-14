@@ -194,7 +194,7 @@ export const RuntimeProfileView = forwardRef((props: {
     }
 
     return (
-        <div className={`is-flex-grow-1 ${visible ? "" : "is-hidden"}`} style={{overflow: "hidden"}}>
+        <div id={`${view.name}`} className={`is-flex-grow-1 ${visible ? "" : "is-hidden"}`} style={{overflow: "hidden"}}>
             {
                 view.widgetGroupIds.length > 0 ?
                     <div className="" style={{
@@ -219,7 +219,7 @@ export const RuntimeProfileView = forwardRef((props: {
                     : ""
             }
             <div className="is-flex" style={{height: "100%", width: "auto", overflow: "auto"}}>
-                <div ref={viewRef} tabIndex={0} className="pl-1" 
+                <div  id={`${view.name}_log`} ref={viewRef} tabIndex={0} className="pl-1" 
                 style={{...getWrapStyle(view), ...{overflow: "auto", flexGrow: "1"}}}>
                 </div>
             </div>
