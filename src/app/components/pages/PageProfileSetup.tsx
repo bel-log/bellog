@@ -26,6 +26,8 @@ export const PageProfileSetup = () => {
 
     const { profileId } = useParams()
 
+    const notificationRef = React.useRef(null)
+
     useLiveQuery(async () => {
         let profile = await db.profiles.get(parseInt(profileId))
 
@@ -42,7 +44,17 @@ export const PageProfileSetup = () => {
                 setup: JSON.stringify(tmpProfile)
             })
 
-        } catch(e) {
+            if(notificationRef.current) {
+                notificationRef.current.style.animationName = "none";
+
+                requestAnimationFrame(() => {
+                  setTimeout(() => {
+                    notificationRef.current.style.animationName = ""
+                  }, 0);
+                })
+            }
+
+        } catch (e) {
             console.log(`Failed to save profile`);
         }
     }
@@ -82,11 +94,13 @@ export const PageProfileSetup = () => {
                 title: "Profile"
             })
         )
+
+        notificationRef.current.style.animationName = "none";
     }, [])
 
     useEffect(() => {
         const saveShortcutListener = async (evt) => {
-            if ((evt.key === 's'|| evt.key === 'S') && evt.ctrlKey) {
+            if ((evt.key === 's' || evt.key === 'S') && evt.ctrlKey) {
                 saveProfile()
                 evt.preventDefault()
             }
@@ -95,57 +109,62 @@ export const PageProfileSetup = () => {
 
         return () => {
             document.removeEventListener('keydown', saveShortcutListener)
-        }   
+        }
     }, [tmpProfile])
 
     return (
-        <div style={{overflow: "auto"}}>
-            {
-                tmpProfile ? <div className="p-2">
-                    <ProfileSetup key={tmpKeyId} profile={tmpProfile}
-                        onConfigUpdate={(newData) => {
-                            setTmpProfile({ ...tmpProfile, ...newData })
-                        }}
-                    />
+        <React.Fragment>
+            <div style={{ overflow: "auto" }}>
+                {
+                    tmpProfile ? <div className="p-2">
+                        <ProfileSetup key={tmpKeyId} profile={tmpProfile}
+                            onConfigUpdate={(newData) => {
+                                setTmpProfile({ ...tmpProfile, ...newData })
+                            }}
+                        />
 
-                    <button className="button is-success mt-4" onClick={() => { saveProfile() }}>Save</button>
+                        <button className="button is-success mt-4" onClick={() => { saveProfile() }}>Save</button>
 
-                    <div className="field is-grouped mt-4">
-                        <div className="control">
-                            <div className="file is-primary" onClick={() => exportProfile()}>
-                                <label className="file-label">
+                        <div className="field is-grouped mt-4">
+                            <div className="control">
+                                <div className="file is-primary" onClick={() => exportProfile()}>
+                                    <label className="file-label">
 
-                                    <span className="file-cta">
-                                        <span className="file-icon">
-                                            <i className="fas fa-download"></i>
+                                        <span className="file-cta">
+                                            <span className="file-icon">
+                                                <i className="fas fa-download"></i>
+                                            </span>
+                                            <span className="file-label">
+                                                Export profile
+                                            </span>
                                         </span>
-                                        <span className="file-label">
-                                            Export profile
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="control">
+                                <div className="file is-primary">
+                                    <label className="file-label">
+                                        <input className="file-input" type="file" name="import" accept=".bll" onChange={(e) => loadProfile(e)} />
+                                        <span className="file-cta">
+                                            <span className="file-icon">
+                                                <i className="fas fa-upload"></i>
+                                            </span>
+                                            <span className="file-label">
+                                                Import profile
+                                            </span>
                                         </span>
-                                    </span>
-                                </label>
+                                    </label>
+                                </div>
                             </div>
                         </div>
-                        <div className="control">
-                            <div className="file is-primary">
-                                <label className="file-label">
-                                    <input className="file-input" type="file" name="import" accept=".bll" onChange={(e) => loadProfile(e)} />
-                                    <span className="file-cta">
-                                        <span className="file-icon">
-                                            <i className="fas fa-upload"></i>
-                                        </span>
-                                        <span className="file-label">
-                                            Import profile
-                                        </span>
-                                    </span>
-                                </label>
-                            </div>
-                        </div>
-                    </div>
-                </div> : ""
-            }
+                    </div> : ""
+                }
+            </div>
+            <div ref={notificationRef} className="fadeNotification notification is-success">
+                Profile updated successfully!
+            </div>
+        </React.Fragment>
 
-        </div>
 
     );
 }
