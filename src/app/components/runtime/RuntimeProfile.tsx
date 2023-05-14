@@ -131,8 +131,8 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         if (driver.status === DriverStatus.CLOSE) {
             driver.open()
         } else {
+            onLogEnabledToggle(false)
             driver.close()
-            setLogEnabled(false)
         }
     }
 
