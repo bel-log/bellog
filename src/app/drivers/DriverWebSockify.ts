@@ -98,10 +98,10 @@ export class DriverWebSockify implements DriverOpenClose {
 
 
                 if(this.params.externalWebSockify) {
-                    this.websocket = new WebSocket(`wss://localhost:${this.params.externalWebSockifyPort}/`);
+                    this.websocket = new WebSocket(`ws://localhost:${this.params.externalWebSockifyPort}/`);
                 } else {
-                    const response = await (await fetch(`https://localhost:${location.port}/websockify?ip=${this.params.ip}&port=${this.params.port}`)).json()
-                    this.websocket = new WebSocket(`wss://localhost:${response.port}/`);
+                    const response = await (await fetch(`/websockify?ip=${this.params.ip}&port=${this.params.port}`)).json()
+                    this.websocket = new WebSocket(`ws://localhost:${response.port}/`);
                 }
 
                 this.websocket.onopen = (event) => {
@@ -110,11 +110,17 @@ export class DriverWebSockify implements DriverOpenClose {
 
                     if(!this.params.externalWebSockify) {
                         this.keepalive = window.setInterval(async () => {
-                            const response = await fetch(`https://localhost:${location.port}/websockify?ip=${this.params.ip}&port=${this.params.port}&keepalive=true`)
+                            const response = await fetch(`/websockify?ip=${this.params.ip}&port=${this.params.port}&keepalive=true`)
      
-                             if(!response.ok || response.status !== 200 || (await response.json()).error !== null) {
-                                 this.onErrorCb(new DriverError("Keepalive failed"))
-                                 this.websocket.close()
+                             if(response.ok && response.status === 200) {
+                                 const json = (await response.json())
+                                 if(json.err) {
+                                    this.onErrorCb(new DriverError("Keepalive failed"))
+                                    this.websocket.close()
+                                 }
+                             } else {
+                                this.onErrorCb(new DriverError("Keepalive failed"))
+                                this.websocket.close()
                              }
      
                          }, 30 * 1000)
@@ -122,8 +128,10 @@ export class DriverWebSockify implements DriverOpenClose {
                 };
 
 
-                this.websocket.onmessage = (event) => {
-                    this.cache.add(event.data)
+                this.cache.clean()
+                this.websocket.onmessage = async (event) =>  {
+                    const data = event.data as Blob
+                    this.cache.add(new Uint8Array(await data.arrayBuffer()))
                 };
 
                 this.websocket.onclose = (event) => {

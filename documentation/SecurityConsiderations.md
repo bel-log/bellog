@@ -10,7 +10,7 @@ Basic protection agains thid-party script that may send private data to their se
 is provided via a csp policy in page header
 
 ```
-<meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' 'unsafe-eval'">
+<meta http-equiv="Content-Security-Policy" content="default-src ws: localhost:* 'self' 'unsafe-inline' 'unsafe-eval'">
 ```
 
 This prevents any cross origin request.

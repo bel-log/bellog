@@ -30,11 +30,13 @@ const proxy = {
                 const port = req.query.port
                 const freePort = getPortFree()
 
-                if (req.query.keepAlive) {
-                    if (webSocketMap[`${ip}:${port}`]) {
+                const wid = `${ip}:${port}`
+
+                if (req.query.keepalive) {
+                    if (webSocketMap.hasOwnProperty(wid)) {
                         // Websocket already ready, refresh keep alive
-                        clearInterval(webSocketMap[`${ip}:${port}`].timer)
-                        webSocketMap[`${ip}:${port}`].timer = setInterval(webSocketMap[`${ip}:${port}`].cb, 1 * 60 * 1000)
+                        clearInterval(webSocketMap[wid].timer)
+                        webSocketMap[wid].timer = setInterval(webSocketMap[wid].cb, 1 * 60 * 1000)
                         res.send({ port: freePort, err: null })
                     } else {
                         res.send({ err: "Websocket not ready" })
@@ -42,38 +44,48 @@ const proxy = {
                     return
                 }
 
-                webSocketMap[`${ip}:${port}`] = {}
-                webSocketMap[`${ip}:${port}`].port = freePort
-                webSocketMap[`${ip}:${port}`].timer = -1
-                webSocketMap[`${ip}:${port}`].cb = () => {
-                    wsockify.terminate()
-                    clearInterval(webSocketMap[`${ip}:${port}`].timer)
-                    delete webSocketMap[`${ip}:${port}`]
-                }
-
-                freePort.then((freePort) => {
-                    try {
-                        let wsockify = new Websockify(
-                            {
-                                source: `localhost:${freePort}`, //WebSocket server binding address
-                                target: `${ip}:${port}`, //Proxying TCP port
-                                logEnabled: false,      //Disable logging
-                            }
-                        );
-
-                        wsockify.start().then(() => {
-                            res.send({ port: freePort, err: null })
-                            webSocketMap[`${ip}:${port}`].timer = setInterval(webSocketMap[`${ip}:${port}`].cb, 1 * 60 * 1000)
-                        }).catch((err) => {
-                            res.send({ err: err.message })
-                            delete webSocketMap[`${ip}:${port}`]
-                        });
-                    } catch (err) {
-                        res.send({ err: err.message })
-                        delete webSocketMap[`${ip}:${port}`]
+                if (!webSocketMap.hasOwnProperty(wid)) {
+                    webSocketMap[wid] = {}
+                   
+                    webSocketMap[wid].timer = -1
+                    webSocketMap[wid].cb = () => {
+                        console.log(`Clear ${wid}`)
+                        console.log(`Clear ${webSocketMap[wid].timer}`)
+                        webSocketMap[wid].ws.terminate()
+                        clearInterval(webSocketMap[wid].timer)
+                        delete webSocketMap[wid]
                     }
 
-                })
+                    freePort.then((freePort) => {
+                        try {
+                            let wsockify = new Websockify(
+                                {
+                                    source: `localhost:${freePort}`, //WebSocket server binding address
+                                    target: `${ip}:${port}`, //Proxying TCP port
+                                    logEnabled: true,      //Disable logging
+                                }
+                            );
+    
+                            wsockify.start().then(() => {
+                                res.send({ port: freePort, err: null })
+                                webSocketMap[wid].ws = wsockify
+                                webSocketMap[wid].port = freePort
+                                webSocketMap[wid].timer = setInterval(webSocketMap[wid].cb, 1 * 60 * 1000)
+                            }).catch((err) => {
+                                res.send({ err: err.message })
+                                clearInterval(webSocketMap[wid].timer)
+                                delete webSocketMap[wid]
+                            });
+                        } catch (err) {
+                            res.send({ err: err.message })
+                            clearInterval(webSocketMap[wid].timer)
+                            delete webSocketMap[wid]
+                        }
+    
+                    })
+                } else {
+                    res.send({ port: webSocketMap[wid].port, err: null })
+                }
             }
         }
     }
