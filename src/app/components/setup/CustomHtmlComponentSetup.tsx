@@ -31,7 +31,7 @@ export const CustomHtmlComponentSetup = (props: {
     const previewRef = useRef<HTMLHeadingElement>()
 
     function updateCode(code: string, previewOnly: boolean= false) {
-        let paramsNames = [...code.matchAll(/\$\{.*(\$\$[a-zA-Z0-9]*).*}/gm)]
+        let paramsNames = [...code.matchAll(/\${[^$]*(\$\$[a-zA-Z0-9]*)[^a-zA-Z0-9]*}/gm)]
 
         let currentParameters = paramsNames.reduce((acc, m) => {
             let name = m.slice(-1)[0].replace("$$", "")
