@@ -1,6 +1,6 @@
 
 export const PROFILE_VERSION = "4"
-export const VERSION = "v0.1.1"
+export const VERSION = "v0.2.0"
 
 export function checkVersionForRedirection(setupVersion: string) {
     if(setupVersion !== PROFILE_VERSION) {
