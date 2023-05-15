@@ -32,6 +32,8 @@ Bellog supports:
 * Connecting to ADB devices and running logcat (requires recent version of Chrome or edge)
 * Storing the logs (requires recent version of Chrome or edge)
 
+*Tested only on Windows, there are some knows issue on MacOS related to ADB*
+
 == Check it out
 
 You can visit the online https://bel-log.github.io[Bellog] and use it.
@@ -68,6 +70,8 @@ npm run build
 
 == Roadmap
 
+* Debug MacOS
 * Web HID
 * Can bus (?)
+* TLS
 
