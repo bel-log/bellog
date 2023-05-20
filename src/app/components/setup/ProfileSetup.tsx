@@ -38,13 +38,10 @@ import { CustomBuildersSetup } from "./CustomBuildersSetup";
 import { Action } from "./Action";
 import { WidgetGroup } from "./WidgetGroup";
 import { CollpaseGroup } from "../CollapseGroup";
-import { isDriverAllowedInWebMode, getDriverWarning } from "./../../utility/env";
-import { DriverAdbLogcat, DriverAdbLogcatParameters } from "../../drivers/DriverAdbLogcat";
-import { DriverAdbLogcatSetup } from "./DriverAdbSetup";
-import { DriverWebSockifySetup } from "./DriverWebsockifySetup";
-import { DriverWebSockifyParameters } from "../../drivers/DriverWebSockify";
+import { SetupSideBarItems } from "../SetupSideBar";
+import { SideMainSettings } from "../sidepages/SideMainSettings";
 
-const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any }) => {
+const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSideBarItems, onConfigUpdate: any }) => {
 
     const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 
@@ -101,11 +98,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
         setWidgetGroups([...widgetGroups, buildDefaultWidgetGroup(widgetGroups)])
     }
 
-    function updateDriverType(newDriverType: DriverNames) {
-        setDriverType(newDriverType, true)
-        setDriverSettings(buildDefaultDriverSettings(newDriverType), true)
-        applyCache()
-    }
+
 
     function cloneAction(action: ActionProperties) {
         const actionForNewID = buildDefaultAction(actions, builders)
@@ -138,7 +131,7 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
                 break
             }
         }
-        
+
         header.appendChild(script)
 
         let stylesa = header.getElementsByTagName("style")
@@ -155,421 +148,333 @@ const ProfileSetup = (props: { profile: SetupProfileObject, onConfigUpdate: any 
 
     return (
         <div>
-            <h1 className="title">Setup Profile</h1>
+            {
+                props.sideBarItem === SetupSideBarItems.MainSettings &&
+                <SideMainSettings
+                    profileName={profileName}
+                    setProfileName={(newProfileName) => {
+                        setProfileName(newProfileName)
+                    }}
+                    driverType={driverType}
+                    driverSettings={driverSettings}
+                    setDriver={([newDriverType, newDriverSettings]) => {
+                        setDriverType(newDriverType, true)
+                        setDriverSettings(newDriverSettings, true)
+                        applyCache()
+                    }}
+                />
+            }
 
-            <div className="field">
-                <label className="label">Profile name</label>
-                <div className="control">
-                    <input className="input" type="text" placeholder="Text input" value={profileName}
-                        onChange={(evt) => setProfileName(evt.target.value)} />
-                </div>
-            </div>
+            {
+                props.sideBarItem === SetupSideBarItems.CustomHtmlComponents &&
+                <React.Fragment>
+                    <CollapseCard title="Custom Html Components">
+                        <CollpaseGroup array={htmlElems} deleteIcon
+                            getTitle={(index) => htmlElems[index].name}
+                            getId={(index) => htmlElems[index].id}
 
-            <div className="field">
-                {
-                    (() => {
-                        const [tmpDriverSettings, setTmpDriverSettings] = useState(driverSettings)
-                        const [driverModalIsOpen, setDriverModalIsOpen] = useStateWithCallback(false, (isOpen) => {
-                            if (isOpen) {
-                                setTmpDriverSettings(driverSettings)
+                            setNewArray={(array) => { setHtmlElems(array) }}
+                        >
+                            {
+                                (htmlelem, index) => (
+                                    <CustomHtmlComponentSetup
+                                        key={htmlelem.id}
+                                        cfg={htmlelem}
+                                        onConfigChange={(newHtmlElem) =>
+                                            setHtmlElems(
+                                                htmlElemsRef.current.map((val, n_index) => {
+                                                    if (n_index == index)
+                                                        return { ...val, ...newHtmlElem }
+                                                    else
+                                                        return val
+                                                }))}
+                                    />
+                                )
                             }
-                        })
+                        </CollpaseGroup>
+                        <button className="button is-primary mt-4" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
+                    </CollapseCard>
+                </React.Fragment>
+            }
 
-                        useEffect(() => {
-                            setDriverSettings(tmpDriverSettings)
-                        }, [tmpDriverSettings])
-
-                        return (
-                            <React.Fragment>
-                                <label className="label">Driver</label>
-                                <div className="field has-addons">
-                                    <div className="select">
-                                        <select value={driverType} className={`${isDriverAllowedInWebMode(driverType) ? "" : "has-text-danger"}`}
-                                            onChange={(evt) => updateDriverType(evt.target.value as DriverNames)}>
-                                            {
-                                                Object.values(DriverNames).map(
-                                                    (driver, dindex) => {
-                                                        if (isDriverAllowedInWebMode(driver)) {
-                                                            return <option className="has-text-black" key={dindex} value={driver}>{driver}</option>
-                                                        } else {
-                                                            return <option className="has-text-danger" key={dindex} value={driver}>{driver}</option>
-                                                        }
-                                                    }
-                                                )
-                                            }
-                                        </select>
-                                    </div>
-                                    <p className="control">
-                                        <a className="button is-info" onClick={() => {
-                                            setDriverModalIsOpen(!driverModalIsOpen)
-                                        }}>
-                                            Settings
-                                        </a>
-                                    </p>
-                                    {
-                                        (() => {
-                                            if (isDriverAllowedInWebMode(driverType)) {
-                                                return <div></div>
-                                            } else return <div className="control is-flex is-align-items-center ml-2 has-text-danger">
-                                                <p className="is-justify-content-center">{getDriverWarning(driverType)}</p>
-                                            </div>
-                                        })()
-                                    }
-                                    {
-                                        (() => {
-                                            if (driverModalIsOpen) {
-                                                return (
-                                                    <div className={`modal ${driverModalIsOpen ? "is-active" : ""}`}>
-                                                        <div className="modal-background"></div>
-                                                        <div className="modal-card">
-                                                            <header className="modal-card-head">
-                                                                <p className="modal-card-title">{driverType} Settings</p>
-                                                                <button className="delete" aria-label="close"
-                                                                    onClick={() => setDriverModalIsOpen(false)}></button>
-                                                            </header>
-                                                            <section className="modal-card-body">
-                                                                {
-                                                                    (() => {
-                                                                        switch (driverType) {
-                                                                            case DriverNames.DriverSerialPortWebSerial:
-                                                                                return (
-                                                                                    <DriverWebSerialSetup
-                                                                                        cfg={tmpDriverSettings as DriverSerialPortWebSerialParameters}
-                                                                                        onConfigUpdate={(cfg) => {
-                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
-                                                                                        }}
-                                                                                    />
-                                                                                )
-                                                                            case DriverNames.DriverAdbLogcat:
-                                                                                return (
-                                                                                    <DriverAdbLogcatSetup
-                                                                                        cfg={tmpDriverSettings as DriverAdbLogcatParameters}
-                                                                                        onConfigUpdate={(cfg) => {
-                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
-                                                                                        }}
-                                                                                    />
-                                                                                )
-                                                                            case DriverNames.DriverWebSockify:
-                                                                                return (
-                                                                                    <DriverWebSockifySetup
-                                                                                        cfg={tmpDriverSettings as DriverWebSockifyParameters}
-                                                                                        onConfigUpdate={(cfg) => {
-                                                                                            setTmpDriverSettings({ ...tmpDriverSettings, ...cfg })
-                                                                                        }}
-                                                                                    />
-                                                                                )
-
-                                                                        }
-                                                                    })()
-                                                                }
-                                                            </section>
-                                                            <footer className="modal-card-foot">
-                                                                <button className="button is-success"
-                                                                    onClick={() => {
-                                                                        setDriverSettings(tmpDriverSettings);
-                                                                        setDriverModalIsOpen(false)
-                                                                    }}>
-                                                                    Save changes
-                                                                </button>
-                                                                <button className="button"
-                                                                    onClick={() => setDriverModalIsOpen(false)}>
-                                                                    Cancel
-                                                                </button>
-                                                            </footer>
-                                                        </div>
-                                                    </div>
-                                                )
-                                            } else return (<div />)
-
-                                        })()
-                                    }
-
-                                </div>
-                            </React.Fragment>
-
-                        )
-                    })()
-                }
-            </div>
-
-            <CollapseCard title="Custom Html Components">
-                <CollpaseGroup array={htmlElems} deleteIcon
-                    getTitle={(index) => htmlElems[index].name}
-                    getId={(index) => htmlElems[index].id}
-
-                    setNewArray={(array) => { setHtmlElems(array) }}
-                >
-                    {
-                        (htmlelem, index) => (
-                            <CustomHtmlComponentSetup
-                                key={htmlelem.id}
-                                cfg={htmlelem}
-                                onConfigChange={(newHtmlElem) =>
-                                    setHtmlElems(
-                                        htmlElemsRef.current.map((val, n_index) => {
-                                            if (n_index == index)
-                                                return { ...val, ...newHtmlElem }
-                                            else
-                                                return val
-                                        }))}
-                            />
-                        )
-                    }
-                </CollpaseGroup>
-                <button className="button is-primary mt-4" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
-            </CollapseCard>
-
-            <CollapseCard title="Global styles">
-                {
-                    styles.map(
-                        (style, index) => {
-                            return (
-                                <GlobalStyleSetup
-                                    key={style.id}
-                                    cfg={style}
-                                    onConfigChange={(newStyle) =>
-                                        setStyles(
-                                            stylesRef.current.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...val, ...newStyle }
-                                                else
-                                                    return val
-                                            }))}
-                                    onDelete={() => setStyles(styles.filter((val, n_index) => {
-                                        return n_index != index
-                                    }))}
-                                />
-                            )
-
-                        }
-                    )
-                }
-                <button className="button is-primary mt-4" onClick={() => addNewGlobalStyle()}>Add New</button>
-            </CollapseCard>
-
-            <CollapseCard title="Global scripts">
-                {
-                    scripts.map(
-                        (gscript, index) => {
-                            return (
-                                <GlobalScriptSetup
-                                    key={gscript.id}
-                                    cfg={gscript}
-                                    onConfigChange={(newScript) =>
-                                        setScripts(
-                                            scriptsRef.current.map((n_script, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...n_script, ...newScript }
-                                                else
-                                                    return n_script
-                                            }))}
-                                    onDelete={() => setScripts(scripts.filter((n_script, n_index) => {
-                                        return n_index != index
-                                    }))}
-                                />
-                            )
-
-                        }
-                    )
-                }
-                <button className="button is-primary mt-4" onClick={() => addNewGlobalScript()}>Add New</button>
-            </CollapseCard>
-
-            <CollapseCard title="Custom parsers">
-                {
-                    parsers.map(
-                        (parser, index) => {
-                            return (
-                                <CustomParsersSetup
-                                    key={parser.id}
-                                    cfg={parser}
-                                    onConfigChange={(newScript) =>
-                                        setParsers(
-                                            parsersRef.current.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...val, ...newScript }
-                                                else
-                                                    return val
-                                            }))}
-                                    onDelete={() => setParsers(parsers.filter((val, n_index) => {
-                                        return n_index != index
-                                    }))}
-                                />
-                            )
-
-                        }
-                    )
-                }
-                <button className="button is-primary mt-4" onClick={() => addNewCustomParser()}>Add New</button>
-            </CollapseCard>
-            <CollapseCard title="Custom builders">
-                {
-                    builders.map(
-                        (builder, index) => {
-                            return (
-                                <CustomBuildersSetup
-                                    key={builder.id}
-                                    cfg={builder}
-                                    onConfigChange={(newScript) =>
-                                        setBuilders(
-                                            buildersRef.current.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...val, ...newScript }
-                                                else
-                                                    return val
-                                            }))}
-                                    onDelete={() => setBuilders(builders.filter((val, n_index) => {
-                                        return n_index != index
-                                    }))}
-                                />
-                            )
-
-                        }
-                    )
-                }
-                <button className="button is-primary mt-4" onClick={() => addNewCustomBuilder()}>Add New</button>
-            </CollapseCard>
-            <CollapseCard title="Actions">
-
-                <CollpaseGroup array={actions} deleteIcon
-                    getTitle={(index) => actions[index].name}
-                    getId={(index) => actions[index].id}
-
-                    setNewArray={(array) => { setActions(array) }}
-                >
-                    {
-                        (action, index) => (
-                            <Action
-                                key={action.id}
-                                cfg={action}
-                                customBuilders={builders}
-                                onConfigChange={(newScript) =>
-                                    setActions(
-                                        actionsRef.current.map((val, n_index) => {
-                                            if (n_index == index)
-                                                return { ...val, ...newScript }
-                                            else
-                                                return val
-                                        }))}
-                            />
-                        )
-                    }
-                </CollpaseGroup>
-                <button className="button is-primary mt-4" onClick={() => addNewCustomAction()}>Add New</button>
-            </CollapseCard>
-
-            <div className="mt-4">
-                <div className="field is-grouped">
-                    <div className="is-flex control is-align-items-center">
-                        <label className="label">Views</label>
-                    </div>
-                    <div className="control">
-                        <div className="button is-success is-quad-button" onClick={() => addNewView()}>
-                            <span className="icon is-large">
-                                <i className="fas fa-plus"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                <CollpaseGroup array={views} deleteIcon
-                    getTitle={(index) => views[index].name}
-                    getId={(index) => views[index].id}
-
-                    setNewArray={(array) => { setViews(array) }}
-                >
-                    {
-                        (view, index) => (
-                            <ViewSetup
-                                cfg={view}
-                                customParsers={parsers}
-                                customHtmlComponents={htmlElems}
-                                widgetsGroups={widgetGroups}
-                                onConfigChange={(newView) =>
-                                    setViews(
-                                        viewsRef.current.map((val, n_index) => {
-                                            if (n_index == index)
-                                                return { ...val, ...newView }
-                                            else
-                                                return val
-                                        }))}
-                            />
-                        )
-                    }
-                </CollpaseGroup>
-            </div>
-
-            <div className="mt-4">
-                <div className="field is-grouped">
-                    <div className="is-flex control is-align-items-center">
-                        <label className="label">Interactive Widgets</label>
-                    </div>
-                    <div className="control">
-                        <div className="button is-success is-quad-button" onClick={() => addNewInteractiveWidget()}>
-                            <span className="icon is-large">
-                                <i className="fas fa-plus"></i>
-                            </span>
-                        </div>
-                    </div>
-                </div>
-                {
-
-                    <CollpaseGroup array={widgetGroups} deleteIcon
-                        getTitle={(index) => widgetGroups[index].name}
-                        getId={(index) => widgetGroups[index].id}
-
-                        setNewArray={(array) => { setWidgetGroups(array) }}
-                    >
+            {
+                props.sideBarItem === SetupSideBarItems.CustomCodeAndStyles &&
+                <React.Fragment>
+                    <CollapseCard title="Global styles">
                         {
-                            (val, index) => (
-                                <WidgetGroup
-                                    cfg={val}
-                                    customHtmlComponents={htmlElems}
-                                    availableActions={actions}
-                                    onConfigChange={(newView) =>
-                                        setWidgetGroups(
-                                            widgetGroupsRef.current.map((val, n_index) => {
-                                                if (n_index == index)
-                                                    return { ...val, ...newView }
-                                                else
-                                                    return val
+                            styles.map(
+                                (style, index) => {
+                                    return (
+                                        <GlobalStyleSetup
+                                            key={style.id}
+                                            cfg={style}
+                                            onConfigChange={(newStyle) =>
+                                                setStyles(
+                                                    stylesRef.current.map((val, n_index) => {
+                                                        if (n_index == index)
+                                                            return { ...val, ...newStyle }
+                                                        else
+                                                            return val
+                                                    }))}
+                                            onDelete={() => setStyles(styles.filter((val, n_index) => {
+                                                return n_index != index
                                             }))}
-                                />
+                                        />
+                                    )
+
+                                }
                             )
                         }
-                    </CollpaseGroup>
-                }
-            </div>
+                        <button className="button is-primary mt-4" onClick={() => addNewGlobalStyle()}>Add New</button>
+                    </CollapseCard>
 
-            <div className="mt-4">
-                <CollapseCard title="Settings">
+                    <CollapseCard title="Global scripts">
+                        {
+                            scripts.map(
+                                (gscript, index) => {
+                                    return (
+                                        <GlobalScriptSetup
+                                            key={gscript.id}
+                                            cfg={gscript}
+                                            onConfigChange={(newScript) =>
+                                                setScripts(
+                                                    scriptsRef.current.map((n_script, n_index) => {
+                                                        if (n_index == index)
+                                                            return { ...n_script, ...newScript }
+                                                        else
+                                                            return n_script
+                                                    }))}
+                                            onDelete={() => setScripts(scripts.filter((n_script, n_index) => {
+                                                return n_index != index
+                                            }))}
+                                        />
+                                    )
 
+                                }
+                            )
+                        }
+                        <button className="button is-primary mt-4" onClick={() => addNewGlobalScript()}>Add New</button>
+                    </CollapseCard>
+                </React.Fragment>
+            }
 
-                    <div className="field">
-                        <div className="control">
-                            <label className="checkbox">
-                                <input type="checkbox" checked={globalSettings.shareDataBetweenViews} onChange={(evt) => {
-                                    setGlobalSettings({ ...globalSettings, ...{ shareDataBetweenViews: evt.target.checked } })
-                                }} />
-                                &nbsp;Share data between views
-                            </label>
+            {
+                props.sideBarItem === SetupSideBarItems.CustomParserAndBuilders &&
+                <React.Fragment>
+                    <CollapseCard title="Custom parsers">
+                        {
+                            parsers.map(
+                                (parser, index) => {
+                                    return (
+                                        <CustomParsersSetup
+                                            key={parser.id}
+                                            cfg={parser}
+                                            onConfigChange={(newScript) =>
+                                                setParsers(
+                                                    parsersRef.current.map((val, n_index) => {
+                                                        if (n_index == index)
+                                                            return { ...val, ...newScript }
+                                                        else
+                                                            return val
+                                                    }))}
+                                            onDelete={() => setParsers(parsers.filter((val, n_index) => {
+                                                return n_index != index
+                                            }))}
+                                        />
+                                    )
+
+                                }
+                            )
+                        }
+                        <button className="button is-primary mt-4" onClick={() => addNewCustomParser()}>Add New</button>
+                    </CollapseCard>
+                    <CollapseCard title="Custom builders">
+                        {
+                            builders.map(
+                                (builder, index) => {
+                                    return (
+                                        <CustomBuildersSetup
+                                            key={builder.id}
+                                            cfg={builder}
+                                            onConfigChange={(newScript) =>
+                                                setBuilders(
+                                                    buildersRef.current.map((val, n_index) => {
+                                                        if (n_index == index)
+                                                            return { ...val, ...newScript }
+                                                        else
+                                                            return val
+                                                    }))}
+                                            onDelete={() => setBuilders(builders.filter((val, n_index) => {
+                                                return n_index != index
+                                            }))}
+                                        />
+                                    )
+
+                                }
+                            )
+                        }
+                        <button className="button is-primary mt-4" onClick={() => addNewCustomBuilder()}>Add New</button>
+                    </CollapseCard>
+                </React.Fragment>
+            }
+
+            {
+                props.sideBarItem === SetupSideBarItems.Actions &&
+                <React.Fragment>
+                    <CollapseCard title="Actions">
+
+                        <CollpaseGroup array={actions} deleteIcon
+                            getTitle={(index) => actions[index].name}
+                            getId={(index) => actions[index].id}
+
+                            setNewArray={(array) => { setActions(array) }}
+                        >
+                            {
+                                (action, index) => (
+                                    <Action
+                                        key={action.id}
+                                        cfg={action}
+                                        customBuilders={builders}
+                                        onConfigChange={(newScript) =>
+                                            setActions(
+                                                actionsRef.current.map((val, n_index) => {
+                                                    if (n_index == index)
+                                                        return { ...val, ...newScript }
+                                                    else
+                                                        return val
+                                                }))}
+                                    />
+                                )
+                            }
+                        </CollpaseGroup>
+                        <button className="button is-primary mt-4" onClick={() => addNewCustomAction()}>Add New</button>
+                    </CollapseCard>
+                </React.Fragment>
+            }
+
+            {
+                props.sideBarItem === SetupSideBarItems.View &&
+                <React.Fragment>
+
+                    <div className="mt-4">
+                        <div className="field is-grouped">
+                            <div className="is-flex control is-align-items-center">
+                                <label className="label">Views</label>
+                            </div>
+                            <div className="control">
+                                <div className="button is-success is-quad-button" onClick={() => addNewView()}>
+                                    <span className="icon is-large">
+                                        <i className="fas fa-plus"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+                        <CollpaseGroup array={views} deleteIcon
+                            getTitle={(index) => views[index].name}
+                            getId={(index) => views[index].id}
+
+                            setNewArray={(array) => { setViews(array) }}
+                        >
+                            {
+                                (view, index) => (
+                                    <ViewSetup
+                                        cfg={view}
+                                        customParsers={parsers}
+                                        customHtmlComponents={htmlElems}
+                                        widgetsGroups={widgetGroups}
+                                        onConfigChange={(newView) =>
+                                            setViews(
+                                                viewsRef.current.map((val, n_index) => {
+                                                    if (n_index == index)
+                                                        return { ...val, ...newView }
+                                                    else
+                                                        return val
+                                                }))}
+                                    />
+                                )
+                            }
+                        </CollpaseGroup>
                     </div>
 
-                    <div className="field">
-                        <label className="label">Maximum items per view</label>
-                        <div className="control">
-                            <input
-                                className="input is-success"
-                                type="number"
-                                value={globalSettings.maximumItemsPerView}
-                                onChange={(evt) => {
-                                    setGlobalSettings({ ...globalSettings, ...{ maximumItemsPerView: parseInt(evt.target.value) } })
-                                }}
-                            />
+                    <div className="mt-4">
+                        <div className="field is-grouped">
+                            <div className="is-flex control is-align-items-center">
+                                <label className="label">Interactive Widgets</label>
+                            </div>
+                            <div className="control">
+                                <div className="button is-success is-quad-button" onClick={() => addNewInteractiveWidget()}>
+                                    <span className="icon is-large">
+                                        <i className="fas fa-plus"></i>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
+                        {
+
+                            <CollpaseGroup array={widgetGroups} deleteIcon
+                                getTitle={(index) => widgetGroups[index].name}
+                                getId={(index) => widgetGroups[index].id}
+
+                                setNewArray={(array) => { setWidgetGroups(array) }}
+                            >
+                                {
+                                    (val, index) => (
+                                        <WidgetGroup
+                                            cfg={val}
+                                            customHtmlComponents={htmlElems}
+                                            availableActions={actions}
+                                            onConfigChange={(newView) =>
+                                                setWidgetGroups(
+                                                    widgetGroupsRef.current.map((val, n_index) => {
+                                                        if (n_index == index)
+                                                            return { ...val, ...newView }
+                                                        else
+                                                            return val
+                                                    }))}
+                                        />
+                                    )
+                                }
+                            </CollpaseGroup>
+                        }
                     </div>
-                </CollapseCard>
-            </div>
+                </React.Fragment>
+            }
+
+            {
+                props.sideBarItem === SetupSideBarItems.OtherSettings &&
+                <React.Fragment>
+                    <div className="mt-4">
+                        <CollapseCard title="Settings">
+
+
+                            <div className="field">
+                                <div className="control">
+                                    <label className="checkbox">
+                                        <input type="checkbox" checked={globalSettings.shareDataBetweenViews} onChange={(evt) => {
+                                            setGlobalSettings({ ...globalSettings, ...{ shareDataBetweenViews: evt.target.checked } })
+                                        }} />
+                                        &nbsp;Share data between views
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="field">
+                                <label className="label">Maximum items per view</label>
+                                <div className="control">
+                                    <input
+                                        className="input is-success"
+                                        type="number"
+                                        value={globalSettings.maximumItemsPerView}
+                                        onChange={(evt) => {
+                                            setGlobalSettings({ ...globalSettings, ...{ maximumItemsPerView: parseInt(evt.target.value) } })
+                                        }}
+                                    />
+                                </div>
+                            </div>
+                        </CollapseCard>
+                    </div>
+                </React.Fragment>
+            }
 
         </div>
     );

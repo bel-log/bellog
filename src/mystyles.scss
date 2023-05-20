@@ -126,6 +126,10 @@ html, body {
   animation: fadeinout 1s linear forwards;
 }
 
+.has-background-color-primary-plus {
+  background-color: $primaryplus;
+}
+
 @-webkit-keyframes fadeinout {
 0%,100% { opacity: 0; }
 50% { opacity: 1; }
