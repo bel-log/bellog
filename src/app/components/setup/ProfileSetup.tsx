@@ -41,7 +41,11 @@ import { CollpaseGroup } from "../CollapseGroup";
 import { SetupSideBarItems } from "../SetupSideBar";
 import { SideMainSettings } from "../sidepages/SideMainSettings";
 
-const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSideBarItems, onConfigUpdate: any }) => {
+const ProfileSetup = (props: {
+    profile: SetupProfileObject, sideBarItem: SetupSideBarItems,
+    exportProfile: () => void, loadProfile: (e: React.ChangeEvent<HTMLInputElement>) => void,
+    onConfigUpdate: any
+}) => {
 
     const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 
@@ -152,6 +156,8 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
                 props.sideBarItem === SetupSideBarItems.MainSettings &&
                 <SideMainSettings
                     profileName={profileName}
+                    exportProfile={props.exportProfile}
+                    loadProfile={props.loadProfile}
                     setProfileName={(newProfileName) => {
                         setProfileName(newProfileName)
                     }}
@@ -168,6 +174,16 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.CustomHtmlComponents &&
                 <React.Fragment>
+                    <h1 className="title">Custom Html Components</h1>
+                    <p>Data received is always displayed on the runtime as html object.<br/>
+                    It is often necessary to create your own visual object to display data according to your needs.<br/>
+                    Bellog embeds the <a href="https://bulma.io/documentation/">Bulma CSS framework</a>, so good-looking object can be easily achieve by checking out the framework examples.<br/>
+                    </p><br/>
+                    <p>
+                        Html code supports expressions like {"${myJsFunc()}"}<br/>
+                        Variables with two leading {"$$"} are special Bellog's bindings to replace with incoming data received and parsed
+                    </p>
+                    <br/>
                     <CollapseCard title="Custom Html Components">
                         <CollpaseGroup array={htmlElems} deleteIcon
                             getTitle={(index) => htmlElems[index].name}
@@ -200,6 +216,13 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.CustomCodeAndStyles &&
                 <React.Fragment>
+                    <h1 className="title">Custom Code and Styles</h1>
+                    <p>You can add .js scripts or .css styles that will be accessible by any cusotm parser, custom builder
+                        action, custom html component or match script. <br />
+                        They are useful to customize html components or to add code or libraries used to parse a protocol. <br />
+                        All scripts and style will be injected inside the head tag of the page.
+                    </p>
+                    <br />
                     <CollapseCard title="Global styles">
                         {
                             styles.map(
@@ -261,6 +284,12 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.CustomParserAndBuilders &&
                 <React.Fragment>
+                    <h1 className="title">Custom Parsers and Builders</h1>
+                    <p>A parser contains the code to parse the data received from the driver.<br/>
+                    For example CRC calculations, matching command code, base64 deconding and so on.<br/>
+                    A builder instead takes data from an Action and sends it. <br/>
+                    </p>
+                    <br/>
                     <CollapseCard title="Custom parsers">
                         {
                             parsers.map(
@@ -321,6 +350,11 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.Actions &&
                 <React.Fragment>
+                    <h1 className="title">Actions</h1>
+                    <p>Action can be triggered from a Widget, for example when a button is pressed. <br/>
+                    Actions are bound to an event (like click) and send fixed that to the driver. <br/>
+                    </p>
+                    <br/>
                     <CollapseCard title="Actions">
 
                         <CollpaseGroup array={actions} deleteIcon
@@ -355,7 +389,11 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.View &&
                 <React.Fragment>
-
+                    <h1 className="title">Views</h1>
+                    <p>Views are the main components of the application. They are the pages that will be displayed to the user.<br/>
+                    For each view must be associated a parser, data filters and visual object to display accepted data <br/>
+                    Each view can have multiple widgets, widgets always stay fixed at the left of a page.
+                    </p>
                     <div className="mt-4">
                         <div className="field is-grouped">
                             <div className="is-flex control is-align-items-center">
@@ -443,36 +481,33 @@ const ProfileSetup = (props: { profile: SetupProfileObject, sideBarItem: SetupSi
             {
                 props.sideBarItem === SetupSideBarItems.OtherSettings &&
                 <React.Fragment>
-                    <div className="mt-4">
-                        <CollapseCard title="Settings">
+                    <h1 className="title">Other settings</h1>
 
-
-                            <div className="field">
-                                <div className="control">
-                                    <label className="checkbox">
-                                        <input type="checkbox" checked={globalSettings.shareDataBetweenViews} onChange={(evt) => {
-                                            setGlobalSettings({ ...globalSettings, ...{ shareDataBetweenViews: evt.target.checked } })
-                                        }} />
-                                        &nbsp;Share data between views
-                                    </label>
-                                </div>
-                            </div>
-
-                            <div className="field">
-                                <label className="label">Maximum items per view</label>
-                                <div className="control">
-                                    <input
-                                        className="input is-success"
-                                        type="number"
-                                        value={globalSettings.maximumItemsPerView}
-                                        onChange={(evt) => {
-                                            setGlobalSettings({ ...globalSettings, ...{ maximumItemsPerView: parseInt(evt.target.value) } })
-                                        }}
-                                    />
-                                </div>
-                            </div>
-                        </CollapseCard>
+                    <div className="field">
+                        <div className="control">
+                            <label className="checkbox">
+                                <input type="checkbox" checked={globalSettings.shareDataBetweenViews} onChange={(evt) => {
+                                    setGlobalSettings({ ...globalSettings, ...{ shareDataBetweenViews: evt.target.checked } })
+                                }} />
+                                &nbsp;Share data between views
+                            </label>
+                        </div>
                     </div>
+
+                    <div className="field">
+                        <label className="label">Maximum items per view</label>
+                        <div className="control">
+                            <input
+                                className="input is-success"
+                                type="number"
+                                value={globalSettings.maximumItemsPerView}
+                                onChange={(evt) => {
+                                    setGlobalSettings({ ...globalSettings, ...{ maximumItemsPerView: parseInt(evt.target.value) } })
+                                }}
+                            />
+                        </div>
+                    </div>
+
                 </React.Fragment>
             }
 

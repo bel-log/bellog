@@ -15,11 +15,14 @@ import { DriverWebSockifySetup } from "../setup/DriverWebsockifySetup";
 export const SideMainSettings = (props: {
     profileName: string, setProfileName: (string) => void,
     driverType: DriverNames, driverSettings: DriverSettings,
+    exportProfile: () => void, loadProfile: (e: React.ChangeEvent<HTMLInputElement>) => void,
     setDriver: ([DriverNames, DriverSettings]) => void
 }) => {
 
     const driverType = props.driverType
     const profileName = props.profileName
+    const exportProfile = props.exportProfile
+    const loadProfile = props.loadProfile
     const setProfileName = props.setProfileName
     const [tmpDriverSettings, setTmpDriverSettings] = useState(props.driverSettings)
     const [driverModalIsOpen, setDriverModalIsOpen] = useState(false)
@@ -38,17 +41,31 @@ export const SideMainSettings = (props: {
 
     return (
         <React.Fragment>
-            <h1 className="title">Setup Profile</h1>
+                        <div className="content">
+
+            <h1>Setup Profile</h1>
 
             <div className="field">
-                <label className="label">Profile name</label>
+            <h4>Profile Name</h4>
                 <div className="control">
                     <input className="input" type="text" placeholder="Text input" value={profileName}
                         onChange={(evt) => setProfileName(evt.target.value)} />
                 </div>
             </div>
 
-            <label className="label">Driver</label>
+
+            <div className="is-flex is-flex-direction-row">
+                <div>
+                <h4>Driver</h4>
+                </div>
+                <div>
+                <span className={`ml-2 has-text-info has-tooltip-right icon is-large}`}
+                            data-tooltip="Select how the data stream is retrieved or sent by the profile.">
+                            <i className={`fas fa-lg fa-circle-info`}></i>
+                        </span>
+                        </div>
+            </div>
+
             <div className="field has-addons">
                 <div className="select">
                     <select value={driverType} className={`${isDriverAllowedInWebMode(driverType) ? "" : "has-text-danger"}`}
@@ -150,7 +167,40 @@ export const SideMainSettings = (props: {
 
                     })()
                 }
+            </div>
 
+            <div className="field is-grouped mt-4">
+                <div className="control">
+                    <div className="file is-primary" onClick={() => exportProfile()}>
+                        <label className="file-label">
+
+                            <span className="file-cta">
+                                <span className="file-icon">
+                                    <i className="fas fa-download"></i>
+                                </span>
+                                <span className="file-label">
+                                    Export profile
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+                <div className="control">
+                    <div className="file is-primary">
+                        <label className="file-label">
+                            <input className="file-input" type="file" name="import" accept=".bll" onChange={(e) => loadProfile(e)} />
+                            <span className="file-cta">
+                                <span className="file-icon">
+                                    <i className="fas fa-upload"></i>
+                                </span>
+                                <span className="file-label">
+                                    Import profile
+                                </span>
+                            </span>
+                        </label>
+                    </div>
+                </div>
+            </div>
             </div>
         </React.Fragment>
     )

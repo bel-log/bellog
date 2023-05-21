@@ -129,42 +129,12 @@ export const PageProfileSetup = () => {
                                 onConfigUpdate={(newData) => {
                                     setTmpProfile({ ...tmpProfile, ...newData })
                                 }}
+                                loadProfile={loadProfile}
+                                exportProfile={exportProfile}
                             />
 
                             <button className="button is-success mt-4" onClick={() => { saveProfile() }}>Save</button>
 
-                            <div className="field is-grouped mt-4">
-                                <div className="control">
-                                    <div className="file is-primary" onClick={() => exportProfile()}>
-                                        <label className="file-label">
-
-                                            <span className="file-cta">
-                                                <span className="file-icon">
-                                                    <i className="fas fa-download"></i>
-                                                </span>
-                                                <span className="file-label">
-                                                    Export profile
-                                                </span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                                <div className="control">
-                                    <div className="file is-primary">
-                                        <label className="file-label">
-                                            <input className="file-input" type="file" name="import" accept=".bll" onChange={(e) => loadProfile(e)} />
-                                            <span className="file-cta">
-                                                <span className="file-icon">
-                                                    <i className="fas fa-upload"></i>
-                                                </span>
-                                                <span className="file-label">
-                                                    Import profile
-                                                </span>
-                                            </span>
-                                        </label>
-                                    </div>
-                                </div>
-                            </div>
                         </div> : ""
 
                     }
