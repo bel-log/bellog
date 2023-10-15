@@ -21,12 +21,14 @@ export class DriverCache {
     public add(data: Uint8Array) {
         this.queue.push(data)
         if(this.timerID !== -1 && this.queue.length >= this.maxElemCount)
-            window.clearTimeout(this.timerID)
-        this.timerID = window.setTimeout( () => {
-            this.onFlushCb(this.queue)
-            this.queue = []
-            this.timerID = -1
-        }, this.timeout)
+            this.flush()
+        else {
+            this.timerID = window.setTimeout( () => {
+                this.onFlushCb(this.queue)
+                this.queue = []
+                this.timerID = -1
+            }, this.timeout)
+        }
     }
 
     public flush() {

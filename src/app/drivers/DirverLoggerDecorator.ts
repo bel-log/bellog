@@ -74,8 +74,15 @@ export class DirverLoggerDecorator implements DriverLoggable, DriverOpenClose {
                 // |reader| has been canceled.
                 break;
             }
-            if (value) {
-                this.loggerCache.add(value)
+            if (value && value.length > 0) {
+                // Load data in chunks of DriverCache maxElemCount (100 bytes)
+                let arraySlices = ((value.length / 100) + 1);
+                for(let i=0; i < arraySlices; i++) {
+                    if(i == (arraySlices-1))
+                        this.loggerCache.add(value.slice(i*100, (i*100) + value.length%100))
+                    else
+                        this.loggerCache.add(value.slice(i*100, (i*100) + 100))
+                }
             }
         }
 
