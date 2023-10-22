@@ -383,9 +383,5 @@ Not yet.
 *Can I trigeer an Action after receiving a sequence?* +
 No, maybe in the future.
 
-*How can I backup the logs?* +
-Currently you can copy and paste the data from the view by doing Ctrl+A and Ctrl+C.
-In the future i want to add the possibility to export an html file with the html rendered view.
-
 *Can I create a custom Driver?* +
 No, but i want to add a 'Backend' driver where an user can use a backend application to provide data from other peripherals (ex. Netowork, CAN BUS, etc).
