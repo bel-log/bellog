@@ -28,7 +28,7 @@ export const Widget = (props: {
     const availableActions = props.availableActions
     const availableCustomHtmlComponents = props.customHtmlComponents
 
-    useUpdateEffect(() => {
+    useEffect(() => {
 
         if(htmlComponentType == HtmlComponentType.Custom) {
             if(htmlCustomID == 0 && availableCustomHtmlComponents.length > 0) {
