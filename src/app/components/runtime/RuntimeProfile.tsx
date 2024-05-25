@@ -7,6 +7,11 @@ import { DriverLoggable, DriverOpenClose, DriverStatus, isDriverLoggable, isDriv
 import { Observable } from "../../utility/Observable";
 import { View } from "../../view/View";
 import { ParserNames } from "../../parsers/Parser";
+import {BuilderFactory} from "../../builders/BuilderFactory";
+import {BuilderNames} from "../../builders/Builder";
+import {HexStringBuilder} from "../../builders/HexStringBuilder";
+import {LineBuilder} from "../../builders/LineBuilder";
+import {CustomBuilder, CustomBuilderParameters} from "../../builders/CustomBuilder";
 
 export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
 
@@ -43,7 +48,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         // Remove existing
         let scriptsa = document.head.getElementsByTagName("script")
         for (let i = 0; i < scriptsa.length; i++) {
-            if (scriptsa[i].id === "__js") {
+            if (scriptsa[i].id === "__js" || scriptsa[i].id === "__bellog_pubjs") {
                 document.head.removeChild(scriptsa[i])
                 break
             }
@@ -66,7 +71,84 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
             }).join("\r\n")
 
         document.head.appendChild(script);
-        
+
+        let publicFuncs = document.createElement('script');
+        publicFuncs.id = "__bellog_pubjs"
+        publicFuncs.type = 'text/javascript';
+        publicFuncs.innerHTML = `
+         const bellog = {
+             rawSend: (data) => {
+                  const event = new CustomEvent('bellog:rawSend', {
+                        detail: {
+                            data: data
+                        }
+                    });
+                    document.dispatchEvent(event);
+                },
+             buildAndSend: (builderName, builderParams) => {
+                  const event = new CustomEvent('bellog:buildAndSend', {
+                        detail: {
+                            builderName: builderName,
+                            builderParams: builderParams
+                        }
+                    });
+                    document.dispatchEvent(event);
+                }
+         }
+        `;
+
+        document.head.appendChild(publicFuncs);
+
+        function rawSend(e: Event) {
+            //@ts-ignore
+            driver.send(e.detail.data)
+        }
+        function buildAndSend(e: Event) {
+            try
+            {
+                //@ts-ignore
+                let builderName = e.detail.builderName
+                //@ts-ignore
+                let builderParams = e.detail.builderParams
+                let builder
+
+                switch (builderName) {
+                    case BuilderNames.LineBuilder:
+                        builder = BuilderFactory.build({ name: builderName, settings: { id: 0 } }, profile.builders);
+                        (builder as LineBuilder).prepareArgs(Object.values(builderParams)[0] as string);
+                        break;
+                    case BuilderNames.HexStringBuilder:
+                        builder = BuilderFactory.build({ name: builderName, settings: { id: 0 } }, profile.builders);
+                        (builder as HexStringBuilder).prepareArgs(Object.values(builderParams)[0] as string);
+                        break;
+                    default:
+                        const builderMatch = profile.builders.find((it) => it.name === builderName)
+                        if(builderMatch)
+                        {
+                            builder = BuilderFactory.build({ name: BuilderNames.CustomBuilder, settings: builderMatch.id }, profile.builders);
+                            (builder as CustomBuilder).prepareArgs(builderParams);
+                        }
+                        else
+                        {
+                            console.error(`Builder ${builderName} not found`)
+                            return
+                        }
+                        break;
+                }
+
+                const dataToSend = builder.build()
+                driver.send(dataToSend)
+            } catch (ex)
+            {
+                console.error("Error in calling buildAndSend. Check the parameters.")
+                console.error(ex)
+            }
+
+        }
+        //window.removeEventListener()
+        document.addEventListener('bellog:rawSend', rawSend);
+        document.addEventListener('bellog:buildAndSend', buildAndSend);
+
         // set style
         let style = document.createElement('style');
         style.id = "__css"
@@ -75,6 +157,11 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
         }).join("\r\n")
 
         document.head.appendChild(style);
+
+        return () => {
+            document.removeEventListener('bellog:rawSend', rawSend);
+            document.removeEventListener('bellog:buildAndSend', buildAndSend);
+        };
 
     }, [])
 

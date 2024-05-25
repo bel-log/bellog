@@ -374,14 +374,34 @@ Some libraries are bundled by default into Bellog.
 
 * https://bulma.io/[Bulma CSS Framework]
 
+[[Global_Hooks]]
+There are some functions that can be called from any code snipped or script:
+
+* bellog.rawSend
+* bellog.buildAndSend
+
+These can be used to send data at any moment without the need of user interaction.
+
+[source, javascript]
+----
+bellog.rawSend("A string") // Or an Uint8Array
+
+// This invokes the builder to prepare the message, basically will add a newline
+bellog.buildAndSend("LineBuilder", {Text: "text"})
+// This invokes the builder to prepare the message, converts hex string into Uint8Array before sending
+bellog.buildAndSend("LineBuilder", {HexString: "AABBCC"})
+// This invokes a builder designed by the user in the Builders section, data to pass depend on the builder parameter list
+bellog.buildAndSend("MyCustomBuilder", {param1: 111})
+----
+
 [[FAQ]]
 == FAQ
 
 *Can I trigeer an Action with Timers?* +
-Not yet.
+Just create a timer with SetInterval javascript function in global script and use bellog's hooks to send data (bellog.rawSend and bellog.buildAndSend)
 
 *Can I trigeer an Action after receiving a sequence?* +
-No, maybe in the future.
+See above answer.
 
 *Can I create a custom Driver?* +
 No, but i want to add a 'Backend' driver where an user can use a backend application to provide data from other peripherals (ex. Netowork, CAN BUS, etc).
