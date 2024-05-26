@@ -74,7 +74,7 @@ function(accumulator, data, onAccept, onRefuse, info) {
   // data: Uin8tArray of received data
   // onAccept(accumulator, info): call this callback when accumulator is ready and has a valid sequence
   // onRefuse(accumulator, info): call this to refuse the sequence. Content may be displayed anyway according to view configuration
-  // info: {isTx: boolean, driverName: string}
+  // info: {isTx: boolean, time: string, driverName: string}
   var _accumulator = (accumulator === null || accumulator === undefined) ? "" : accumulator;
   const _data = String.fromCharCode.apply(null, data);
   for (let i = 0; i < _data.length; i++) {
@@ -198,7 +198,7 @@ Example of Object compare function:
 function customObjectCompare(state, parsedData, info) {
     // state: can be set to keep persistent state between compares.
     // parsedData: string or object according to parser usage
-    // info: {isTx: boolean, driverName: string}
+    // info: {isTx: boolean, time: string, driverName: string}
     // retrun an object with key pair of items to render and result status
     // keys must always be present when the function returns
     if(parsedData) {

@@ -23,9 +23,6 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     const [tmpKey, setTmpKey] = useState(0)
     const [logEnabled, setLogEnabled] = useState(false)
 
-    const fileWriterRef = React.useRef<FileSystemWritableFileStream>(null)
-    
-
     const dataRxObserver = useMemo(() => {
         return new Observable()
     }, [])
@@ -166,13 +163,12 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
     }, [])
 
     useEffect(() => {
-        driver.onReceive((data) => {
-            dataRxObserver.notify(data)
-            fileWriterRef.current?.write(data)
+        driver.onReceive((data, chunkInfo) => {
+            dataRxObserver.notify({data: data, chunkInfo: chunkInfo})
         })
 
-        driver.onTransmit((data) => {
-            dataTxObserver.notify(data)
+        driver.onTransmit((data, chunkInfo) => {
+            dataTxObserver.notify({data: data, chunkInfo: chunkInfo})
         })
 
         driver.onError((error) => {
@@ -191,7 +187,6 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                 }
             }
             driver.destroy()
-            fileWriterRef.current?.close()
         }
     }, [])
 

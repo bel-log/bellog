@@ -1,4 +1,4 @@
-import {Driver, DriverNames, DriverStatus} from "./Driver";
+import {Driver, DriverChunkInfo, DriverNames, DriverStatus} from "./Driver";
 import {Buffer} from "buffer"
 
 export interface DriverClipboardParameters {}
@@ -7,8 +7,8 @@ export const DriverClipboardDefaults = {}
 
 export class DriverClipboard implements Driver {
 
-    private onReceiveCb: (data: Uint8Array | string) => void
-    private onTransmitCb: (data: Uint8Array | string) => void
+    private onReceiveCb: (data: Uint8Array | string, chunkInfo: DriverChunkInfo) => void
+    private onTransmitCb: (data: Uint8Array | string, chunkInfo: DriverChunkInfo) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
 
@@ -33,11 +33,11 @@ export class DriverClipboard implements Driver {
         this.onErrorCb = cb
     }
     
-    onReceive(cb: (data: Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -47,13 +47,18 @@ export class DriverClipboard implements Driver {
 
     /* If data is a string, it is assumed to be a hex string */
     send(data: Uint8Array | string) {
+        const date = new Date()
+        const chunkInfo = {
+            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+            isTx: true
+        }
         if(typeof data === "string") {
             navigator.clipboard.writeText(data as string)
-            this.onTransmitCb?.(data as string)
+            this.onTransmitCb?.(data as string, chunkInfo)
         } else {
             let dataStr = Buffer.from(data).toString('hex');
             navigator.clipboard.writeText(dataStr)
-            this.onTransmitCb?.(data)
+            this.onTransmitCb?.(data, chunkInfo)
         }
     }
 
@@ -63,8 +68,13 @@ export class DriverClipboard implements Driver {
 
     keydownListener = async (evt) => {
         if ((evt.key === 'v'|| evt.key === 'V') && evt.ctrlKey) {
+            const date = new Date()
+            const chunkInfo = {
+                time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                isTx: false
+            }
             const text = await navigator.clipboard.readText() + "\r\n";
-            this.onReceiveCb?.(text)
+            this.onReceiveCb?.(text, chunkInfo)
         }
     }
 }

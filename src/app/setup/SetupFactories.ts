@@ -1,34 +1,31 @@
 import {
+    ActionProperties,
+    HtmlComponentEventType,
     HtmlComponentParameterType,
+    HtmlComponentType,
+    SetupBindingProperties,
+    SetupBindingPropertiesGui,
+    SetupBindingType,
     SetupCustomBuilderProperties,
     SetupCustomHtmlProperties,
     SetupCustomParserProperties,
     SetupGlobalScriptProperties,
     SetupGlobalStyleProperties,
-    SetupBindingProperties,
-    SetupBindingType,
+    SetupProfileObject,
     ViewSetupMatchElementProperties,
     ViewSetupMatchResolverProperties,
     ViewSetupMatchResolverType,
     ViewSetupProperties,
-    WidgetSetupProperties,
     WidgetActionProperties,
-    ActionProperties,
-    HtmlComponentType,
-    HtmlComponentEventType,
     WidgetGroupSetupProperties,
-    SetupBindingPropertiesGui
+    WidgetSetupProperties
 } from "./SetupInterfaces";
 import * as beautify from "js-beautify"
-import { DriverFactory } from "../drivers/DriverFactory";
-import { DriverNames, DriverSettings } from "../drivers/Driver";
-import { ParserNames } from "../parsers/Parser";
-import { SetupProfileObject } from "./SetupInterfaces";
-import { LineBuilder } from "../builders/LineBuilder";
-import { BuilderNames, BuilderSettings } from "../builders/Builder";
-import { CustomBuilder, CustomBuilderParameters } from "../builders/CustomBuilder";
-import { html } from "@codemirror/lang-html";
-import { PROFILE_VERSION } from "../../Version";
+import {DriverFactory} from "../drivers/DriverFactory";
+import {DriverNames, DriverSettings} from "../drivers/Driver";
+import {ParserNames} from "../parsers/Parser";
+import {BuilderNames} from "../builders/Builder";
+import {PROFILE_VERSION} from "../../Version";
 
 const beautifyOptions = { indent_size: 2, space_in_empty_paren: true }
 
@@ -106,7 +103,7 @@ export function buildDefaultCustomParser(array: SetupCustomParserProperties[]): 
                 // data: Uin8tArray of received data (or string for clipboard driver)
                 // onAccept(accumulator, info): call this callback when accumulator is ready and has a valid sequence
                 // onRefuse(accumulator, info): call this to refuse the sequence. Content may be displayed anyway according to view configuration
-                // info: {isTx: boolean, driverName: string}
+                // info: {isTx: boolean, time: string, driverName: string}
                 var _accumulator = (accumulator === null || accumulator === undefined) ? "" : accumulator;
                 // Convert Uint8 to string if necessary
                 const _data = typeof data !== "string" ? String.fromCharCode.apply(null, data) : data;
@@ -161,6 +158,18 @@ export function buildDefaultCustomBuilder(array: SetupCustomBuilderProperties[])
 
 export function BuildHtmlComponent(htmlType: HtmlComponentType, htmlCustomID: number | null, customHtmlComponents: SetupCustomHtmlProperties[]):SetupCustomHtmlProperties {
     switch(htmlType) {
+        case HtmlComponentType.DivWithTimestamp:
+            return {
+                name: htmlType,
+                id: htmlCustomID,
+                code: "<div style='color: ${$$color}'>${$$timestamp} ${$$content}</div>",
+                parameters: {
+                    color: {type: HtmlComponentParameterType.Color,  default: "#000000"},
+                    timestamp: {type: HtmlComponentParameterType.Text, default: ""},
+                    content: {type: HtmlComponentParameterType.Text, default: ""}
+                },
+                events: {}
+            }
         case HtmlComponentType.Div:
             return {
                 name: htmlType,
@@ -321,7 +330,7 @@ export function buildDefaultResolverParam(resolver: ViewSetupMatchResolverType):
                     function customObjectCompare(state, parsedData, info) {
                         // state: can be set to keep persistent state between compares.
                         // parsedData: string or object according to parser usage
-                        // info: {isTx: boolean, driverName: string}
+                        // info: {isTx: boolean, time: string, driverName: string}
                         // retrun an object with key pair of items to render and result status
                         // keys must always be present when the function returns
                         if(parsedData) {
@@ -389,10 +398,12 @@ export function buildDefaultHtmlBindings(htmlComponent: SetupCustomHtmlPropertie
 
     const bindings = Object.keys(htmlParameters).reduce((acc, name) => {
         const fixed = (htmlParameters[name].type !== HtmlComponentParameterType.Text)
-        acc[name] = {
-            fixed: fixed,
-            value: htmlParameters[name].default,
-            item: resolverResultKeys[0]
+        if(name !== "timestamp") {
+            acc[name] = {
+                fixed: fixed,
+                value: htmlParameters[name].default,
+                item: resolverResultKeys[0]
+            }
         }
         return acc
     }, {})

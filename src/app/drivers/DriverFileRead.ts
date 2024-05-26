@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import { Driver, DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
+import {Driver, DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 
 export interface DriverFileReadParameters {}
@@ -8,10 +8,10 @@ export const DriverFileReadDefaults = {}
 
 export class DriverFileRead implements DriverOpenClose {
 
-    private cache: DriverCache
+    private cache: DriverCache<Uint8Array>
     private fileReader: ReadableStreamDefaultReader<Uint8Array>
-    private onReceiveCb: (data: Uint8Array) => void
-    private onTransmitCb: (data: Uint8Array) => void
+    private onReceiveCb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void
+    private onTransmitCb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
     private readingPromise: () => Promise<void>;
@@ -33,11 +33,11 @@ export class DriverFileRead implements DriverOpenClose {
 
     }
 
-    onReceive(cb: (data: Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -64,7 +64,12 @@ export class DriverFileRead implements DriverOpenClose {
 
                 this.cache.onFlush( (data: (Uint8Array)[]) => {
                     data.forEach((d) => {
-                        this.onReceiveCb?.(d)
+                        const date = new Date()
+                        const chunkInfo = {
+                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            isTx: false
+                        }
+                        this.onReceiveCb?.(d, chunkInfo)
                     })
                 })
 

@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import { DriverLoggable, DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
+import {DriverChunkInfo, DriverLoggable, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 import { AdbWebUsbBackendManager } from "@yume-chan/adb-backend-webusb"
 import {
@@ -24,10 +24,10 @@ export const DriverAdbLogcatDefaults = {
 export class DriverAdbLogcat implements DriverOpenClose {
 
     private CredentialStore: AdbWebCredentialStore
-    private cache: DriverCache
+    private cache: DriverCache<Uint8Array>
     iverCache
     private logcatReader: ReadableStreamDefaultReader<Uint8Array>
-    private onReceiveCb: (data: Uint8Array) => void
+    private onReceiveCb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
     private idlePromise: Promise<void>;
@@ -53,11 +53,11 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
     }
 
-    onReceive(cb: (data: Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
     }
 
     onStatusChange(cb: (status: DriverStatus) => void) {
@@ -139,7 +139,12 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
                 this.cache.onFlush((data) => {
                     data.forEach((d) => {
-                        this.onReceiveCb?.(d)
+                        const date = new Date()
+                        const chunkInfo = {
+                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            isTx: false
+                        }
+                        this.onReceiveCb?.(d, chunkInfo)
                     })
                 })
 

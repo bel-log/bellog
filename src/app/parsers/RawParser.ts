@@ -1,4 +1,5 @@
 import {Parser, ParserInfoType} from "./Parser";
+import {DriverChunkInfo} from "../drivers/Driver";
 
 export interface RawParserParameters {}
 
@@ -19,7 +20,9 @@ export class RawParser implements Parser {
         this.onAcceptCb = cb
     }
 
-    put(_data: Uint8Array, isTx: boolean) {
-        this.onAcceptCb?.(_data, {driverName: this.driverName, isTx: isTx})
+    put(_data: Uint8Array, chunkInfo: DriverChunkInfo) {
+        this.onAcceptCb?.(_data,
+            {driverName: this.driverName, time: chunkInfo.time,isTx: chunkInfo.isTx}
+        )
     }
 }

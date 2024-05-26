@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import {Driver, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
+import {Driver, DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 
 export interface DriverSerialPortWebSerialParameters extends SerialOptions {
@@ -23,9 +23,9 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
     private readonly options: SerialOptions
     private port: SerialPort
     private portReader:  ReadableStreamDefaultReader<Uint8Array>
-    private DriverCache: DriverCache
-    private onReceiveCb: (data: Uint8Array) => void
-    private onTransmitCb: (data: Uint8Array | string) => void
+    private DriverCache: DriverCache<Uint8Array>
+    private onReceiveCb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void
+    private onTransmitCb: (data: Uint8Array | string, chunkInfo: DriverChunkInfo) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
     readonly name: string;
@@ -54,11 +54,11 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
         this.onErrorCb = cb
     }
 
-    onReceive(cb: (data: Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -75,8 +75,13 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
             const writer = this.port.writable.getWriter();
             await writer.write(wdata as Uint8Array)
             writer.releaseLock()
-            
-            this.onTransmitCb(wdata)
+
+            const date = new Date()
+            const chunkInfo = {
+                time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                isTx: true
+            }
+            this.onTransmitCb(wdata, chunkInfo)
         }
         catch (error)
         {
@@ -95,7 +100,12 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
 
                 this.DriverCache.onFlush((data) => {
                     data.forEach((d) => {
-                        this.onReceiveCb?.(d as Uint8Array)
+                        const date = new Date()
+                        const chunkInfo = {
+                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            isTx: false
+                        }
+                        this.onReceiveCb?.(d as Uint8Array, chunkInfo)
                     })
                 })
 

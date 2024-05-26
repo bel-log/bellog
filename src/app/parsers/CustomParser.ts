@@ -1,4 +1,4 @@
-import { DriverNames } from "../drivers/Driver";
+import {DriverChunkInfo, DriverNames} from "../drivers/Driver";
 import {Parser, ParserInfoType} from "./Parser";
 
 export type CustomParserFuncType = (acc: any, data: Uint8Array | string, onAcceptCb: ((acc: any, info: ParserInfoType) => void), onRefuseCb: ((acc: any, info: ParserInfoType) => void), info: ParserInfoType) => any
@@ -23,11 +23,8 @@ export class CustomParser implements Parser {
         this.onAcceptCb = cb
     }
 
-    put(_data: Uint8Array, isTx: boolean) {
-        if(isTx) {
-            this.accumulatorTx = this.proc(this.accumulatorTx, _data, this.onAcceptCb, this.onRefuseCb, {driverName: this.driverName, isTx: isTx})
-        } else {
-            this.accumulatorRx = this.proc(this.accumulatorRx, _data, this.onAcceptCb, this.onRefuseCb, {driverName: this.driverName, isTx: isTx})
-        }
+    put(_data: Uint8Array, chunkInfo: DriverChunkInfo) {
+        this.accumulatorTx = this.proc(this.accumulatorTx, _data, this.onAcceptCb, this.onRefuseCb,
+            {driverName: this.driverName, time: chunkInfo.time, isTx: chunkInfo.isTx})
     }
 }

@@ -3,13 +3,22 @@ import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, 
 import ProfileSetup from "../setup/ProfileSetup";
 import { DriverFactory } from "../../drivers/DriverFactory";
 import { buildToolbarState, ToolbarContext } from "../Toolbar";
-import { Driver, DriverLoggable, DriverNames, DriverOpenClose, DriverStatus, isDriverLoggable, isDriverOpenClose } from "../../drivers/Driver";
+import {
+    Driver,
+    DriverChunkInfo,
+    DriverLoggable,
+    DriverNames,
+    DriverOpenClose,
+    DriverStatus,
+    isDriverLoggable,
+    isDriverOpenClose
+} from "../../drivers/Driver";
 import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
 import { ParserFactory } from "../../parsers/ParserFactory";
 import { ViewFactory } from "../../view/ViewFactory";
 import { Observable } from "../../utility/Observable";
 import { buildDefaultProfile } from "../../setup/SetupFactories";
-import { ParserNames } from "../../parsers/Parser";
+import {ParserInfoType, ParserNames} from "../../parsers/Parser";
 import { WidgetGroup } from "../setup/WidgetGroup";
 
 export const RuntimeProfileView = forwardRef((props: {
@@ -110,20 +119,24 @@ export const RuntimeProfileView = forwardRef((props: {
         viewRef.current.innerHTML = defContent
         hasDataRef.current = false
         
-        const onReceive = (data) => {
+        const onReceive = (obj) => {
+            const data = obj.data
+            const chunkInfo = obj.chunkInfo
             if (globalSettings.shareDataBetweenViews || selectedRef.current) {
                 // Uint8Array | string
-                parser.put(data, false)
+                parser.put(data, chunkInfo)
                 if(fileWriterRef.current && logEnabledRef.current) {
                     fileWriterRef.current.write(data)
                 }
             }
         }
 
-        const onTransmit = (data) => {
+        const onTransmit = (obj) => {
+            const data = obj.data
+            const chunkInfo = obj.chunkInfo
             if (globalSettings.shareDataBetweenViews || selectedRef.current) {
                 // Uint8Array | string
-                parser.put(data, true)
+                parser.put(data, chunkInfo)
             }
         }
 
@@ -136,19 +149,19 @@ export const RuntimeProfileView = forwardRef((props: {
         props.dataTxObserver.subscribe(onTransmit)
 
 
-        parser.onAccept((acc, parseInfo) => {
+        parser.onAccept((acc, chunkInfo: ParserInfoType) => {
             if(!hasDataRef.current) {
                 viewRef.current.innerHTML = ""
                 hasDataRef.current = true
             }
-            customView.putParsedObject(acc, true, parseInfo)
+            customView.putParsedObject(acc, true, chunkInfo)
         })
-        parser.onRefuse((acc, parseInfo) => {
+        parser.onRefuse((acc, chunkInfo: ParserInfoType) => {
             if(!hasDataRef.current) {
                 viewRef.current.innerHTML = ""
                 hasDataRef.current = true
             }
-            customView.putParsedObject(acc, false, parseInfo)
+            customView.putParsedObject(acc, false, chunkInfo)
         })
 
         document.addEventListener('mousewheel', function (e) {

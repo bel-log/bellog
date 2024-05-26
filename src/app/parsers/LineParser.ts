@@ -1,4 +1,5 @@
 import {Parser, ParserInfoType} from "./Parser";
+import {DriverChunkInfo} from "../drivers/Driver";
 
 export interface LineParserParameters {}
 
@@ -20,14 +21,14 @@ export class LineParser implements Parser {
         this.onAcceptCb = cb
     }
 
-    put(_data: Uint8Array | string, isTx: boolean) {
+    put(_data: Uint8Array | string, chunkInfo: DriverChunkInfo) {
         let data = _data
         if(typeof data !== "string")
             data = String.fromCharCode.apply(null, _data);
         for (let i = 0; i < data.length; i++) {
             if (data[i] == '\r' || data[i] == '\n') {
                 if (this.buffer.length > 0) {
-                    this.onAcceptCb?.(this.buffer, {driverName: this.driverName, isTx: isTx})
+                    this.onAcceptCb?.(this.buffer, {driverName: this.driverName, time: chunkInfo.time, isTx: chunkInfo.isTx})
                     this.buffer = ""
                 }
             } else {

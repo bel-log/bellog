@@ -1,7 +1,8 @@
 import {RawParserParameters} from "./RawParser";
 import {LineParserParameters} from "./LineParser";
+import {DriverChunkInfo} from "../drivers/Driver";
 
-export type ParserInfoType = {driverName: string, isTx: boolean}
+export type ParserInfoType = {driverName: string, time:string, isTx: boolean}
 export type ParserSettings = RawParserParameters | LineParserParameters
 
 export enum ParserNames{
@@ -11,7 +12,7 @@ export enum ParserNames{
 }
 
 export interface Parser {
-    put(data: Uint8Array | string, isTx: boolean): void
+    put(data: Uint8Array | string, chunkInfo: DriverChunkInfo): void
     onRefuse(cb: (acc: any, info: ParserInfoType) => void)
     onAccept(cb: (acc: any, info: ParserInfoType) => void)
 }

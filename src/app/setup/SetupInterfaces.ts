@@ -60,6 +60,7 @@ export enum ViewSetupMatchResolverType {
 
 export enum HtmlComponentType {
     Div = "Div",
+    DivWithTimestamp = "DivWithTimestamp",
     Span = "Span",
     Raw = "Raw",
     Button = "Button",

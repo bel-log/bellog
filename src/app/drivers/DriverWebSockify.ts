@@ -1,5 +1,5 @@
 import { DriverError } from "../utility/exception"
-import { DriverNames, DriverOpenClose, DriverStatus } from "./Driver"
+import {DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 import { isWebMode } from "../utility/env";
 
@@ -20,11 +20,11 @@ export const DriverWebSockifyDefaults = {
 
 export class DriverWebSockify implements DriverOpenClose {
 
-    private cache: DriverCache
+    private cache: DriverCache<Uint8Array>
     private websocket: WebSocket
     private keepalive: number
-    private onReceiveCb: (data: Uint8Array) => void
-    private onTransmitCb: (data: Uint8Array | string) => void
+    private onReceiveCb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void
+    private onTransmitCb: (data: Uint8Array | string, chunkInfo: DriverChunkInfo) => void
     private onStatusChangeCb: (status: DriverStatus) => void
     private onErrorCb: (ex: Error) => void
     private idlePromise: Promise<void>;
@@ -50,11 +50,11 @@ export class DriverWebSockify implements DriverOpenClose {
 
     }
 
-    onReceive(cb: (data: Uint8Array) => void): void {
+    onReceive(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onReceiveCb = cb
     }
 
-    onTransmit(cb: (data: Uint8Array) => void): void {
+    onTransmit(cb: (data: Uint8Array, chunkInfo: DriverChunkInfo) => void): void {
         this.onTransmitCb = cb
     }
 
@@ -83,12 +83,17 @@ export class DriverWebSockify implements DriverOpenClose {
     }
 
     async send(data: Uint8Array | string) {
+        const date = new Date()
+        const chunkInfo = {
+            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+            isTx: true
+        }
         let wdata = data
         if (typeof data === "string") {
             wdata = new TextEncoder().encode(data)
         }
         this.websocket?.send(wdata)
-        this.onTransmitCb?.(wdata)
+        this.onTransmitCb?.(wdata, chunkInfo)
     }
 
     async open() {
@@ -145,7 +150,12 @@ export class DriverWebSockify implements DriverOpenClose {
 
                 this.cache.onFlush((data) => {
                     data.forEach((d) => {
-                        this.onReceiveCb?.(d)
+                        const date = new Date()
+                        const chunkInfo = {
+                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            isTx: false
+                        }
+                        this.onReceiveCb?.(d, chunkInfo)
                     })
                 })
 

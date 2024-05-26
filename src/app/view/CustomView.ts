@@ -68,7 +68,7 @@ export class CustomView implements View {
     public putDriverError(error: Error) {
         const msg = "Bellog Driver Exception: " + error.message
         // Force a refused message
-        this.putParsedObject(msg, false, {driverName: this.driver.name, isTx: false})
+        this.putParsedObject(msg, false, {driverName: this.driver.name, time: "", isTx: false})
     }
 
     public putParsedObject(data: any, accepted: boolean, info: ParserInfoType) {
@@ -192,32 +192,38 @@ export class CustomView implements View {
         let parameters = {}
 
         try {
-
+debugger;
             switch (matcher.htmlComponentBindingType) {
                 case SetupBindingType.Code:
                     const bindResultFunc = new Function("return " + (matcher.htmlComponentBindings as SetupBindingPropertiesCode).code)();
                     const bindResult = bindResultFunc(state, availableBindingsResult)
                     Object.keys(htmlParameters).forEach((name) => {
-                        parameters["$$" + name] = bindResult[name]
+                        if(name === "timestamp") {
+                            parameters["$$" + name] = info.time
+                        } else {
+                            parameters["$$" + name] = bindResult[name]
+                        }
                     })
                     break;
                 case SetupBindingType.Gui:
                     Object.keys(htmlParameters).forEach((name) => {
-                        parameters["$$" + name] = htmlParameters[name].default;
-                        const binding = (matcher.htmlComponentBindings as SetupBindingPropertiesGui).bindings[name]
-                        if (binding) {
-                            if (binding.fixed)
-                                parameters["$$" + name] = binding.value
-                            else {
-                                if (binding.item in availableBindingsResult) {
-                                    parameters["$$" + name] = availableBindingsResult[binding.item]
-                                }
+                        // 'timestamp' key is reserved for automatic time printing
+                        if(name === "timestamp") {
+                            parameters["$$" + name] = info.time
+                        } else {
+                            parameters["$$" + name] = htmlParameters[name].default;
+                            const binding = (matcher.htmlComponentBindings as SetupBindingPropertiesGui).bindings[name]
+                            if (binding) {
+                                if (binding.fixed)
+                                    parameters["$$" + name] = binding.value
                                 else {
-                                    parameters["$$" + name] = "Internal Error: No resolver result matching binding"
+                                    if (binding.item in availableBindingsResult) {
+                                        parameters["$$" + name] = availableBindingsResult[binding.item]
+                                    } else {
+                                        parameters["$$" + name] = "Internal Error: No resolver result matching binding"
+                                    }
                                 }
                             }
-
-
                         }
                     })
                     break;
