@@ -1,6 +1,7 @@
 import { DriverError } from "../utility/exception"
 import {Driver, DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
+import {GetDateForChunkInfo} from "../utility/DataTimeUtils";
 
 export interface DriverFileReadParameters {}
 
@@ -64,9 +65,8 @@ export class DriverFileRead implements DriverOpenClose {
 
                 this.cache.onFlush( (data: (Uint8Array)[]) => {
                     data.forEach((d) => {
-                        const date = new Date()
                         const chunkInfo = {
-                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            time: GetDateForChunkInfo(),
                             isTx: false
                         }
                         this.onReceiveCb?.(d, chunkInfo)

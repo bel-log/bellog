@@ -192,7 +192,6 @@ export class CustomView implements View {
         let parameters = {}
 
         try {
-debugger;
             switch (matcher.htmlComponentBindingType) {
                 case SetupBindingType.Code:
                     const bindResultFunc = new Function("return " + (matcher.htmlComponentBindings as SetupBindingPropertiesCode).code)();

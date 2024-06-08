@@ -1,6 +1,7 @@
 import { DriverError } from "../utility/exception"
 import {Driver, DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
+import {GetDateForChunkInfo} from "../utility/DataTimeUtils";
 
 export interface DriverSerialPortWebSerialParameters extends SerialOptions {
     usbVendorId?: number
@@ -78,7 +79,7 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
 
             const date = new Date()
             const chunkInfo = {
-                time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                time: GetDateForChunkInfo(),
                 isTx: true
             }
             this.onTransmitCb(wdata, chunkInfo)
@@ -100,9 +101,8 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
 
                 this.DriverCache.onFlush((data) => {
                     data.forEach((d) => {
-                        const date = new Date()
                         const chunkInfo = {
-                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            time: GetDateForChunkInfo(),
                             isTx: false
                         }
                         this.onReceiveCb?.(d as Uint8Array, chunkInfo)

@@ -2,6 +2,7 @@ import { DriverError } from "../utility/exception"
 import {DriverChunkInfo, DriverNames, DriverOpenClose, DriverStatus} from "./Driver"
 import { DriverCache } from "./DriverCache"
 import { isWebMode } from "../utility/env";
+import {GetDateForChunkInfo} from "../utility/DataTimeUtils";
 
 
 export interface DriverWebSockifyParameters {
@@ -85,7 +86,7 @@ export class DriverWebSockify implements DriverOpenClose {
     async send(data: Uint8Array | string) {
         const date = new Date()
         const chunkInfo = {
-            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+            time: GetDateForChunkInfo(),
             isTx: true
         }
         let wdata = data
@@ -150,9 +151,8 @@ export class DriverWebSockify implements DriverOpenClose {
 
                 this.cache.onFlush((data) => {
                     data.forEach((d) => {
-                        const date = new Date()
                         const chunkInfo = {
-                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            time: GetDateForChunkInfo(),
                             isTx: false
                         }
                         this.onReceiveCb?.(d, chunkInfo)

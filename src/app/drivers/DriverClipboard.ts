@@ -1,5 +1,6 @@
 import {Driver, DriverChunkInfo, DriverNames, DriverStatus} from "./Driver";
 import {Buffer} from "buffer"
+import {GetDateForChunkInfo} from "../utility/DataTimeUtils";
 
 export interface DriverClipboardParameters {}
 
@@ -49,7 +50,7 @@ export class DriverClipboard implements Driver {
     send(data: Uint8Array | string) {
         const date = new Date()
         const chunkInfo = {
-            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+            time: GetDateForChunkInfo(),
             isTx: true
         }
         if(typeof data === "string") {
@@ -70,7 +71,7 @@ export class DriverClipboard implements Driver {
         if ((evt.key === 'v'|| evt.key === 'V') && evt.ctrlKey) {
             const date = new Date()
             const chunkInfo = {
-                time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                time: GetDateForChunkInfo(),
                 isTx: false
             }
             const text = await navigator.clipboard.readText() + "\r\n";

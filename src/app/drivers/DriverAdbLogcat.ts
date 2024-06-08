@@ -11,6 +11,7 @@ import {
 } from "@yume-chan/stream-extra";
 import AdbWebCredentialStore from "@yume-chan/adb-credential-web";
 import { Adb, AdbPacketData, AdbPacketInit } from "@yume-chan/adb"
+import {GetDateForChunkInfo} from "../utility/DataTimeUtils";
 
 
 export interface DriverAdbLogcatParameters {
@@ -139,9 +140,8 @@ export class DriverAdbLogcat implements DriverOpenClose {
 
                 this.cache.onFlush((data) => {
                     data.forEach((d) => {
-                        const date = new Date()
                         const chunkInfo = {
-                            time: date.toLocaleDateString() + " " + date.toLocaleTimeString(),
+                            time: GetDateForChunkInfo(),
                             isTx: false
                         }
                         this.onReceiveCb?.(d, chunkInfo)
