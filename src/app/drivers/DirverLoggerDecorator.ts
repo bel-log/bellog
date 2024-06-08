@@ -94,7 +94,7 @@ export class DirverLoggerDecorator implements DriverLoggable, DriverOpenClose {
             if (value && value.length > 0) {
                 for(let i=0; i < value.length; i++)
                 {
-                    if(value[i] === 0x0D)  {
+                    if(value[i] === 0x0A)  { // '\n'
                         if(byteCount > 0) {
                             let acc = value.subarray(i-byteCount, (i-byteCount) + byteCount)
                             const text = new TextDecoder().decode(acc);
