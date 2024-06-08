@@ -11,6 +11,7 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
 
     const [baudRate, setBaudRate] = [p.baudRate.val, p.baudRate.set]
     const [dataBits, setDataBits] = [p.dataBits.val, p.dataBits.set]
+    const [stopBits, setStopBits] = [p.stopBits.val, p.stopBits.set]
     const [parity, setParity] = [p.parity.val, p.parity.set]
     const [bufferSize, setBufferSize] = [p.bufferSize.val, p.bufferSize.set]
     const [flowControl, setFlowControl] = [p.flowControl.val, p.flowControl.set]
@@ -26,7 +27,9 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
                     <div className="field">
                         <p className="control is-expanded">
                             <input className="input" type="number" placeholder="Baudrate" value={baudRate}
-                                onChange={(evt) => { setBaudRate(parseInt(evt.target.value)) }} />
+                                   onChange={(evt) => {
+                                       setBaudRate(parseInt(evt.target.value))
+                                   }}/>
                         </p>
                     </div>
                 </div>
@@ -40,9 +43,30 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
                     <div className="field">
                         <div className="select">
                             <select value={dataBits}
-                                onChange={(evt) => { setDataBits(parseInt(evt.target.value)) }}>
+                                    onChange={(evt) => {
+                                        setDataBits(parseInt(evt.target.value))
+                                    }}>
                                 <option>7</option>
                                 <option>8</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="field is-horizontal">
+                <div className="field-label is-normal">
+                    <label className="label">Stop Bits</label>
+                </div>
+                <div className="field-body">
+                    <div className="field">
+                        <div className="select">
+                            <select value={stopBits}
+                                    onChange={(evt) => {
+                                        setStopBits(parseInt(evt.target.value))
+                                    }}>
+                                <option>1</option>
+                                <option>2</option>
                             </select>
                         </div>
                     </div>
@@ -57,7 +81,9 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
                     <div className="field">
                         <div className="select">
                             <select value={parity}
-                                onChange={(evt) => { setParity(evt.target.value as ParityType) }}>
+                                    onChange={(evt) => {
+                                        setParity(evt.target.value as ParityType)
+                                    }}>
                                 <option>none</option>
                                 <option>even</option>
                                 <option>odd</option>
@@ -75,7 +101,9 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
                     <div className="field">
                         <p className="control is-expanded">
                             <input className="input" type="number" placeholder="Buffersize" value={bufferSize}
-                                onChange={(evt) => { setBufferSize(parseInt(evt.target.value)) }} />
+                                   onChange={(evt) => {
+                                       setBufferSize(parseInt(evt.target.value))
+                                   }}/>
                         </p>
                     </div>
                 </div>
@@ -89,7 +117,7 @@ export const DriverWebSerialSetup = (props: { cfg: SerialOptions, onConfigUpdate
                     <div className="field">
                         <div className="select">
                             <select value={flowControl}
-                                onChange={(evt) => setFlowControl(evt.target.value as FlowControlType)}>
+                                    onChange={(evt) => setFlowControl(evt.target.value as FlowControlType)}>
                                 <option>none</option>
                                 <option>hardware</option>
                             </select>
