@@ -51,17 +51,19 @@ export const ViewSetup = (props: {
 
 
     useEffect(() => {
-        if (parserType === ParserNames.CustomParser && availableCustomParsers.length <= 0)
-            setParserType(ParserNames.LineParser, true)
-        else {
-            const parserObj = availableCustomParsers.find((it) => it.id === customParserID)
-            if (!parserObj) {
-                // Parser got deleted
+        if(parserType === ParserNames.CustomParser) {
+            if (availableCustomParsers.length <= 0)
                 setParserType(ParserNames.LineParser, true)
-                setCustomParserID(0, true)
+            else {
+                const parserObj = availableCustomParsers.find((it) => it.id === customParserID)
+                if (!parserObj) {
+                    // Parser got deleted
+                    setParserType(ParserNames.LineParser, true)
+                    setCustomParserID(0, true)
+                }
             }
+            applyCache()
         }
-        applyCache()
     }, [availableCustomParsers])
 
 
