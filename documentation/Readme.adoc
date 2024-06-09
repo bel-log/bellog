@@ -382,6 +382,17 @@ There are some functions that can be called from any code snipped or script:
 
 These can be used to send data at any moment without the need of user interaction.
 
+You can instead subscribe to these events to receive open/close events for driver with open/close capability (serial).
+
+document.addEventListener('bellog:DriverOpened', function(e) {
+  console.log("Reiceived event bellog:DriverOpened")
+});
+
+document.addEventListener('bellog:DriverClosed', function(e) {
+  console.log("Reiceived event bellog:DriverClosed")
+});
+
+
 [source, javascript]
 ----
 bellog.rawSend("A string") // Or an Uint8Array
