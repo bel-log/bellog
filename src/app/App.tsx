@@ -9,16 +9,45 @@ import Toolbar from "./components/Toolbar";
 import PageHome from './components/pages/PageHome';
 import { PageProfileRuntime } from './components/pages/PageProfileRuntime';
 import PageRedirector from './components/pages/PageRedirector';
-import { PROFILE_VERSION } from '../Version';
+import {checkVersionForRedirection, PROFILE_VERSION} from '../Version';
 import PageDiscaimer from './components/pages/PageDisclaimer';
 import { getCookie } from 'typescript-cookie';
+import {useLiveQuery} from "dexie-react-hooks";
+import {db} from "./db/db";
+import {normalizeProfile} from "./setup/SetupNormalizer";
+import {SetupProfileObject} from "./setup/SetupInterfaces";
 
 const App = () => {
 
+    const disclaimerKey = "disclaimerAccepted"
+    const [disclaimerAccepted, setDiscaimer] = React.useState<boolean>(false)
+
+    useEffect(() => {
+        try {
+            db.flags.add({
+                name: disclaimerKey,
+                value: false
+            }, disclaimerKey)
+        } catch (ex) {}
+    }, []);
+
+    useLiveQuery(async () => {
+        const disclaimerAccepted = await db.flags.get(disclaimerKey)
+        setDiscaimer(disclaimerAccepted.value)
+    });
+
+    function updateDiscaimer(value: boolean)
+    {
+        db.flags.update(disclaimerKey, {
+          value: value
+        })
+        setDiscaimer(value)
+    }
+
     return (
         <div className='is-flex is-flex-direction-column' style={{ height: "100%" }}>
-            {getCookie("securityDiscalimerAccepted") !== "true" ?
-                <PageDiscaimer />
+            {!disclaimerAccepted ?
+                <PageDiscaimer onDisclaimer={updateDiscaimer} />
                 :
                 <Toolbar>
                     <Routes >

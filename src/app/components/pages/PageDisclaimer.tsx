@@ -23,9 +23,8 @@ export const PageDiscaimer = (props) => {
             <footer className="modal-card-foot">
                 <button className="button is-success"
                     onClick={() => {
-                        setCookie("securityDiscalimerAccepted", "true", { expires: 365 })
+                        props.onDisclaimer(true)
                         setModelIsOpen(false)
-                        location.reload();
                     }}>
                     Accept
                 </button>
