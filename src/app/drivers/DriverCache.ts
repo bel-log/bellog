@@ -22,7 +22,7 @@ export class DriverCache<T> {
         this.queue.push(data)
         if(this.timerID !== -1 && this.queue.length >= this.maxElemCount)
             this.flush()
-        else {
+        else if(this.timerID === -1) {
             this.timerID = window.setTimeout( () => {
                 this.onFlushCb(this.queue)
                 this.queue = []
