@@ -1,25 +1,20 @@
 import * as React from "react";
-import { createContext, forwardRef, useContext, useEffect, useImperativeHandle, useRef, useState } from "react";
-import ProfileSetup from "../setup/ProfileSetup";
-import { DriverFactory } from "../../drivers/DriverFactory";
-import { buildToolbarState, ToolbarContext } from "../Toolbar";
+import {forwardRef, useContext, useEffect, useRef, useState} from "react";
+import {buildToolbarState, ToolbarContext} from "../Toolbar";
 import {
     Driver,
-    DriverChunkInfo,
-    DriverLoggable,
     DriverNames,
     DriverOpenClose,
     DriverStatus,
     isDriverLoggable,
     isDriverOpenClose
 } from "../../drivers/Driver";
-import { SetupProfileObject, ViewSetupProperties } from "../../setup/SetupInterfaces";
-import { ParserFactory } from "../../parsers/ParserFactory";
-import { ViewFactory } from "../../view/ViewFactory";
-import { Observable } from "../../utility/Observable";
-import { buildDefaultProfile } from "../../setup/SetupFactories";
+import {SetupProfileObject, ViewSetupProperties} from "../../setup/SetupInterfaces";
+import {ParserFactory} from "../../parsers/ParserFactory";
+import {ViewFactory} from "../../view/ViewFactory";
+import {Observable} from "../../utility/Observable";
+import {buildDefaultProfile} from "../../setup/SetupFactories";
 import {ParserInfoType, ParserNames} from "../../parsers/Parser";
-import { WidgetGroup } from "../setup/WidgetGroup";
 
 export const RuntimeProfileView = forwardRef((props: {
     visible: boolean, logEnabled: boolean, onLogEnabledToggle: (enabled: boolean) => void, onLogImport: () => void,
@@ -94,6 +89,12 @@ export const RuntimeProfileView = forwardRef((props: {
             })
             driverOpenClose.onStatusChange(() => {
                 buildToolbar(driver)
+                // TODO Move toolbar logic into RuntimeProfile
+                if(driverOpenClose.status === DriverStatus.OPEN) {
+                    document.dispatchEvent(new Event("bellog:DriverOpened"))
+                } else {
+                    document.dispatchEvent(new Event("bellog:DriverClosed"))
+                }
             })
         } else {
             toolbarNewState = buildToolbarState({
