@@ -25,6 +25,10 @@ export const ImportPopup = (props: { isOpen: boolean, onSelect: (name: string, u
         {
             name: "Serial Binary Protocol",
             url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Serial%20Binary%20Protocol/Serial_Protocol.bll"
+        },
+        {
+            name: "Modbus RTU",
+            url: "https://raw.githubusercontent.com/bel-log/bellog/master/samples/Modbus%20RTU/MODBUS_RTU.bll"
         }
     ]
 
