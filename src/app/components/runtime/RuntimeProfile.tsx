@@ -122,7 +122,7 @@ export const RuntimeProfile = (props: { profile: SetupProfileObject }) => {
                         const builderMatch = profile.builders.find((it) => it.name === builderName)
                         if(builderMatch)
                         {
-                            builder = BuilderFactory.build({ name: BuilderNames.CustomBuilder, settings: builderMatch.id }, profile.builders);
+                            builder = BuilderFactory.build({ name: BuilderNames.CustomBuilder, settings: {id: builderMatch.id} }, profile.builders);
                             (builder as CustomBuilder).prepareArgs(builderParams);
                         }
                         else
