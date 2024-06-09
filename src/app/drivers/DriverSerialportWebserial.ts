@@ -100,13 +100,19 @@ export class DriverSerialPortWebSerial implements DriverOpenClose {
                 this.onStatusChangeCb?.(this._status)
 
                 this.DriverCache.onFlush((data) => {
-                    data.forEach((d) => {
-                        const chunkInfo = {
-                            time: GetDateForChunkInfo(),
-                            isTx: false
-                        }
-                        this.onReceiveCb?.(d as Uint8Array, chunkInfo)
-                    })
+
+                    const flatNumberArray = data.reduce((acc, curr) => {
+                        acc.push(...curr);
+                        return acc;
+                    }, []);
+
+                    const dataFlat = new Uint8Array(flatNumberArray);
+
+                    const chunkInfo = {
+                        time: GetDateForChunkInfo(),
+                        isTx: false
+                    }
+                    this.onReceiveCb?.(dataFlat, chunkInfo)
                 })
 
                 while (this.port.readable && this.status == DriverStatus.OPEN) {
