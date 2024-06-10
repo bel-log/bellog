@@ -20,7 +20,7 @@ import {SetupProfileObject} from "./setup/SetupInterfaces";
 const App = () => {
 
     const disclaimerKey = "disclaimerAccepted"
-    const [disclaimerAccepted, setDiscaimer] = React.useState<boolean>(false)
+    const [disclaimerAccepted, setDiscaimer] = React.useState<boolean>(null)
 
     useEffect(() => {
         try {
@@ -46,7 +46,7 @@ const App = () => {
 
     return (
         <div className='is-flex is-flex-direction-column' style={{ height: "100%" }}>
-            {!disclaimerAccepted ?
+            {disclaimerAccepted === false ?
                 <PageDiscaimer onDisclaimer={updateDiscaimer} />
                 :
                 <Toolbar>
