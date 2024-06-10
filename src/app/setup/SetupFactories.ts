@@ -422,7 +422,7 @@ export function buildDefaultHtmlBindings(htmlComponent: SetupCustomHtmlPropertie
                             // resolvedParsedData['All'] -> Hello Mark
                             // resolvedParsedData['Group 1'] -> Mark
                             // available resolvedParsedData keys: ${resolverResultKeys.join(" ")}
-                            return {${Object.keys(htmlParameters).map((name) => {
+                            return {${Object.keys(htmlParameters).filter((name) => name !== "timestamp").map((name) => {
                             return `${name}: ${(htmlParameters[name].type === HtmlComponentParameterType.Text) ? `resolvedParsedData["${resolverResultKeys.at(0)}"]` : injectValue(htmlParameters[name].default, htmlParameters[name].type)}\r\n`
                     })}}}`, beautifyOptions)
                 case ViewSetupMatchResolverType.ObjectCompare:
@@ -430,7 +430,7 @@ export function buildDefaultHtmlBindings(htmlComponent: SetupCustomHtmlPropertie
                         function applyObjectToHtml(state, resolvedParsedData)
                         {
                             // available resolvedParsedData keys: ${resolverResultKeys.join(" ")}
-                            return {${Object.keys(htmlParameters).map((name) => {
+                            return {${Object.keys(htmlParameters).filter((name) => name !== "timestamp").map((name) => {
                             return `${name}: ${(htmlParameters[name].type === HtmlComponentParameterType.Text) ? `resolvedParsedData["${resolverResultKeys.at(0)}"]` : injectValue(htmlParameters[name].default, htmlParameters[name].type)}\r\n`
                     })}}}`, beautifyOptions)
                 default:
@@ -438,7 +438,7 @@ export function buildDefaultHtmlBindings(htmlComponent: SetupCustomHtmlPropertie
                         function applyObjectToHtml(state, resolvedParsedData)
                         {
                             // available resolvedParsedData keys: ${resolverResultKeys.join(" ")}
-                            return {${Object.keys(htmlParameters).map((name) => {
+                            return {${Object.keys(htmlParameters).filter((name) => name !== "timestamp").map((name) => {
                             return `${name}: ${(htmlParameters[name].type === HtmlComponentParameterType.Text) ? `resolvedParsedData["${resolverResultKeys.at(0)}"]` : injectValue(htmlParameters[name].default, htmlParameters[name].type)}\r\n`
                     })}}}`, beautifyOptions)
             }
