@@ -26,11 +26,14 @@
   },
   "license": "ISC",
   "dependencies": {
+    "@codemirror/lang-html": "^6.4.9",
     "@codemirror/lang-javascript": "^6.2.2",
     "@codemirror/lang-less": "^6.0.2",
     "@creativebulma/bulma-tooltip": "^1.2.0",
-    "@yume-chan/adb": "^0.0.19",
+    "@lezer/javascript": "^1.4.19",
+    "@lezer/lr": "^1.4.2",
     "@uiw/react-codemirror": "^4.23.6",
+    "@yume-chan/adb": "^0.0.19",
     "@yume-chan/adb-backend-webusb": "^0.0.19",
     "@yume-chan/adb-credential-web": "^0.0.19",
     "buffer": "^6.0.3",
@@ -54,6 +57,6 @@
     "save-dev": "^0.0.1-security",
     "serialize-javascript": "^6.0.2",
     "tail": "^2.2.6",
-    "typescript-cookie": "^1.0.6"
+    "typescript-cookie": "^1.0.6",
   }
 }

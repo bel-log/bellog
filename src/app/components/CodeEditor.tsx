@@ -4,6 +4,7 @@ import { javascript } from "@codemirror/lang-javascript";
 import { useUpdateEffect } from "../utility/customHooks";
 import { useState } from "react";
 import { css } from "@codemirror/lang-css";
+import { html } from "@codemirror/lang-html";
 
 export const CodeEditor = (props: {value: string, onChange: (value: string) => void, isHtml?: boolean, isCss?: boolean}) => {
 
@@ -20,7 +21,7 @@ export const CodeEditor = (props: {value: string, onChange: (value: string) => v
             minHeight="100px"
             maxHeight="800px"
             extensions={[
-                props.isHtml ? javascript({ jsx: true }) : 
+                props.isHtml ? html() :
                 props.isCss ? css() : javascript({ jsx: false })
             ]}
             onChange={(value) => {
