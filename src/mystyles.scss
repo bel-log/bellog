@@ -1,12 +1,10 @@
 @charset "utf-8";
 
-@import "globals.scss";
+$tooltipColor: #2ead56;
+$primaryplus: #fa6c39;
 
-// Import only what you need from Bulma
-@import "../node_modules/bulma/bulma.sass";
-
-@import "../node_modules/@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css";
-
+@use "globals.scss";
+@use "../node_modules/@creativebulma/bulma-tooltip/dist/bulma-tooltip.min.css";
 /*
 body {
   font-size: 1rem;
@@ -21,7 +19,7 @@ body {
 
 /* Override border under tooltip */
 span[data-tooltip] {
-  border-bottom: 0px;
+  border-bottom: 0;
 }
 
 html {
@@ -60,7 +58,7 @@ html, body {
   transform:translate(0%,-100%);
   padding:10px 20px;
   color:#ffffff;
-  background-color: $secondary;
+  background-color: $tooltipColor;
   font-weight:normal;
   font-size:14px;
   border-radius:8px;
@@ -76,7 +74,11 @@ html, body {
 }
 
 .checkbox {
-  @extend .is-unselectable
+  -webkit-touch-callout: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .is-quad-button {
@@ -120,10 +122,11 @@ html, body {
   position: fixed;
   bottom: 0;
   left: 50%;
+  color: white;
   transform: translateX(-50%);
   opacity: 0;
-  -webkit-animation: fadeinout 1s linear forwards;
-  animation: fadeinout 1s linear forwards;
+  -webkit-animation: fadeinout 1.5s linear forwards;
+  animation: fadeinout 1.5s linear forwards;
 }
 
 .has-background-color-primary-plus {

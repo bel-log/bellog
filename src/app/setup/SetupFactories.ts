@@ -535,7 +535,7 @@ export function buildDefaultActionBindings(builderType: string, builderCustomID:
             break;
         case BuilderNames.CustomBuilder:
             try {
-                let customBuilder = avaiableCustomBuilders.find((it) => it.id == builderCustomID ?? 0)
+                let customBuilder = avaiableCustomBuilders.find((it) => it.id == builderCustomID)
                 const customBuilderFunc =  new Function("return " + customBuilder.code)()
                 const [args, _] = customBuilderFunc({}, null)
                 keys = args

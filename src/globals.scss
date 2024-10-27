@@ -1,12 +1,32 @@
 @charset "utf-8";
 
 $primary: coral;
-$primaryplus: #fa6c39;
-$secondary: #2ead56;
-$icon-color: white;
+$info: #2783ff;
+$danger: #ff4343;
 
-:export {
-  primary: $primary;
-  secondary: $secondary;
-  iconColor: $icon-color;
+@use "bulma/sass" with (
+  $primary: $primary,
+  $info: $info,
+  $danger: $danger,
+);
+
+
+.file-icon {
+  color: hsl(var(--bulma-white-h), var(--bulma-white-s), var(--bulma-white-l)) !important;
+}
+
+.icon {
+  color: hsl(var(--bulma-white-h), var(--bulma-white-s), var(--bulma-white-l)) !important;
+}
+
+.file-label {
+  color: hsl(var(--bulma-white-h), var(--bulma-white-s), var(--bulma-white-l)) !important;
+}
+
+.button {
+  color: hsl(var(--bulma-white-h), var(--bulma-white-s), var(--bulma-white-l)) !important;
+}
+
+.navbar-item {
+  color: hsl(var(--bulma-white-h), var(--bulma-white-s), var(--bulma-white-l)) !important;
 }

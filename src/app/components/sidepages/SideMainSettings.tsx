@@ -148,14 +148,14 @@ export const SideMainSettings = (props: {
                                             }
                                         </section>
                                         <footer className="modal-card-foot">
-                                            <button className="button is-success"
+                                            <button className="button is-success mr-2"
                                                 onClick={() => {
                                                     updateDriverSettings(tmpDriverSettings);
                                                     setDriverModalIsOpen(false)
                                                 }}>
                                                 Save changes
                                             </button>
-                                            <button className="button"
+                                            <button className="button is-danger"
                                                 onClick={() => setDriverModalIsOpen(false)}>
                                                 Cancel
                                             </button>
@@ -171,7 +171,7 @@ export const SideMainSettings = (props: {
 
             <div className="field is-grouped mt-4">
                 <div className="control">
-                    <div className="file is-primary" onClick={() => exportProfile()}>
+                    <div className="file is-primary " onClick={() => exportProfile()}>
                         <label className="file-label">
 
                             <span className="file-cta">
@@ -193,7 +193,7 @@ export const SideMainSettings = (props: {
                                 <span className="file-icon">
                                     <i className="fas fa-upload"></i>
                                 </span>
-                                <span className="file-label">
+                                <span className="file-label has-text-white">
                                     Import profile
                                 </span>
                             </span>
