@@ -40,6 +40,8 @@ import { WidgetGroup } from "./WidgetGroup";
 import { CollpaseGroup } from "../CollapseGroup";
 import { SetupSideBarItems } from "../SetupSideBar";
 import { SideMainSettings } from "../sidepages/SideMainSettings";
+import {SideCustomHtmlComponents} from "../sidepages/SideCustomHtmlComponents";
+import {SideCustomCodeAndStyles} from "../sidepages/SideCustomCodeAndStyles";
 
 const ProfileSetup = (props: {
     profile: SetupProfileObject, sideBarItem: SetupSideBarItems,
@@ -49,9 +51,6 @@ const ProfileSetup = (props: {
 
     const [p, applyCache] = usePropagator<SetupProfileObject>(props.profile, props.onConfigUpdate)
 
-    const [profileName, setProfileName] = [p.profileName.val, p.profileName.set]
-    const [driverType, setDriverType] = [p.driverType.val, p.driverType.set]
-    const [driverSettings, setDriverSettings] = [p.driverSettings.val, p.driverSettings.set]
     const scriptsRef = React.useRef(p.scripts.val);
     const [scripts, setScripts] = [p.scripts.val, (newval) => { scriptsRef.current = newval; p.scripts.set(newval); },];
     const stylesRef = React.useRef(p.styles.val);
@@ -70,14 +69,6 @@ const ProfileSetup = (props: {
     const [widgetGroups, setWidgetGroups] = [p.widgetGroups.val, (newval) => { widgetGroupsRef.current = newval; p.widgetGroups.set(newval); },];
     const [globalSettings, setGlobalSettings] = [p.globalSettings.val, p.globalSettings.set]
 
-    function addNewGlobalScript() {
-        setScripts([...scripts, buildDefaultGlobalScript(scripts)])
-    }
-
-    function addNewGlobalStyle() {
-        setStyles([...styles, buildDefaultGlobalStyle(styles)])
-    }
-
     function addNewCustomParser() {
         setParsers([...parsers, buildDefaultCustomParser(parsers)])
     }
@@ -90,9 +81,7 @@ const ProfileSetup = (props: {
         setActions([...actions, buildDefaultAction(actions, builders)])
     }
 
-    function addNewCustomHtmlComponent() {
-        setHtmlElems([...htmlElems, buildDefaultCustomHtmlElem(htmlElems)])
-    }
+
 
     function addNewView() {
         setViews([...views, buildDefaultView(views)])
@@ -100,14 +89,6 @@ const ProfileSetup = (props: {
 
     function addNewInteractiveWidget() {
         setWidgetGroups([...widgetGroups, buildDefaultWidgetGroup(widgetGroups)])
-    }
-
-
-
-    function cloneAction(action: ActionProperties) {
-        const actionForNewID = buildDefaultAction(actions, builders)
-        const actionCopy = { ...action, ...{ id: actionForNewID.id } }
-        setActions([...actions, JSON.parse(JSON.stringify(actionCopy))])
     }
 
     useEffect(() => {
@@ -155,130 +136,19 @@ const ProfileSetup = (props: {
             {
                 props.sideBarItem === SetupSideBarItems.MainSettings &&
                 <SideMainSettings
-                    profileName={profileName}
                     exportProfile={props.exportProfile}
                     loadProfile={props.loadProfile}
-                    setProfileName={(newProfileName) => {
-                        setProfileName(newProfileName)
-                    }}
-                    driverType={driverType}
-                    driverSettings={driverSettings}
-                    setDriver={([newDriverType, newDriverSettings]) => {
-                        setDriverType(newDriverType, true)
-                        setDriverSettings(newDriverSettings, true)
-                        applyCache()
-                    }}
                 />
             }
 
             {
                 props.sideBarItem === SetupSideBarItems.CustomHtmlComponents &&
-                <React.Fragment>
-                    <h1 className="title">Custom Html Components</h1>
-                    <p>Data received is always displayed on the runtime as html object.<br/>
-                    It is often necessary to create your own visual object to display data according to your needs.<br/>
-                    Bellog embeds the <a href="https://bulma.io/documentation/">Bulma CSS framework</a>, so good-looking object can be easily achieve by checking out the framework examples.<br/>
-                    </p><br/>
-                    <p>
-                        Html code supports expressions like {"${myJsFunc()}"}<br/>
-                        Variables with two leading {"$$"} are special Bellog's bindings to replace with incoming data received and parsed
-                    </p>
-                    <br/>
-                    <CollapseCard title="Custom Html Components">
-                        <CollpaseGroup array={htmlElems} deleteIcon
-                            getTitle={(index) => htmlElems[index].name}
-                            getId={(index) => htmlElems[index].id}
-
-                            setNewArray={(array) => { setHtmlElems(array) }}
-                        >
-                            {
-                                (htmlelem, index) => (
-                                    <CustomHtmlComponentSetup
-                                        key={htmlelem.id}
-                                        cfg={htmlelem}
-                                        onConfigChange={(newHtmlElem) =>
-                                            setHtmlElems(
-                                                htmlElemsRef.current.map((val, n_index) => {
-                                                    if (n_index == index)
-                                                        return { ...val, ...newHtmlElem }
-                                                    else
-                                                        return val
-                                                }))}
-                                    />
-                                )
-                            }
-                        </CollpaseGroup>
-                        <button className="button is-primary mt-4" onClick={() => addNewCustomHtmlComponent()}>Add New</button>
-                    </CollapseCard>
-                </React.Fragment>
+                <SideCustomHtmlComponents />
             }
 
             {
                 props.sideBarItem === SetupSideBarItems.CustomCodeAndStyles &&
-                <React.Fragment>
-                    <h1 className="title">Custom Code and Styles</h1>
-                    <p>You can add .js scripts or .css styles that will be accessible by any cusotm parser, custom builder
-                        action, custom html component or match script. <br />
-                        They are useful to customize html components or to add code or libraries used to parse a protocol. <br />
-                        All scripts and style will be injected inside the head tag of the page.
-                    </p>
-                    <br />
-                    <CollapseCard title="Global styles">
-                        {
-                            styles.map(
-                                (style, index) => {
-                                    return (
-                                        <GlobalStyleSetup
-                                            key={style.id}
-                                            cfg={style}
-                                            onConfigChange={(newStyle) =>
-                                                setStyles(
-                                                    stylesRef.current.map((val, n_index) => {
-                                                        if (n_index == index)
-                                                            return { ...val, ...newStyle }
-                                                        else
-                                                            return val
-                                                    }))}
-                                            onDelete={() => setStyles(styles.filter((val, n_index) => {
-                                                return n_index != index
-                                            }))}
-                                        />
-                                    )
-
-                                }
-                            )
-                        }
-                        <button className="button is-primary mt-4" onClick={() => addNewGlobalStyle()}>Add New</button>
-                    </CollapseCard>
-
-                    <CollapseCard title="Global scripts">
-                        {
-                            scripts.map(
-                                (gscript, index) => {
-                                    return (
-                                        <GlobalScriptSetup
-                                            key={gscript.id}
-                                            cfg={gscript}
-                                            onConfigChange={(newScript) =>
-                                                setScripts(
-                                                    scriptsRef.current.map((n_script, n_index) => {
-                                                        if (n_index == index)
-                                                            return { ...n_script, ...newScript }
-                                                        else
-                                                            return n_script
-                                                    }))}
-                                            onDelete={() => setScripts(scripts.filter((n_script, n_index) => {
-                                                return n_index != index
-                                            }))}
-                                        />
-                                    )
-
-                                }
-                            )
-                        }
-                        <button className="button is-primary mt-4" onClick={() => addNewGlobalScript()}>Add New</button>
-                    </CollapseCard>
-                </React.Fragment>
+                <SideCustomCodeAndStyles />
             }
 
             {

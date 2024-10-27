@@ -15,8 +15,12 @@ import { useParams } from "react-router-dom";
 import { normalizeProfile } from "../../setup/SetupNormalizer";
 import { checkVersionForRedirection } from "../../../Version";
 import { SetupSideBarItems, SetupSiedBar } from "../SetupSideBar";
+import {useSnapshot} from "valtio/index";
+import {profileStore} from "../ProfileStore";
 
 export const PageProfileSetup = () => {
+
+    const profileStoreSnap = useSnapshot(profileStore)
 
     const [toolbarState, setToolbarState] = React.useContext(ToolbarContext)
 
@@ -37,6 +41,7 @@ export const PageProfileSetup = () => {
         const profileObj = normalizeProfile(JSON.parse(profile.setup) as SetupProfileObject)
         checkVersionForRedirection(profileObj.setupVersion)
         setTmpProfile(profileObj)
+        profileStoreSnap.setProfile(profileObj)
     });
 
     async function saveProfile() {

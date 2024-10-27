@@ -1,36 +1,42 @@
-import {usePropagator, useStateWithCallback} from "../../utility/customHooks";
 import * as React from "react";
-import CodeMirror from '@uiw/react-codemirror';
-import {javascript} from "@codemirror/lang-javascript";
-import {HtmlComponentEventType, HtmlComponentParameterType, SetupCustomHtmlProperties} from "../../setup/SetupInterfaces";
-import {useEffect, useRef, useState} from "react";
-import {setParamOfArrayProp, setParamOfObjectProp} from "../../utility/customSetters";
+import {useRef, useState} from "react";
+import {
+    HtmlComponentEventType,
+    HtmlComponentParameterType,
+    SetupCustomHtmlProperties
+} from "../../setup/SetupInterfaces";
 import {compileTemplate} from "../../utility/customRenderUtils";
-import { CollapseCard } from "../CollapseCard";
 import CodeEditor from "../CodeEditor";
+import {useSnapshot} from "valtio/index";
 
 enum TabType {
     CodeTab,
     PreviewTab
 }
 
-export const CustomHtmlComponentSetup = (props: { 
-        cfg: SetupCustomHtmlProperties, 
-        onConfigChange: any
-    }) => {
+export const CustomHtmlComponentSetup = (props: {
+    cfg: SetupCustomHtmlProperties
+}) => {
 
-    const [p, applyCache] = usePropagator<SetupCustomHtmlProperties>(props.cfg, props.onConfigChange)
+    const snap = useSnapshot(props.cfg)
+    const store = props.cfg
 
-    const [name, setName] = [p.name.val, p.name.set]
-    const [code, setCode] = [p.code.val, p.code.set]
-    const [parameters, setParameters] = [p.parameters.val, p.parameters.set]
-    const [events, setEvents] = [p.events.val, p.events.set]
-    
+    const [name, setName] = [snap.name, (newVal: string) => {
+        store.name = newVal
+    }]
+    const [code, setCode] = [snap.code, (newVal: string) => {
+        store.code = newVal
+    }]
+    const [, setEvents] = [snap.events, (newVal: { [name: string]: { type: HtmlComponentEventType; }; }) => {
+        store.events = newVal
+    }]
+    const parameters = snap.parameters
+
     const [selectedTab, setSelectedTab] = useState(TabType.CodeTab)
 
     const previewRef = useRef<HTMLHeadingElement>()
 
-    function updateCode(code: string, previewOnly: boolean= false) {
+    function updateCode(code: string, previewOnly: boolean = false) {
         let paramsNames = [...code.matchAll(/\${[^$]*(\$\$[a-zA-Z0-9]*)[^a-zA-Z0-9]*}/gm)]
 
         let currentParameters = paramsNames.reduce((acc, m) => {
@@ -39,12 +45,10 @@ export const CustomHtmlComponentSetup = (props: {
             return acc
         }, {})
 
-        let eventTypes = Object.values(HtmlComponentEventType).join("|")
         // TODO put eventTypes inside regex
-        let eventNames = [...code.matchAll(/<.*data-(iwclick)=[\"\'](.*?)[\"|\'].*>/gm)]
+        let eventNames = [...code.matchAll(/<.*data-(iwclick)=["'](.*?)["|'].*>/gm)]
         let currentEvents = eventNames.reduce((acc, m) => {
-            if(m.length == 3)
-            {
+            if (m.length == 3) {
                 acc[m[2]] = {type: m[1]}
                 return acc
             }
@@ -57,16 +61,14 @@ export const CustomHtmlComponentSetup = (props: {
         try {
             compileTemplate(code, args)
             previewRef.current.innerHTML = compileTemplate(code, args)
-        } catch (ex)
-        {
+        } catch (ex) {
             previewRef.current.innerHTML = ex
         }
 
-        if(!previewOnly) {
-            setCode(code, true)
-            setParameters(currentParameters, true)
-            setEvents(currentEvents, true)
-            applyCache()
+        if (!previewOnly) {
+            setCode(code)
+            store.parameters = (currentParameters)
+            setEvents(currentEvents)
         }
     }
 
@@ -81,7 +83,7 @@ export const CustomHtmlComponentSetup = (props: {
             <div className="tabs is-left is-boxed">
                 <ul className="">
                     <li className={"is-clickable " + (selectedTab == TabType.CodeTab ? "is-active" : "")}
-                    onClick={() => setSelectedTab(TabType.CodeTab)}>
+                        onClick={() => setSelectedTab(TabType.CodeTab)}>
                         <a>
                                 <span className="icon is-small"><i className="fas fa-code"
                                                                    aria-hidden="true"></i></span>
@@ -89,7 +91,10 @@ export const CustomHtmlComponentSetup = (props: {
                         </a>
                     </li>
                     <li className={"is-clickable " + (selectedTab == TabType.PreviewTab ? "is-active" : "")}
-                        onClick={() => {updateCode(code, true); setSelectedTab(TabType.PreviewTab)}}>
+                        onClick={() => {
+                            updateCode(code, true);
+                            setSelectedTab(TabType.PreviewTab)
+                        }}>
                         <a>
                                 <span className="icon is-small"><i className="fas fa-video"
                                                                    aria-hidden="true"></i></span>
@@ -108,12 +113,12 @@ export const CustomHtmlComponentSetup = (props: {
 
             {
                 selectedTab == TabType.CodeTab ?
-                <CodeEditor
-                    value={code}
-                    isHtml={true}
-                    onChange={(value) => {
-                        updateCode(value)
-                }}/> : ""
+                    <CodeEditor
+                        value={code}
+                        isHtml={true}
+                        onChange={(value) => {
+                            updateCode(value)
+                        }}/> : ""
             }
 
             {
@@ -121,36 +126,40 @@ export const CustomHtmlComponentSetup = (props: {
                     return (
                         <fieldset className="fieldset" key={index}>
                             <legend className="ml-2">{name}</legend>
-                        <div className="field is-grouped">
-                            <div className="control">
-                                <div className="field">
-                                    <label className="label">Type</label>
-                                    <div className="select">
-                                        <select value={parameters[name].type}
-                                                onChange={(evt) => {setParamOfObjectProp(setParameters, parameters, name, {type: evt.target.value as HtmlComponentParameterType})}}>
-                                            {
-                                                Object.keys(HtmlComponentParameterType).map(
-                                                    (val, index) => {
-                                                        return (
-                                                            <option key={index}>{val}</option>
-                                                        )
-                                                    }
-                                                )
-                                            }
-                                        </select>
+                            <div className="field is-grouped">
+                                <div className="control">
+                                    <div className="field">
+                                        <label className="label">Type</label>
+                                        <div className="select">
+                                            <select value={parameters[name].type}
+                                                    onChange={(evt) => {
+                                                        store.parameters[name].type = evt.target.value as HtmlComponentParameterType
+                                                    }}>
+                                                {
+                                                    Object.keys(HtmlComponentParameterType).map(
+                                                        (val, index) => {
+                                                            return (
+                                                                <option key={index}>{val}</option>
+                                                            )
+                                                        }
+                                                    )
+                                                }
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="control">
+                                    <div className="field">
+                                        <label className="label">Default</label>
+                                        <div className="control">
+                                            <input className="input" type={parameters[name].type.toLowerCase()}
+                                                   placeholder="Text input" value={parameters[name].default}
+                                                   onChange={(evt) =>
+                                                       store.parameters[name].default = evt.target.value}/>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                            <div className="control">
-                                <div className="field">
-                                    <label className="label">Default</label>
-                                    <div className="control">
-                                        <input className="input" type={parameters[name].type.toLowerCase()} placeholder="Text input" value={parameters[name].default}
-                                               onChange={(evt) => setParamOfObjectProp(setParameters, parameters, name, {default: evt.target.value})}/>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
                         </fieldset>
                     )
                 })

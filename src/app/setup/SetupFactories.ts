@@ -54,7 +54,7 @@ export function buildDefaultDriverSettings(type: DriverNames): DriverSettings {
     return DriverFactory.getDefaultParams(type)
 }
 
-export function buildDefaultGlobalScript(array: SetupGlobalScriptProperties[]): SetupGlobalScriptProperties {
+export function buildDefaultGlobalScript(array: Readonly<SetupGlobalScriptProperties[]>): SetupGlobalScriptProperties {
     const maxId = array.reduce(
         (max, script) => (script.id > max ? script.id : max),
         array.length > 0 ? array[0].id : 0
@@ -228,7 +228,7 @@ export function BuildHtmlComponent(htmlType: HtmlComponentType, htmlCustomID: nu
 }
 
 
-export function buildDefaultCustomHtmlElem(array: SetupCustomHtmlProperties[]): SetupCustomHtmlProperties {
+export function buildDefaultCustomHtmlElem(array: Readonly<SetupCustomHtmlProperties[]>): SetupCustomHtmlProperties {
 
     let maxId = Math.max(...array.map(o => o.id))
     maxId = maxId < 0 ? 0 : maxId

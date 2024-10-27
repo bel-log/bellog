@@ -3,7 +3,7 @@ import { useLayoutEffect, useState } from "react";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 export const CollpaseGroup = (props: {
-    array: Array<any>,
+    array:  Readonly<Array<any>>,
     eyeIcon?: boolean,
     deleteIcon?: boolean,
     duplicateIcon?: boolean,
