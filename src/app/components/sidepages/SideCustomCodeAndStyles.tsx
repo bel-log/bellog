@@ -5,8 +5,7 @@ import {
 import {useSnapshot} from "valtio";
 import {profileStore} from "../ProfileStore";
 import {CollapseCard} from "../CollapseCard";
-import {GlobalStyleSetup} from "../setup/GlobalStyleSetup";
-import {GlobalScriptSetup} from "../setup/GlobalScriptSetup";
+import {GlobalScriptStyleSetup} from "../setup/GlobalScriptStyleSetup";
 import { SetupGlobalScriptProperties, SetupGlobalStyleProperties} from "../../setup/SetupInterfaces";
 
 
@@ -45,12 +44,9 @@ export const SideCustomCodeAndStyles = () => {
                     styles.map(
                         (style, index) => {
                             return (
-                                <GlobalStyleSetup
+                                <GlobalScriptStyleSetup
                                     key={style.id}
-                                    cfg={style}
-                                    onConfigChange={(newStyle: SetupGlobalStyleProperties) => {
-                                        profileStore.profile.styles[index] = newStyle;
-                                    }}
+                                    cfg={profileStore.profile.styles[index]}
                                     onDelete={() => setStyles(styles.filter((_val, n_index) => {
                                         return n_index != index
                                     }))}
@@ -68,12 +64,9 @@ export const SideCustomCodeAndStyles = () => {
                     scripts.map(
                         (gscript, index) => {
                             return (
-                                <GlobalScriptSetup
+                                <GlobalScriptStyleSetup
                                     key={gscript.id}
-                                    cfg={gscript}
-                                    onConfigChange={(newScript: SetupGlobalScriptProperties) => {
-                                        profileStore.profile.scripts[index] = newScript;
-                                    }}
+                                    cfg={profileStore.profile.scripts[index]}
                                     onDelete={() => setScripts(scripts.filter((_n_script, n_index) => {
                                         return n_index != index
                                     }))}

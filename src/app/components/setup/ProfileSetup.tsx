@@ -12,8 +12,6 @@ import {
     useState
 } from "react";
 import { usePropagator, useStateWithCallback, useUpdateEffect } from "../../utility/customHooks";
-import { GlobalScriptSetup } from "./GlobalScriptSetup";
-import { CustomParsersSetup } from "./CustomParsersSetup";
 import { CollapseCard } from "../CollapseCard";
 import {
     buildDefaultAction,
@@ -25,7 +23,7 @@ import {
     buildDefaultGlobalScript,
     buildDefaultGlobalStyle, buildDefaultView, buildDefaultWidgetGroup
 } from "../../setup/SetupFactories";
-import { GlobalStyleSetup } from "./GlobalStyleSetup";
+import { GlobalScriptStyleSetup } from "./GlobalScriptStyleSetup";
 import { ActionProperties, SetupCustomParserProperties } from "../../setup/SetupInterfaces";
 import { DriverWebSerialSetup } from "./DriverWebSerialSetup";
 import { DriverSerialPortWebSerial, DriverSerialPortWebSerialParameters } from "../../drivers/DriverSerialportWebserial";
@@ -42,6 +40,7 @@ import { SetupSideBarItems } from "../SetupSideBar";
 import { SideMainSettings } from "../sidepages/SideMainSettings";
 import {SideCustomHtmlComponents} from "../sidepages/SideCustomHtmlComponents";
 import {SideCustomCodeAndStyles} from "../sidepages/SideCustomCodeAndStyles";
+import {SideCustomParserAndBuilders} from "../sidepages/SideCustomParserAndBuilders";
 
 const ProfileSetup = (props: {
     profile: SetupProfileObject, sideBarItem: SetupSideBarItems,
@@ -69,13 +68,6 @@ const ProfileSetup = (props: {
     const [widgetGroups, setWidgetGroups] = [p.widgetGroups.val, (newval) => { widgetGroupsRef.current = newval; p.widgetGroups.set(newval); },];
     const [globalSettings, setGlobalSettings] = [p.globalSettings.val, p.globalSettings.set]
 
-    function addNewCustomParser() {
-        setParsers([...parsers, buildDefaultCustomParser(parsers)])
-    }
-
-    function addNewCustomBuilder() {
-        setBuilders([...builders, buildDefaultCustomBuilder(builders)])
-    }
 
     function addNewCustomAction() {
         setActions([...actions, buildDefaultAction(actions, builders)])
@@ -153,68 +145,7 @@ const ProfileSetup = (props: {
 
             {
                 props.sideBarItem === SetupSideBarItems.CustomParserAndBuilders &&
-                <React.Fragment>
-                    <h1 className="title">Custom Parsers and Builders</h1>
-                    <p>A parser contains the code to parse the data received from the driver.<br/>
-                    For example CRC calculations, matching command code, base64 deconding and so on.<br/>
-                    A builder instead takes data from an Action and sends it. <br/>
-                    </p>
-                    <br/>
-                    <CollapseCard title="Custom parsers">
-                        {
-                            parsers.map(
-                                (parser, index) => {
-                                    return (
-                                        <CustomParsersSetup
-                                            key={parser.id}
-                                            cfg={parser}
-                                            onConfigChange={(newScript) =>
-                                                setParsers(
-                                                    parsersRef.current.map((val, n_index) => {
-                                                        if (n_index == index)
-                                                            return { ...val, ...newScript }
-                                                        else
-                                                            return val
-                                                    }))}
-                                            onDelete={() => setParsers(parsers.filter((val, n_index) => {
-                                                return n_index != index
-                                            }))}
-                                        />
-                                    )
-
-                                }
-                            )
-                        }
-                        <button className="button is-primary mt-4" onClick={() => addNewCustomParser()}>Add New</button>
-                    </CollapseCard>
-                    <CollapseCard title="Custom builders">
-                        {
-                            builders.map(
-                                (builder, index) => {
-                                    return (
-                                        <CustomBuildersSetup
-                                            key={builder.id}
-                                            cfg={builder}
-                                            onConfigChange={(newScript) =>
-                                                setBuilders(
-                                                    buildersRef.current.map((val, n_index) => {
-                                                        if (n_index == index)
-                                                            return { ...val, ...newScript }
-                                                        else
-                                                            return val
-                                                    }))}
-                                            onDelete={() => setBuilders(builders.filter((val, n_index) => {
-                                                return n_index != index
-                                            }))}
-                                        />
-                                    )
-
-                                }
-                            )
-                        }
-                        <button className="button is-primary mt-4" onClick={() => addNewCustomBuilder()}>Add New</button>
-                    </CollapseCard>
-                </React.Fragment>
+                <SideCustomParserAndBuilders />
             }
 
             {

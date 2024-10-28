@@ -6,18 +6,15 @@ export interface GlobalSetupSettings {
     shareDataBetweenViews: boolean
     maximumItemsPerView: number
 }
-
-export interface SetupGlobalScriptProperties {
+export interface SetupGlobalScriptStyleProperties {
     id: number,
     name: string,
     code: string
 }
 
-export interface SetupGlobalStyleProperties {
-    id: number,
-    name: string,
-    code: string
-}
+export interface SetupGlobalStyleProperties extends SetupGlobalScriptStyleProperties {}
+
+export interface SetupGlobalScriptProperties extends SetupGlobalScriptStyleProperties {}
 
 export interface SetupCustomParserProperties {
     id: number,

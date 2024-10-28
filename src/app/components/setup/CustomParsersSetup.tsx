@@ -1,19 +1,17 @@
-
-
-import {usePropagator, useStateWithCallback} from "../../utility/customHooks";
 import * as React from "react";
 import CodeMirror from '@uiw/react-codemirror';
-import {autoCloseTags, javascript} from "@codemirror/lang-javascript";
+import {javascript} from "@codemirror/lang-javascript";
 import {SetupCustomParserProperties} from "../../setup/SetupInterfaces";
 import { useState } from "react";
 import { EditableText } from "../EditableText";
+import {useSnapshot} from "valtio/index";
 
-export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, onConfigChange: any, onDelete?: any}) => {
+export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, onDelete?: any}) => {
 
-    const [p, applyCache] = usePropagator<SetupCustomParserProperties>(props.cfg, props.onConfigChange)
+    const script = useSnapshot(props.cfg)
 
-    const [name, setName] = [p.name.val, p.name.set]
-    const [code, setCode] = [p.code.val, p.code.set]
+    const [name, setName] = [script.name, (newVal: string) => {props.cfg.name = newVal}]
+    const [code, setCode] = [script.code, (newVal: string) => {props.cfg.code = newVal}]
 
     const [visible, setVisible] = useState(false)
 
@@ -44,7 +42,7 @@ export const CustomParsersSetup = (props : {cfg: SetupCustomParserProperties, on
                 minHeight="100px"
                 maxHeight="800px"
                 extensions={[javascript({ jsx: false })]}
-                onChange={(value, viewUpdate) => {
+                onChange={(value: string) => {
                     setCode(value)
                 }} /> : ""}
 

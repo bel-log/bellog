@@ -1,19 +1,17 @@
-import { usePropagator, useStateWithCallback } from "../../utility/customHooks";
 import * as React from "react";
-import CodeMirror from '@uiw/react-codemirror';
-import { javascript } from "@codemirror/lang-javascript";
-import { SetupGlobalScriptProperties } from "../../setup/SetupInterfaces";
-import { useState } from "react";
+import {SetupGlobalScriptStyleProperties} from "../../setup/SetupInterfaces";
 import { EditableText } from "../EditableText";
+import { useState } from "react";
 import CodeEditor from "../CodeEditor";
+import {useSnapshot} from "valtio/index";
 
-export const GlobalScriptSetup = (props: { cfg: SetupGlobalScriptProperties, onConfigChange: any, onDelete?: any }) => {
+export const GlobalScriptStyleSetup = (props: {cfg: SetupGlobalScriptStyleProperties, onDelete?: () => void}) => {
 
-    const [p, applyCache] = usePropagator<SetupGlobalScriptProperties>(props.cfg, props.onConfigChange)
+    const style = useSnapshot(props.cfg)
 
-    const [name, setName] = [p.name.val, p.name.set]
-    const [code, setCode] = [p.code.val, p.code.set]
-    
+    const [name, setName] = [style.name, (newVal: string) => {props.cfg.name = newVal}]
+    const [code, setCode] = [style.code, (newVal: string) => {props.cfg.code = newVal}]
+
     const [visible, setVisible] = useState(false)
 
     return (
@@ -39,13 +37,15 @@ export const GlobalScriptSetup = (props: { cfg: SetupGlobalScriptProperties, onC
                 </span>
             </a>
 
-            {visible ?            
-             <CodeEditor
-                value={code}
-                onChange={(value) => {
-                    setCode(value)
-                }}/> : ""
+            {
+                visible ? <CodeEditor
+                    value={code}
+                    isCss={true}
+                    onChange={(value) => {
+                        setCode(value)
+                    }} /> : ""
             }
+
 
         </div>
     )

@@ -84,7 +84,7 @@ export function buildDefaultGlobalStyle(array: SetupGlobalStyleProperties[]): Se
     }
 }
 
-export function buildDefaultCustomParser(array: SetupCustomParserProperties[]): SetupCustomParserProperties {
+export function buildDefaultCustomParser(array: Readonly<SetupCustomParserProperties[]>): SetupCustomParserProperties {
 
     let maxId = Math.max(...array.map(o => o.id))
     maxId = maxId < 0 ? 0 : maxId
@@ -124,7 +124,7 @@ export function buildDefaultCustomParser(array: SetupCustomParserProperties[]): 
     }
 }
 
-export function buildDefaultCustomBuilder(array: SetupCustomBuilderProperties[]): SetupCustomBuilderProperties {
+export function buildDefaultCustomBuilder(array: Readonly<SetupCustomBuilderProperties[]>): SetupCustomBuilderProperties {
 
     let maxId = Math.max(...array.map(o => o.id))
     maxId = maxId < 0 ? 0 : maxId
